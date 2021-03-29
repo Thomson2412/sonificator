@@ -1,3 +1,7 @@
+s.boot;
+Buffer.freeAll;
+s.freeAll;
+
 (
 ~wt = Array.newClear(4);
 ~sine = Signal.sineFill(1024, [1, 0]).asWavetable;
@@ -20,24 +24,22 @@
 ~buf = Buffer.allocConsecutive(4, s, 2048);
 ~buf.do({arg buf, i; buf.loadCollection(~wt[i])});
 
-
-~wt.do({arg wtsig, i; wtsig.plot(~buf[i].bufnum.asString)})
-
 (
 SynthDef.new(\vosc, {
-	arg buf=0, numBufs=2, freq=440, amp=0.2;
-	var sig, bufPos, detuneSig;
+	arg buf=0, numBufs=1, bufPos=0, freq=440, att=0, dec=1, sus = 0, rel=0.2, amp=0.2, gate = 1, pan=0;
+	var sig, detuneSig, env;
 	detuneSig = LFNoise1.kr(0.2!8).bipolar(0.2).midiratio;
-	bufPos = buf + LFNoise1.kr(0.5).range(0, numBufs - 1);
+	bufPos = buf + bufPos.min(numBufs - 1);
+	env = Env.adsr(att, dec, sus, rel);
 	sig = VOsc.ar(bufPos, freq * detuneSig);
-	sig = Splay.ar(sig);
-	sig = LeakDC.ar(sig) * amp;
-	Out.ar(0, sig);
+	sig = Splay.ar(sig, center:pan);
+	sig = LeakDC.ar(sig);
+	sig = sig * EnvGen.kr(env, gate, doneAction: Done.freeSelf);
+	sig = FreeVerb2.ar(sig, sig, mix: 0.33, room: 0.5, damp: 0.5, mul: 1.0, add: 0.0);
+	sig = LPF.ar(sig, freq: 16000, mul: 1.0, add: 0.0);
+	Out.ar(0, sig  * amp);
 }).add;
 )
-
-Synth(\vosc, [\freq, 60.midicps, \buf, ~buf[0].bufnum, \numBufs, 4]);
-
 
 (
 var scale;
@@ -45,10 +47,10 @@ var amp;
 var duration;
 var release;
 var strum;
-var scale_notes = Pseq([[0,2,4,6]]);
+var scale_notes = [[0,2,4,6]];
+var melody_notes = [0,2,4,6, 0,2,4,5, 0,1,3,5, 0,1,3,4];
+var edginess;
 var line;
-b.free;
-b = Buffer.alloc(s, 80, 2);
 o.free;
 o = OSCFunc(
 	{
@@ -58,43 +60,63 @@ o = OSCFunc(
 		if(msg[3] < 4,{
 			scale = Scale.minor;
 		},);
-		amp = msg[2] / 1000;
+		amp = (msg[2] / 1000) - 0.06;
 		duration = msg[4] / 1000;
 		release = duration * 0.5;
 		strum = 0.08.rand + 0.02;
-		line = (msg[5] - 50) / 10;
-
-		// t = Signal.fill(line.size, {|i| line[i]});
-		t = Signal.chebyFill(line.size, line);
-		b.sendCollection(t.asWavetableNoWrap);
-
+		edginess = msg[5] * ~buf.size * 2;
+		line = (msg[6] - 50) / 10;
 		Pbind(
-			\instrument, \test,
-			\degree, scale_notes,
+			\instrument, \vosc,
+			\degree, Pseq(scale_notes),
 			\scale, scale,
 			\root, msg[1],
 			\octave, msg[3],
-			\dur, duration,
+			\dur, duration + 1,
+			\strum, strum,
+			\amp, amp,
+			\att, duration * 0.5,
+			\dec, duration,
+			\sus, 0,
+			\rel, release,
+			\buf, ~buf[0].bufnum,
+			\numBufs, ~buf.size,
+			\bufPos, edginess,
+			\pan, rrand(-0.5, 0.5),
+		).play;
+		Pbind(
+			\instrument, \vosc,
+			\degree, Pseq(melody_notes.scramble),
+			\scale, scale,
+			\root, msg[1],
+			\octave, msg[3] + 1,
+			\dur, Pseq({min(0.2, max(0.12, rrand(0.15, 0.2) - (edginess / 100)))}!melody_notes.size),
 			\strum, strum,
 			\amp, amp,
 			\att, 0.1,
-			\rel, release,
+			\dec, 0.5,
+			\sus, 0,
+			\rel, 0.5,
+			\buf, ~buf[0].bufnum,
+			\numBufs, ~buf.size,
+			\bufPos, 0,
+			\pan, rrand(-0.5, 0.5),
 		).play;
-		Post <<< "Scale: " << scale.name << Char.nl;
-		Post <<< "Root: " << msg[1] << Char.nl;
-		Post <<< "Octave: " << msg[3] << Char.nl;
-		Post <<< "Amp: " << amp << Char.nl;
-		Post <<< "Duration: " << duration << Char.nl;
-		Post <<< "Release: " << release << Char.nl;
-		Post <<< "Strum: " << strum << Char.nl;
-		Post <<< "Scale notes: " << scale_notes << Char.nl;
-		Post <<< "Line: " << line << Char.nl;
+		Post << "Scale: " << scale.name << Char.nl;
+		Post << "Root: " << msg[1] << Char.nl;
+		Post << "Octave: " << msg[3] << Char.nl;
+		Post << "Amp: " << amp << Char.nl;
+		Post << "Duration: " << duration << Char.nl;
+		Post << "Release: " << release << Char.nl;
+		Post << "Strum: " << strum << Char.nl;
+		Post << "Scale notes: " << scale_notes << Char.nl;
+		Post << "Edginess: " << edginess << Char.nl;
+		Post << "Line: " << line << Char.nl;
 		Post << Char.nl;
 	},
 	'/low_level_data', nil, 8484);
 )
-b.plot;
-
+{min(0.2, max(0.15, rrand(0.15, 0.2) - ))}!12
 (
 var line;
 var plot;
@@ -110,110 +132,27 @@ o = OSCFunc(
 	},
 	'/test', nil, 8484);
 )
-
-b = Buffer.alloc(s, l.size * 2, 1);
-l.plot;
-t = Signal.fill(l.size, {|i| l[i]});
-t = Signal.chebyFill(l.size, l);
-
-t.plot
-// t.asWavetableNoWrap will convert it to the official Wavetable format at next power of two size
-b.sendCollection(t.asWavetableNoWrap);  // may also use loadCollection here
-b.plot
-
-(
-{
-    Shaper.ar(
-        b,
-		SinOsc.ar([440, 440], 0.5)
-    )
-}.scope
-)
-
-b.free;
-
-Wavetable.chebyFill(513, [1]).plot;
-
-// shifted to avoid DC offset when waveshaping a zero signal
-Wavetable.chebyFill(513, [0, 1], zeroOffset: true).plot;
-
-// normalized sum of (unshifted) Chebyshev polynomials (the default)
-Wavetable.chebyFill(513, [0, 1, 0, 0, 0, 1], normalize: true, zeroOffset: false).plot;
-
-Wavetable.chebyFill(513, [0, 0, 1]).plot;
-Wavetable.chebyFill(513, [0.3, -0.8, 1.1]).plot;
-l[0] = 2
-l[l.size-1] = -2
-Wavetable.chebyFill(61, l).plot;
-
-(
-s.waitForBoot({
-    var amplitudes = [0, 1, 1, -2, 1];
-    var wavs = [
-        Wavetable.chebyFill(256+1, amplitudes, normalize: true, zeroOffset: true),
-        Wavetable.chebyFill(256+1, amplitudes, normalize: true, zeroOffset: false)
-    ];
-    b = wavs.collect{ arg wav; Buffer.loadCollection(s, wav) };
-    s.sync;
-    x = {
-        var in = SinOsc.ar(100, 0);
-        Shaper.ar(b, in ) ++ LeakDC.ar(Shaper.ar(b[1], in))
-    }.scope;
-})
-)
-x.free; b.do(_.free); b = nil;
-Wavetable.sineFill(512, [0.5]).plot;
-Wavetable.sineFill(512, [1]).asSignal.plot;
-
+m = [0,2,4,6, 0,2,4,5, 0,1,3,5, 0,1,3,4];
 (
 Pbind(
-	\instrument, \cfstring1,
-	\degree, scale_notes,
+	\instrument, \vosc,
+	\degree, Pseq(m),
     \scale, Scale.major,
 	\root, 0,
-	\octave, 4,
-	\dur, 3,
-	\strum, 0.08,
-	\amp, 0.2
+	\octave, 6,
+	\dur, Pseq([rrand(0.2, 0.5)], m.size),
+	// \strum, 0.08,
+	\amp, 0.2,
+	\att, 0.1,
+	\dec, 0.5,
+	\sus, 0,
+	\rel, 0.5,
+	\buf, ~buf[0].bufnum,
+	\numBufs, ~buf.size,
+	\bufPos, 0,
+	\pan, rrand(-0.5, 0.5),
 ).play;
 )
-
-Pbind(
-	\instrument, \FMRhodes1,
-	\degree, scale_notes,
-	\scale, scale,
-	\root, msg[1],
-	\octave, msg[3],
-	\dur, duration,
-	\strum, strum,
-	\amp, amp,
-	\att, 0.1,
-	\rel, release,
-).play;
-Pbind(
-	\instrument, \FMRhodes2,
-	\degree, scale_notes,
-	\scale, scale,
-	\root, msg[1],
-	\octave, msg[3],
-	\dur, duration,
-	\strum, strum,
-	\amp, amp,
-	\att, 0.1,
-	\rel, release,
-).play;
-Pbind(
-	\instrument, \everythingRhodes,
-	\degree, scale_notes,
-	\scale, scale,
-	\root, msg[1],
-	\octave, msg[3],
-	\dur, duration,
-	\strum, strum,
-	\amp, amp / 5,
-	\rel, release,
-).play;
-
 
 a = Scale.major;
 a.name;
@@ -226,4 +165,7 @@ b.name;
 b.degrees;
 b.semitones;
 b.ratios;
+
+Env.adsr(0.1, 0.1, 0, 0.2).plot;
+s.nodeMap
 
