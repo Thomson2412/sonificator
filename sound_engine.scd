@@ -1,127 +1,42 @@
 (
-// a SynthDef
-SynthDef(\test, { | out, freq = 440, amp = 0.1, nharms = 10, pan = 0, gate = 1 |
-	var audio = Shaper.ar(b, Blip.ar(freq, nharms), amp);
-	// var audio = Blip.ar(freq, nharms, amp);
-    var env = Linen.kr(gate, doneAction: Done.freeSelf);
-    OffsetOut.ar(out, Pan2.ar(audio, pan, env) );
+~wt = Array.newClear(4);
+~sine = Signal.sineFill(1024, [1, 0]).asWavetable;
+~tri = Env([0, 1 , -1, 0], [1, 2, 1], \lin).asSignal(1024).asWavetable;
+~saw = Env([0, 1 , -1, 0], [1, 0, 1], \lin).asSignal(1024).asWavetable;
+~square = Signal.rectWindow(1024, 512).asWavetable;
+~wt[0] = ~sine;
+~wt[1] = ~tri;
+~wt[2] = ~saw;
+~wt[3] = ~square;
+)
+(
+~sine.plot("~sine");
+~tri.plot("~tri");
+~saw.plot("~saw");
+~square.plot("~square");
+)
+
+
+~buf = Buffer.allocConsecutive(4, s, 2048);
+~buf.do({arg buf, i; buf.loadCollection(~wt[i])});
+
+
+~wt.do({arg wtsig, i; wtsig.plot(~buf[i].bufnum.asString)})
+
+(
+SynthDef.new(\vosc, {
+	arg buf=0, numBufs=2, freq=440, amp=0.2;
+	var sig, bufPos, detuneSig;
+	detuneSig = LFNoise1.kr(0.2!8).bipolar(0.2).midiratio;
+	bufPos = buf + LFNoise1.kr(0.5).range(0, numBufs - 1);
+	sig = VOsc.ar(bufPos, freq * detuneSig);
+	sig = Splay.ar(sig);
+	sig = LeakDC.ar(sig) * amp;
+	Out.ar(0, sig);
 }).add;
 )
 
-(
-SynthDef(\cfstring1, { arg i_out, freq = 360, gate = 1, pan, amp=0.1;
-    var out, eg, fc, osc, a, b, w;
-    fc = LinExp.kr(LFNoise1.kr(Rand(0.25, 0.4)), -1, 1, 500, 2000);
-	osc = Mix.fill(8, {LFSaw.ar(freq * [Rand(0.99, 1.01), Rand(0.99, 1.01)], 0, amp)}).distort * 0.2;
-    eg = EnvGen.kr(Env.asr(1, 1, 1), gate, doneAction: Done.freeSelf);
-    out = eg * RLPF.ar(osc, fc, 0.1);
-    #a, b = out;
-    Out.ar(i_out, Mix.ar(PanAz.ar(4, [a, b], [pan, pan+0.3])));
-}).add;
-)
-
-(
-"https://github.com/SCLOrkHub/SCLOrkSynths/blob/master/SynthDefs/keyboards/FMRhodes1.scd".postln;
-SynthDef(\FMRhodes1, {
-    arg
-    // standard meanings
-    out = 0, freq = 440, gate = 1, pan = 0, amp = 0.1, att = 0.001, rel = 1, lfoSpeed = 4.8, inputLevel = 0.2,
-    // all of these range from 0 to 1
-    modIndex = 0.2, mix = 0.2, lfoDepth = 0.1;
-
-    var env1, env2, env3, env4;
-    var osc1, osc2, osc3, osc4, snd;
-
-    env1 = Env.perc(att, rel * 1.25, inputLevel, curve: \lin).kr;
-    env2 = Env.perc(att, rel, inputLevel, curve: \lin).kr;
-    env3 = Env.perc(att, rel * 1.5, inputLevel, curve: \lin).kr;
-    env4 = Env.perc(att, rel * 1.5, inputLevel, curve: \lin).kr;
-
-    osc4 = SinOsc.ar(freq) * 6.7341546494171 * modIndex * env4;
-    osc3 = SinOsc.ar(freq * 2, osc4) * env3;
-    osc2 = SinOsc.ar(freq * 30) * 0.683729941 * env2;
-    osc1 = SinOsc.ar(freq * 2, osc2) * env1;
-    snd = Mix((osc3 * (1 - mix)) + (osc1 * mix));
-  	snd = snd * (SinOsc.ar(lfoSpeed).range((1 - lfoDepth), 1));
-
-    snd = snd * Env.asr(0, 1, 0.1).kr(gate: gate, doneAction: 2);
-    snd = Pan2.ar(snd, pan, amp);
-
-    Out.ar(out, snd);
-}).add;
-)
-(
-"https://github.com/SCLOrkHub/SCLOrkSynths/blob/master/SynthDefs/keyboards/FMRhodes2.scd".postln;
-SynthDef(\FMRhodes2, {
-    arg
-    // standard meanings
-    out = 0, freq = 440, gate = 1, pan = 0, amp = 0.1, att = 0.001, rel = 1,
-	//controls
-	lfoSpeed = 2.4, inputLevel = 0.2, modIndex = 2, fmHarmonic = 30,
-    // all of these range from 0 to 1
-    mix = 0.2, lfoDepth = 0.75, lfoBottom = 0.15, lfoRange = 0.3;
-
-    var env1, env2, env3, env4, range, bottom;
-    var osc1, osc2, osc3, osc4, snd;
-
-	bottom = lfoBottom.linlin(0, 1, 100, 12000);
-	range = lfoRange.linlin(0, 1, bottom, 16000);
-
-    env1 = Env.perc(att, rel * 1.25, inputLevel, curve: \lin).kr;
-    env2 = Env.perc(att, rel, inputLevel, curve: \lin).kr;
-    env3 = Env.perc(att, rel * 1.5, inputLevel, curve: \lin).kr;
-    env4 = Env.perc(att, rel * 1.5, inputLevel, curve: \lin).kr;
-
-    osc4 = SinOsc.ar(freq) * 6.7341546494171 * modIndex * env4;
-    osc3 = SinOsc.ar(freq * 2, osc4) * env3;
-    osc2 = SinOsc.ar(freq * fmHarmonic) * 0.683729941 * env2;
-    osc1 = SinOsc.ar(freq * 2, osc2) * env1;
-
-    snd = Mix((osc3 * (1 - mix)) + (osc1 * mix));
-	snd = LPF.ar(snd, SinOsc.kr(lfoSpeed).range(bottom, range), lfoDepth) + (snd * (1 - lfoDepth));
-    snd = snd * Env.asr(0, 1, 0.1).kr(gate: gate, doneAction: 2);
-    snd = Pan2.ar(snd, pan, amp);
-
-    Out.ar(out, snd);
-}).add;
-)
-(
-"https://github.com/SCLOrkHub/SCLOrkSynths/blob/master/SynthDefs/keyboards/everythingRhodes.scd".postln;
-SynthDef("everythingRhodes", {
-	arg
-	//Standard Definitions
-	out = 0, freq = 440, amp = 0.1, att = 0.001, rel = 3, pan = 0,
-	//Other Controls
-	filterRange = 2000, rq = 0.5, harmonic = 2.pow(33.5/12),
-	//These Range from 0 to 1
-	width = 0.2, mix = 0.7;
-
-    //Electric Piano
-	var snd, env, lfo;
-
-	env = Env.perc(att, rel).kr(doneAction: 2); //Original used an ADSR envelope.
-
-	snd = Pulse.ar(
-	        	freq: freq * [1, harmonic], //Original used 33.5.midiratio here, which is just below the 7th harmonic.
-	        	width: [width, width/2],
-		        mul: [mix, (1 - mix)]
-            );
-	snd  = BLowPass4.ar(
-		        in: snd,
-		        freq: (filterRange * env) + (2 * freq),
-		        rq: rq
-		    );
-    snd = Mix.ar(snd) * env * amp;
-
-	Out.ar(out, Pan2.ar(snd, pan));
-},
-metadata: (
-	credit: "Nick Collins, from Mitchell Sigman, 2011. http://www.sussex.ac.uk/Users/nc81/index.html",
-	category: \keyboards,
-	tags: [\rhodes, \piano, \pitched]
-	)
-).add
-)
+Synth(\vosc, [\freq, 60.midicps, \buf, ~buf[0].bufnum, \numBufs, 4]);
 
 
 (

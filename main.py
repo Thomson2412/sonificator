@@ -10,9 +10,9 @@ def scan_img():
     osc_port = 8484
     osc_client = SimpleUDPClient(osc_ip, osc_port)
 
-    sub_img_duration = 2000
+    sub_img_duration = 4000
 
-    img = cv2.imread("data/monet/0500.png")
+    img = cv2.imread("data/monet/0000.png")
     scale_percent = 50
     width = int(img.shape[1] * scale_percent / 100)
     height = int(img.shape[0] * scale_percent / 100)
@@ -23,7 +23,7 @@ def scan_img():
 
     cv2.imshow("HSV", hsv_img)
 
-    step_size = 40 * 2
+    step_size = 160
     for y in range(0, height, step_size):
         for x in range(0, width, step_size):
             sub_img = hsv_img[y:y + step_size, x:x + step_size]
@@ -35,6 +35,8 @@ def scan_img():
             hsv_img[y:y + step_size, x:x + step_size] = img[y:y + step_size, x:x + step_size]
 
             sub_edge = edge_img[y:y + step_size, x:x + step_size]
+            edginess = np.count_nonzero(sub_edge == 255) / sub_edge.size
+
             start_position = int(len(sub_edge) / 2)
             line = []
             for i, col in enumerate(sub_edge.T):
@@ -47,8 +49,8 @@ def scan_img():
                 else:
                     line.append(start_position)
 
-            window = len(sub_img[0]) if step_size % 2 != 0 else len(sub_img[0]) - 1
-            smooth_line = np.clip(np.round(savgol_filter(line, window, 3)).astype(int), 0, len(sub_img) - 1).tolist()
+            #window = len(sub_img[0]) if step_size % 2 != 0 else len(sub_img[0]) - 1
+            #smooth_line = np.clip(np.round(savgol_filter(line, window, 3)).astype(int), 0, len(sub_img) - 1).tolist()
             for i, point in enumerate(line):
                 sub_img[point][i] = [0, 255, 0]
 
@@ -57,8 +59,14 @@ def scan_img():
             scaled_line = []
             for point in line:
                 scaled_line.append(scale_between_range(point, min(line), max(line), 0, 100))
-            # msg = create_message_from_list("/low_level_data", [hue, saturation, intensity, sub_img_duration, scaled_line])
-            msg = create_message_from_list("/test", [hue, saturation, intensity, sub_img_duration, scaled_line])
+            msg = create_message_from_list("/low_level_data", [
+                hue,
+                saturation,
+                intensity,
+                sub_img_duration,
+                edginess,
+                scaled_line])
+            # msg = create_message_from_list("/test", [hue, saturation, intensity, sub_img_duration, scaled_line])
             osc_client.send(msg)
 
             cv2.waitKey(sub_img_duration)
