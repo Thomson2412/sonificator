@@ -1,3 +1,5 @@
+import math
+
 import cv2
 import numpy as np
 from pythonosc.udp_client import SimpleUDPClient
@@ -12,10 +14,11 @@ def scan_img():
 
     sub_img_duration = 4000
 
-    img = cv2.imread("data/monet/0000.png")
-    scale_percent = 50
-    width = int(img.shape[1] * scale_percent / 100)
-    height = int(img.shape[0] * scale_percent / 100)
+    # img = cv2.imread("data/monet/0000.png")
+    img = cv2.imread("data/bob_ross/painting10.png")
+    scale_h = (1080 / 2) / img.shape[0]
+    width = int(img.shape[1] * scale_h)
+    height = int(img.shape[0] * scale_h)
     dim = (width, height)
     img = cv2.resize(img, dim)
     hsv_img = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
@@ -23,18 +26,20 @@ def scan_img():
 
     cv2.imshow("HSV", hsv_img)
 
-    step_size = 160
-    for y in range(0, height, step_size):
-        for x in range(0, width, step_size):
-            sub_img = hsv_img[y:y + step_size, x:x + step_size]
+    steps = 8
+    step_size_x = math.ceil(width / steps)
+    step_size_y = math.ceil(height / steps)
+    for y in range(0, height, step_size_y):
+        for x in range(0, width, step_size_x):
+            sub_img = hsv_img[y:y + step_size_y, x:x + step_size_x]
             mean_hsv = np.round(np.mean(sub_img.reshape(-1, 3), axis=0)).astype(int)
 
             hue = scale_between_range(mean_hsv[0], 0, 179, 0, 12)
             saturation = scale_between_range(mean_hsv[1], 0, 255, 100, 400)
             intensity = scale_between_range(mean_hsv[2], 0, 255, 1, 6)
-            hsv_img[y:y + step_size, x:x + step_size] = img[y:y + step_size, x:x + step_size]
+            hsv_img[y:y + step_size_y, x:x + step_size_x] = img[y:y + step_size_y, x:x + step_size_x]
 
-            sub_edge = edge_img[y:y + step_size, x:x + step_size]
+            sub_edge = edge_img[y:y + step_size_y, x:x + step_size_x]
             edginess = np.count_nonzero(sub_edge == 255) / sub_edge.size
 
             start_position = int(len(sub_edge) / 2)
@@ -56,16 +61,18 @@ def scan_img():
 
             cv2.imshow("HSV", hsv_img)
             cv2.imshow("Edge", edge_img)
+
             scaled_line = []
             for point in line:
-                scaled_line.append(scale_between_range(point, min(line), max(line), 0, 100))
+                scaled_line.append(scale_between_range(point, min(line), max(line), 0, 11))
+
             msg = create_message_from_list("/low_level_data", [
                 hue,
                 saturation,
                 intensity,
                 sub_img_duration,
                 edginess,
-                scaled_line])
+                line])
             # msg = create_message_from_list("/test", [hue, saturation, intensity, sub_img_duration, scaled_line])
             osc_client.send(msg)
 
