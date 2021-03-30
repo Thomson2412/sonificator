@@ -8,11 +8,21 @@ s.doWhenBooted({
 	var tri = Env([0, 1 , -1, 0], [1, 2, 1], \lin).asSignal(1024).asWavetable;
 	var saw = Env([0, 1 , -1, 0], [1, 0, 1], \lin).asSignal(1024).asWavetable;
 	var square = Signal.rectWindow(1024, 512).asWavetable;
-
-	/*sine.plot("~sine");
-	tri.plot("~tri");
-	saw.plot("~saw");
-	square.plot("~square");*/
+	/*var plots = Array.newClear(4);
+	plots[0] = sine.plot("~sine");
+	plots[1] = tri.plot("~tri");
+	plots[2] = saw.plot("~saw");
+	plots[3] = square.plot("~square");
+	plots.do{
+		arg plt;
+		plt.setProperties(
+			// \fontColor, Color.red,
+			\plotColor, Color.red,
+			// \backgroundColor, Color.black,
+			// \gridColorX, Color.white,
+		);
+		plt.refresh;
+	};*/
 
 	wt[0] = sine;
 	wt[1] = tri;
