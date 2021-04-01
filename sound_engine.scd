@@ -53,6 +53,8 @@ s.doWhenBooted({
 	o = OSCFunc(
 		{
 			arg msg, time, addr, recvPort;
+			var root;
+			var octave;
 			var scale;
 			var amp;
 			var duration;
@@ -65,6 +67,8 @@ s.doWhenBooted({
 			var line;
 
 			msg.postln;
+			root = msg[1];
+			octave = msg[3];
 			scale = Scale.major;
 			if(msg[3] < 4,{
 				scale = Scale.minor;
@@ -83,7 +87,7 @@ s.doWhenBooted({
 				\instrument, \vosc,
 				\degree, Pseq([0]),
 				\scale, scale,
-				\root, msg[1],
+				\root, root,
 				\octave, 3,
 				\dur, duration + 1,
 				\strum, 0,
@@ -103,8 +107,8 @@ s.doWhenBooted({
 				\instrument, \vosc,
 				\degree, Pseq(scale_notes),
 				\scale, scale,
-				\root, msg[1],
-				\octave, msg[3],
+				\root, root,
+				\octave, octave,
 				\dur, duration + 1,
 				\strum, strum,
 				\amp, amp,
@@ -123,8 +127,8 @@ s.doWhenBooted({
 				\instrument, \vosc,
 				\degree, Pseq(melody_notes),
 				\scale, scale,
-				\root, msg[1],
-				\octave, msg[3] + 1,
+				\root, root,
+				\octave, octave + 1,
 				\dur, Pseq(
 					{exprand((duration / melody_notes.size) - 0.1, duration / melody_notes.size)}!melody_notes.size
 				),
@@ -142,8 +146,8 @@ s.doWhenBooted({
 			).play;
 
 			Post << "Scale: " << scale.name << Char.nl;
-			Post << "Root: " << msg[1] << Char.nl;
-			Post << "Octave: " << msg[3] << Char.nl;
+			Post << "Root: " << root << Char.nl;
+			Post << "Octave: " << octave << Char.nl;
 			Post << "Amp: " << amp << Char.nl;
 			Post << "Duration: " << duration << Char.nl;
 			Post << "Release: " << release << Char.nl;
