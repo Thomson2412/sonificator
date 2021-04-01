@@ -36,7 +36,7 @@ def scan_img():
 
             hue = scale_between_range(mean_hsv[0], 0, 179, 0, 12)
             saturation = scale_between_range(mean_hsv[1], 0, 255, 100, 400)
-            intensity = scale_between_range(mean_hsv[2], 0, 255, 1, 6)
+            intensity = scale_between_range(mean_hsv[2], 0, 255, 3, 6)
             hsv_img[y:y + step_size_y, x:x + step_size_x] = img[y:y + step_size_y, x:x + step_size_x]
 
             sub_edge = edge_img[y:y + step_size_y, x:x + step_size_x]
