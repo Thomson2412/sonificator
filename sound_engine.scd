@@ -130,7 +130,7 @@ s.doWhenBooted({
 				\root, root,
 				\octave, octave + 1,
 				\dur, Pseq(
-					{exprand((duration / melody_notes.size) - 0.1, duration / melody_notes.size)}!melody_notes.size
+					{exprand((duration / melody_notes.size) - 0.15, duration / melody_notes.size)}!melody_notes.size
 				),
 				\strum, strum,
 				\amp, amp,
