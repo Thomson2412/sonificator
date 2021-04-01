@@ -46,7 +46,10 @@ def scan_img():
             line = []
             for i, col in enumerate(sub_edge.T):
                 edge_positions = np.where(col == 255)[0]
-                if len(edge_positions) > 0:
+                if len(edge_positions) > 0 and len(line) > 0:
+                    close = min(edge_positions, key=lambda pos: abs(pos - line[-1]))
+                    line.append(close)
+                elif len(edge_positions) > 0 and len(line) == 0:
                     close = min(edge_positions, key=lambda pos: abs(pos - start_position))
                     line.append(close)
                 elif len(line) > 0:
