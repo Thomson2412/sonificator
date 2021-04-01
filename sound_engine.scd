@@ -26,8 +26,8 @@ s.doWhenBooted({
 
 	wt[0] = sine;
 	wt[1] = tri;
-	wt[2] = saw;
-	wt[3] = square;
+	wt[2] = square;
+	wt[3] = saw;
 
 	buf = Buffer.allocConsecutive(4, s, 2048);
 	buf.do({arg buf, i; buf.loadCollection(wt[i])});
