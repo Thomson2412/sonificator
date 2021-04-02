@@ -79,7 +79,7 @@ s.doWhenBooted({
 			release = duration * 0.5;
 			strum = 0.08.rand + 0.02;
 			edginess = msg[5] * buf.size * 2;
-			line = msg[6].normalize(0, 11).collect{arg i; i.nearestInScale(scale)};
+			line = msg[6]; // .normalize(0, 11).collect{arg i; i.nearestInScale(scale)};
 			melody_notes.size.do{arg i; melody_notes[i] = line[(i * (line.size / melody_notes.size)).round]};
 
 			//Bass

@@ -42,7 +42,7 @@ def scan_img():
             sub_edge = edge_img[y:y + step_size_y, x:x + step_size_x]
             edginess = np.count_nonzero(sub_edge == 255) / sub_edge.size
 
-            start_position = int(len(sub_edge) / 2)
+            start_position = int(math.floor(len(sub_edge) / 2))
             line = []
             for i, col in enumerate(sub_edge.T):
                 edge_positions = np.where(col == 255)[0]
@@ -65,9 +65,11 @@ def scan_img():
             cv2.imshow("HSV", hsv_img)
             cv2.imshow("Edge", edge_img)
 
-            scaled_line = []
-            for point in line:
-                scaled_line.append(scale_between_range(point, min(line), max(line), 0, 11))
+            inverted_line = [len(sub_edge) - p for p in line]
+            scaled_inverted_line = []
+            for point in inverted_line:
+                scaled = scale_between_range(point, 0, len(sub_edge), 0, 11)
+                scaled_inverted_line.append(scaled)
 
             msg = create_message_from_list("/low_level_data", [
                 hue,
@@ -75,7 +77,7 @@ def scan_img():
                 intensity,
                 sub_img_duration,
                 edginess,
-                line])
+                scaled_inverted_line])
             # msg = create_message_from_list("/test", [hue, saturation, intensity, sub_img_duration, scaled_line])
             osc_client.send(msg)
 
@@ -95,7 +97,7 @@ def create_message_from_list(address, data_list):
 
 def scale_between_range(value, in_min, in_max, out_min, out_max):
     if in_min == in_max:
-        return value
+        return round((out_max - out_min) / 2)
     scaled = round(out_min + (value - in_min) * ((out_max + out_min) / (in_max - in_min)))
     if scaled > out_max:
         return out_max
