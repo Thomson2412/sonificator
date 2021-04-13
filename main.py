@@ -15,29 +15,33 @@ def scan_img():
     sub_img_duration = 4000
 
     # img = cv2.imread("data/monet/0000.png")
-    img = cv2.imread("data/bob_ross/painting10.png")
+    # img = cv2.imread("data/bob_ross/painting10.png")
+    img = cv2.imread("data/bob_ross/painting16.png")
     scale_h = (1080 / 2) / img.shape[0]
     width = int(img.shape[1] * scale_h)
     height = int(img.shape[0] * scale_h)
     dim = (width, height)
     img = cv2.resize(img, dim)
-    hsv_img = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
+    hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     edge_img = cv2.Canny(img, 100, 200)
+    presentation = np.array(img, copy=True)
 
+    cv2.imshow("OG", img)
     cv2.imshow("HSV", hsv_img)
+    cv2.imshow("Edge", edge_img)
+    cv2.imshow("Presentation", presentation)
 
-    steps = 8
-    step_size_x = math.ceil(width / steps)
-    step_size_y = math.ceil(height / steps)
+    steps = 9
+    step_size_x = math.ceil(width / math.sqrt(steps))
+    step_size_y = math.ceil(height / math.sqrt(steps))
     for y in range(0, height, step_size_y):
         for x in range(0, width, step_size_x):
-            sub_img = hsv_img[y:y + step_size_y, x:x + step_size_x]
-            mean_hsv = np.round(np.mean(sub_img.reshape(-1, 3), axis=0)).astype(int)
+            sub_hsv = hsv_img[y:y + step_size_y, x:x + step_size_x]
+            mean_hsv = np.round(np.mean(sub_hsv.reshape(-1, 3), axis=0)).astype(int)
 
             hue = scale_between_range(mean_hsv[0], 0, 179, 0, 12)
             saturation = scale_between_range(mean_hsv[1], 0, 255, 100, 400)
             intensity = scale_between_range(mean_hsv[2], 0, 255, 3, 6)
-            hsv_img[y:y + step_size_y, x:x + step_size_x] = img[y:y + step_size_y, x:x + step_size_x]
 
             sub_edge = edge_img[y:y + step_size_y, x:x + step_size_x]
             edginess = np.count_nonzero(sub_edge == 255) / sub_edge.size
@@ -59,11 +63,19 @@ def scan_img():
 
             #window = len(sub_img[0]) if step_size % 2 != 0 else len(sub_img[0]) - 1
             #smooth_line = np.clip(np.round(savgol_filter(line, window, 3)).astype(int), 0, len(sub_img) - 1).tolist()
+            sub_mean = np.tile(mean_hsv, sub_hsv.shape[0] * sub_hsv.shape[1])
+            sub_mean = sub_mean.reshape(sub_hsv.shape[0], sub_hsv.shape[1], sub_hsv.shape[2]).astype('uint8')
+            sub_mean = cv2.cvtColor(sub_mean, cv2.COLOR_HSV2BGR)
+            inverted_color = cv2.bitwise_not(sub_mean.reshape(-1, 3)[0]).flatten()
+            sub_img = img[y:y + step_size_y, x:x + step_size_x]
             for i, point in enumerate(line):
-                sub_img[point][i] = [0, 255, 0]
+                sub_mean[point][i] = inverted_color
+                sub_img[point][i] = inverted_color
+            presentation[y:y + step_size_y, x:x + step_size_x] = sub_mean
 
-            cv2.imshow("HSV", hsv_img)
-            cv2.imshow("Edge", edge_img)
+            cv2.imshow("Presentation", presentation)
+            cv2.imshow("OG", img)
+
 
             inverted_line = [len(sub_edge) - p for p in line]
             scaled_inverted_line = []
