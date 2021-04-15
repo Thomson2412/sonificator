@@ -15,8 +15,17 @@ def scan_img():
     sub_img_duration = 4000
 
     # img = cv2.imread("data/monet/0000.png")
+    # img = cv2.imread("data/monet/0010.png")
+    # img = cv2.imread("data/monet/0015.png")
+    # img = cv2.imread("data/monet/0018.png")
+    # img = cv2.imread("data/monet/0020.png")
+    # img = cv2.imread("data/monet/0027.png")
+    # img = cv2.imread("data/monet/0032.png")
+    img = cv2.imread("data/monet/0073.png")
     # img = cv2.imread("data/bob_ross/painting10.png")
-    img = cv2.imread("data/bob_ross/painting16.png")
+    # img = cv2.imread("data/bob_ross/painting16.png")
+    # img = cv2.imread("data/shu/Jackson_Pollock.png")
+    # img = cv2.imread("data/shu/Mark_Rothko.png")
     scale_h = (1080 / 2) / img.shape[0]
     width = int(img.shape[1] * scale_h)
     height = int(img.shape[0] * scale_h)
@@ -31,7 +40,13 @@ def scan_img():
     cv2.imshow("Edge", edge_img)
     cv2.imshow("Presentation", presentation)
 
-    steps = 9
+    mean_hsv_overall = np.round(np.mean(hsv_img.reshape(-1, 3), axis=0)).astype(int)
+    overall_mean_img = np.tile(mean_hsv_overall, img.shape[0] * img.shape[1]).reshape(img.shape).astype('uint8')
+    cv2.imshow("Overall", cv2.cvtColor(overall_mean_img, cv2.COLOR_HSV2BGR))
+    root = scale_between_range(mean_hsv_overall[0], 0, 179, 0, 6)
+    scale = scale_between_range(mean_hsv_overall[2], 0, 179, 0, 1)
+
+    steps = 16
     step_size_x = math.ceil(width / math.sqrt(steps))
     step_size_y = math.ceil(height / math.sqrt(steps))
     for y in range(0, height, step_size_y):
@@ -39,9 +54,9 @@ def scan_img():
             sub_hsv = hsv_img[y:y + step_size_y, x:x + step_size_x]
             mean_hsv = np.round(np.mean(sub_hsv.reshape(-1, 3), axis=0)).astype(int)
 
-            hue = scale_between_range(mean_hsv[0], 0, 179, 0, 12)
+            hue = scale_between_range(mean_hsv[0], 0, 179, 0, 6)
             saturation = scale_between_range(mean_hsv[1], 0, 255, 1, 100)
-            intensity = scale_between_range(mean_hsv[2], 0, 255, 3, 6)
+            intensity = scale_between_range(mean_hsv[2], 0, 255, 2, 5)
 
             sub_edge = edge_img[y:y + step_size_y, x:x + step_size_x]
             edginess = np.count_nonzero(sub_edge == 255) / sub_edge.size
@@ -65,7 +80,7 @@ def scan_img():
             # smooth_line = np.clip(np.round(savgol_filter(line, window, 3)).astype(int), 0, len(sub_img) - 1).tolist()
 
             sub_mean = np.tile(mean_hsv, sub_hsv.shape[0] * sub_hsv.shape[1])
-            sub_mean = sub_mean.reshape(sub_hsv.shape[0], sub_hsv.shape[1], sub_hsv.shape[2]).astype('uint8')
+            sub_mean = sub_mean.reshape(sub_hsv.shape).astype('uint8')
             sub_mean = cv2.cvtColor(sub_mean, cv2.COLOR_HSV2BGR)
             inverted_color = cv2.bitwise_not(sub_mean.reshape(-1, 3)[0]).flatten()
             sub_img = img[y:y + step_size_y, x:x + step_size_x]
@@ -89,7 +104,9 @@ def scan_img():
                 intensity,
                 sub_img_duration,
                 edginess,
-                scaled_inverted_line])
+                scaled_inverted_line,
+                root,
+                scale])
             osc_client.send(msg)
 
             cv2.waitKey(sub_img_duration)

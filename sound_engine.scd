@@ -58,11 +58,13 @@ s.doWhenBooted({
 			var root;
 			var octave;
 			var scale;
-			var scale_notes = [[0,2,4,6]];
+			var maj = [[0,4,7,11], [2,5,9,12], [4,7,11,14], [5,9,12,16], [7,11,14,17], [9,12,16,19], [11,14,17,21]];
+			var min = [[0,3,7,10], [2,5,8,12], [3,7,10,14], [5,8,12,15], [7,10,14,17], [8,12,15,19], [10,14,17,20]];
+			var step;
+			var chord;
 
 			var line;
-			var melody_notes = Array.newClear(12); //[0,2,4,6, 0,2,4,5, 0,1,3,5, 0,1,3,4];
-			// var melody_notes = [0,2,4,6, 0,2,4,5, 0,1,3,5, 0,1,3,4];
+			var melody_notes = Array.newClear(10);
 
 			var edginess;
 
@@ -72,17 +74,21 @@ s.doWhenBooted({
 			var strum;
 
 			msg.postln;
-			root = msg[1];
+
+			root = msg[7];
 			octave = msg[3];
 			scale = Scale.major;
-			if(msg[3] < 5,{
+			step = msg[1];
+			chord = maj[step];
+			if(msg[8] == 0,{
 				scale = Scale.minor;
-			},);
+				chord = min[step]
+			});
 
 			line = msg[6]; // .normalize(0, 11).collect{arg i; i.nearestInScale(scale)};
 			melody_notes.size.do{arg i; melody_notes[i] = line[(i * (line.size / melody_notes.size)).round]};
 
-			edginess = min(msg[5] * buf.size * 2, buf.size - 0.1);
+			edginess = min(msg[5] * buf.size * 2, buf.size - 1.1);
 
 			amp = msg[2] / 1000;
 			amp = max(min(amp, 0.1), 0.001);
@@ -93,10 +99,9 @@ s.doWhenBooted({
 			//Bass
 			Pbind(
 				\instrument, \vosc,
-				\degree, Pseq([0]),
-				\scale, scale,
+				\degree, Pseq([chord[0]]),
 				\root, root,
-				\octave, 3,
+				\octave, 2,
 				\dur, duration + 1,
 				\strum, 0,
 				\amp, amp,
@@ -113,11 +118,10 @@ s.doWhenBooted({
 			//Chords
 			Pbind(
 				\instrument, \vosc,
-				\degree, Pseq(scale_notes),
-				\scale, scale,
+				\degree, Pseq([chord]),
 				\root, root,
 				\octave, octave,
-				\dur, duration + 1,
+				\dur, duration,// + 1,
 				\strum, strum,
 				\amp, amp,
 				\att, duration * 0.5,
@@ -127,6 +131,7 @@ s.doWhenBooted({
 				\buf, buf[0].bufnum,
 				\numBufs, buf.size,
 				\bufPos, edginess,
+				\revb, 0.6,
 				\pan, rrand(-0.5, 0.5),
 			).play;
 
@@ -149,21 +154,25 @@ s.doWhenBooted({
 				\buf, buf[0].bufnum,
 				\numBufs, buf.size,
 				\bufPos, 0,
-				\revb, 0.5,
+				// \revb, 0.5,
 				\pan, rrand(-0.5, 0.5),
 			).play;
 
 			Post << "Scale: " << scale.name << Char.nl;
 			Post << "Root: " << root << Char.nl;
 			Post << "Octave: " << octave << Char.nl;
+			Post << "Step: " << step << Char.nl;
+			Post << "Chord: " << chord << Char.nl;
+
+			Post << "Line: " << line << Char.nl;
+			Post << "Melody notes: " << melody_notes << Char.nl;
+
+			Post << "Edginess: " << edginess << Char.nl;
+
 			Post << "Amp: " << amp << Char.nl;
 			Post << "Duration: " << duration << Char.nl;
 			Post << "Release: " << release << Char.nl;
 			Post << "Strum: " << strum << Char.nl;
-			Post << "Edginess: " << edginess << Char.nl;
-			Post << "Line: " << line << Char.nl;
-			Post << "Scale notes: " << scale_notes << Char.nl;
-			Post << "Melody notes: " << melody_notes << Char.nl;
 			Post << Char.nl;
 		},
 		'/low_level_data', nil, 8484);
@@ -191,14 +200,26 @@ o = OSCFunc(
 	'/test', nil, 8484);
 )
 
+
 m = [[0,2,4], [3,5,7], [4,6,8]];
 (
+n = [
+	[0,4,7,11],
+	[2,5,9,12],
+	[4,7,11,14],
+	[5,9,12,16],
+	[7,11,14,17],
+	[9,12,16,19],
+	[11,14,17,21],
+];
+)
+(
 Pbind(
-	\degree, Pseq(m),
-	\scale, Scale.major,
-	\root, 9,
+	\degree, Pseq(n.scramble),
+	\scale, Scale.chromatic,
+	\root, 0,
 	\octave, 4,
-	\dur, Pseq([0.5], m.size),
+	\dur, Pseq([0.2], n.size),
 	// \strum, 0.08,
 	\amp, 0.2,
 ).play;
