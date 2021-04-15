@@ -1,4 +1,5 @@
 s.boot;
+s.plotTree;
 
 (
 s.doWhenBooted({
@@ -8,20 +9,21 @@ s.doWhenBooted({
 	var tri = Env([0, 1 , -1, 0], [1, 2, 1], \lin).asSignal(1024).asWavetable;
 	var saw = Env([0, 1 , -1, 0], [1, 0, 1], \lin).asSignal(1024).asWavetable;
 	var square = Signal.rectWindow(1024, 512).asWavetable;
+
 	/*var plots = Array.newClear(4);
 	plots[0] = sine.plot("~sine");
 	plots[1] = tri.plot("~tri");
 	plots[2] = saw.plot("~saw");
 	plots[3] = square.plot("~square");
 	plots.do{
-		arg plt;
-		plt.setProperties(
-			// \fontColor, Color.red,
-			\plotColor, Color.red,
-			// \backgroundColor, Color.black,
-			// \gridColorX, Color.white,
-		);
-		plt.refresh;
+	arg plt;
+	plt.setProperties(
+	// \fontColor, Color.red,
+	\plotColor, Color.red,
+	// \backgroundColor, Color.black,
+	// \gridColorX, Color.white,
+	);
+	plt.refresh;
 	};*/
 
 	wt[0] = sine;
@@ -56,31 +58,37 @@ s.doWhenBooted({
 			var root;
 			var octave;
 			var scale;
+			var scale_notes = [[0,2,4,6]];
+
+			var line;
+			var melody_notes = Array.newClear(12); //[0,2,4,6, 0,2,4,5, 0,1,3,5, 0,1,3,4];
+			// var melody_notes = [0,2,4,6, 0,2,4,5, 0,1,3,5, 0,1,3,4];
+
+			var edginess;
+
 			var amp;
 			var duration;
 			var release;
 			var strum;
-			var scale_notes = [[0,2,4,6]];
-			var melody_notes = Array.newClear(12); //[0,2,4,6, 0,2,4,5, 0,1,3,5, 0,1,3,4];
-			// var melody_notes = [0,2,4,6, 0,2,4,5, 0,1,3,5, 0,1,3,4];
-			var edginess;
-			var line;
 
 			msg.postln;
 			root = msg[1];
 			octave = msg[3];
 			scale = Scale.major;
-			if(msg[3] < 4,{
+			if(msg[3] < 5,{
 				scale = Scale.minor;
 			},);
-			amp = (msg[2] / 1000) - 0.2;
-			amp = max(min(amp, 0.16), 0.01);
+
+			line = msg[6]; // .normalize(0, 11).collect{arg i; i.nearestInScale(scale)};
+			melody_notes.size.do{arg i; melody_notes[i] = line[(i * (line.size / melody_notes.size)).round]};
+
+			edginess = min(msg[5] * buf.size * 2, buf.size - 0.1);
+
+			amp = msg[2] / 1000;
+			amp = max(min(amp, 0.1), 0.001);
 			duration = msg[4] / 1000;
 			release = duration * 0.5;
 			strum = 0.08.rand + 0.02;
-			edginess = msg[5] * buf.size * 2;
-			line = msg[6]; // .normalize(0, 11).collect{arg i; i.nearestInScale(scale)};
-			melody_notes.size.do{arg i; melody_notes[i] = line[(i * (line.size / melody_notes.size)).round]};
 
 			//Bass
 			Pbind(
@@ -182,27 +190,20 @@ o = OSCFunc(
 	},
 	'/test', nil, 8484);
 )
-m = [0,2,4,6, 0,2,4,5, 0,1,3,5, 0,1,3,4];
+
+m = [[0,2,4], [3,5,7], [4,6,8]];
 (
 Pbind(
-	\instrument, \vosc,
 	\degree, Pseq(m),
 	\scale, Scale.major,
-	\root, 0,
-	\octave, 6,
-	\dur, Pseq([rrand(0.2, 0.5)], m.size),
+	\root, 9,
+	\octave, 4,
+	\dur, Pseq([0.5], m.size),
 	// \strum, 0.08,
 	\amp, 0.2,
-	\att, 0.1,
-	\dec, 0.5,
-	\sus, 0,
-	\rel, 0.5,
-	\buf, ~buf[0].bufnum,
-	\numBufs, ~buf.size,
-	\bufPos, 0,
-	\pan, rrand(-0.5, 0.5),
 ).play;
 )
+
 
 a = Scale.major;
 a.name;

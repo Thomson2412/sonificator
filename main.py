@@ -40,7 +40,7 @@ def scan_img():
             mean_hsv = np.round(np.mean(sub_hsv.reshape(-1, 3), axis=0)).astype(int)
 
             hue = scale_between_range(mean_hsv[0], 0, 179, 0, 12)
-            saturation = scale_between_range(mean_hsv[1], 0, 255, 100, 400)
+            saturation = scale_between_range(mean_hsv[1], 0, 255, 1, 100)
             intensity = scale_between_range(mean_hsv[2], 0, 255, 3, 6)
 
             sub_edge = edge_img[y:y + step_size_y, x:x + step_size_x]
@@ -61,8 +61,9 @@ def scan_img():
                 else:
                     line.append(start_position)
 
-            #window = len(sub_img[0]) if step_size % 2 != 0 else len(sub_img[0]) - 1
-            #smooth_line = np.clip(np.round(savgol_filter(line, window, 3)).astype(int), 0, len(sub_img) - 1).tolist()
+            # window = len(sub_img[0]) if step_size % 2 != 0 else len(sub_img[0]) - 1
+            # smooth_line = np.clip(np.round(savgol_filter(line, window, 3)).astype(int), 0, len(sub_img) - 1).tolist()
+
             sub_mean = np.tile(mean_hsv, sub_hsv.shape[0] * sub_hsv.shape[1])
             sub_mean = sub_mean.reshape(sub_hsv.shape[0], sub_hsv.shape[1], sub_hsv.shape[2]).astype('uint8')
             sub_mean = cv2.cvtColor(sub_mean, cv2.COLOR_HSV2BGR)
@@ -75,7 +76,6 @@ def scan_img():
 
             cv2.imshow("Presentation", presentation)
             cv2.imshow("OG", img)
-
 
             inverted_line = [len(sub_edge) - p for p in line]
             scaled_inverted_line = []
@@ -90,7 +90,6 @@ def scan_img():
                 sub_img_duration,
                 edginess,
                 scaled_inverted_line])
-            # msg = create_message_from_list("/test", [hue, saturation, intensity, sub_img_duration, scaled_line])
             osc_client.send(msg)
 
             cv2.waitKey(sub_img_duration)
