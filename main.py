@@ -1,10 +1,9 @@
 import math
-
 import cv2
 import numpy as np
 from pythonosc.udp_client import SimpleUDPClient
 from pythonosc import osc_message_builder, osc_bundle_builder
-from scipy.signal import savgol_filter
+# from scipy.signal import savgol_filter
 
 
 def scan_img():
@@ -16,12 +15,12 @@ def scan_img():
 
     # img = cv2.imread("data/monet/0000.png")
     # img = cv2.imread("data/monet/0010.png")
-    # img = cv2.imread("data/monet/0015.png")
+    img = cv2.imread("data/monet/0015.png")
     # img = cv2.imread("data/monet/0018.png")
     # img = cv2.imread("data/monet/0020.png")
     # img = cv2.imread("data/monet/0027.png")
     # img = cv2.imread("data/monet/0032.png")
-    img = cv2.imread("data/monet/0073.png")
+    # img = cv2.imread("data/monet/0073.png")
     # img = cv2.imread("data/bob_ross/painting10.png")
     # img = cv2.imread("data/bob_ross/painting16.png")
     # img = cv2.imread("data/shu/Jackson_Pollock.png")
@@ -40,9 +39,49 @@ def scan_img():
     cv2.imshow("Edge", edge_img)
     cv2.imshow("Presentation", presentation)
 
+    saliency = cv2.saliency.StaticSaliencySpectralResidual_create()
+    (success, saliencyMap) = saliency.computeSaliency(img)
+    saliencyMap = (saliencyMap * 255).astype("uint8")
+    cv2.imshow("Output", saliencyMap)
+    cv2.waitKey(0)
+
+    # initialize OpenCV's static fine grained saliency detector and
+    # compute the saliency map
+    saliency = cv2.saliency.StaticSaliencyFineGrained_create()
+    (success, saliencyMap) = saliency.computeSaliency(img)
+    # if we would like a *binary* map that we could process for contours,
+    # compute convex hull's, extract bounding boxes, etc., we can
+    # additionally threshold the saliency map
+    threshMap = cv2.threshold(saliencyMap.astype("uint8"), 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+    # show the images
+    cv2.imshow("Output", saliencyMap)
+    cv2.imshow("Thresh", threshMap)
+    cv2.waitKey(0)
+
+    saliency = cv2.saliency.ObjectnessBING_create()
+    saliency.setTrainingPath("model")
+
+    # compute the bounding box predictions used to indicate saliency
+    (success, saliencyMap) = saliency.computeSaliency(img)
+    numDetections = saliencyMap.shape[0]
+    # loop over the detections
+    for i in range(0, min(numDetections, 6)):
+        # extract the bounding box coordinates
+        (startX, startY, endX, endY) = saliencyMap[i].flatten()
+
+        # randomly generate a color for the object and draw it on the image
+        output = img.copy()
+        color = np.random.randint(0, 255, size=(3,))
+        color = [int(c) for c in color]
+        cv2.rectangle(output, (startX, startY), (endX, endY), color, 2)
+        # show the output image
+        cv2.imshow("Image", output)
+        cv2.waitKey(0)
+
     mean_hsv_overall = np.round(np.mean(hsv_img.reshape(-1, 3), axis=0)).astype(int)
-    overall_mean_img = np.tile(mean_hsv_overall, img.shape[0] * img.shape[1]).reshape(img.shape).astype('uint8')
-    cv2.imshow("Overall", cv2.cvtColor(overall_mean_img, cv2.COLOR_HSV2BGR))
+    overall_mean_img_hsv = np.tile(mean_hsv_overall, img.shape[0] * img.shape[1]).reshape(img.shape).astype('uint8')
+    overall_mean_img = cv2.cvtColor(overall_mean_img_hsv, cv2.COLOR_HSV2BGR)
+    cv2.imshow("Overall", overall_mean_img)
     root = scale_between_range(mean_hsv_overall[0], 0, 179, 0, 6)
     scale = scale_between_range(mean_hsv_overall[2], 0, 179, 0, 1)
 
@@ -85,8 +124,8 @@ def scan_img():
             inverted_color = cv2.bitwise_not(sub_mean.reshape(-1, 3)[0]).flatten()
             sub_img = img[y:y + step_size_y, x:x + step_size_x]
             for i, point in enumerate(line):
-                sub_mean[point][i] = inverted_color
-                sub_img[point][i] = inverted_color
+                # sub_mean[point][i] = inverted_color
+                sub_img[point][i] = [0,0,255]# inverted_color
             presentation[y:y + step_size_y, x:x + step_size_x] = sub_mean
 
             cv2.imshow("Presentation", presentation)
@@ -109,7 +148,11 @@ def scan_img():
                 scale])
             osc_client.send(msg)
 
-            cv2.waitKey(sub_img_duration)
+            # cv2.waitKey(sub_img_duration)
+            cv2.waitKey(1)
+    # cv2.imwrite("Segments.png", presentation)
+    # cv2.imwrite("Edge.png", edge_img)
+    cv2.imwrite("overall_mean.png", overall_mean_img)
     cv2.destroyAllWindows()
 
 
