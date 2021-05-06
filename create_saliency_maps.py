@@ -4,7 +4,7 @@ import numpy as np
 
 
 def main():
-    input_folder = "data/test_saliency/"
+    input_folder = "data/impressionism/"
     file_blocked_list = ["9989.jpg", "81823.jpg"]
 
     saliency = cv2.saliency.StaticSaliencySpectralResidual_create()
