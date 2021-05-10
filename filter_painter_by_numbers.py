@@ -1,16 +1,18 @@
 import csv
-import math
 import os
+import random
 import re
 import shutil
 from collections import Counter
 import matplotlib.pyplot as plt
 import numpy as np
 
+painter_by_numbers_dir = "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers/"
+
 
 def get_items():
     items = []
-    with open('/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers/all_data_info.csv',
+    with open(f"{painter_by_numbers_dir}all_data_info.csv",
               mode='r') as csv_file:
         csv_reader = csv.DictReader(csv_file)
         for item in csv_reader:
@@ -19,37 +21,45 @@ def get_items():
     return items
 
 
-def filter_items(input_items):
+def filter_items_impressionism(items):
     output_items = []
-    for item in input_items:
+    for item in items:
         style = item["style"]
         if style == "Impressionism":
             output_items.append(item)
     return output_items
 
 
-def copy_items():
-    file_list = []
-    for item in filter_items(get_items()):
-        file_list.append(item["new_filename"])
+def pick_item_per_genre(items):
+    output_items = []
+    genres = set([item["genre"] for item in items])
+    for genre in genres:
+        genre_items = list(filter(lambda item: item["genre"] == genre, items))
+        output_items.append(random.choice(genre_items))
+    return output_items
 
-    folders = [
-        "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers/train/",
-        "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers/test/"
-    ]
+
+def copy_items(input_items):
     output_folder = "data/impressionism/"
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
-    for folder in folders:
-        for root, dirs, files in os.walk(folder):
-            for filename in files:
-                if filename in file_list:
-                    shutil.copy2(os.path.join(root, filename), output_folder)
+    else:
+        shutil.rmtree(output_folder)
+        os.makedirs(output_folder)
+
+    for item in input_items:
+        og_filename = item["new_filename"]
+        folder = "train/" if item["in_train"].lower() == "true" else "test/"
+        filepath = os.path.join(f"{painter_by_numbers_dir}{folder}", og_filename)
+        shutil.copy2(filepath, output_folder)
+        item_extension = os.path.splitext(filepath)[1]
+        item_year = re.sub("\D", "", item["date"].replace("c.", "").split(".")[0])
+        new_filename = "{}-{}-{}-{}{}".format(item["artist"], item["title"], item["genre"], item_year, item_extension)
+        new_filepath = os.path.join(output_folder, new_filename)
+        os.rename(os.path.join(output_folder, og_filename), new_filepath)
 
 
-def plot_items():
-    items = filter_items(get_items())
-
+def plot_items(items):
     artists = [item["artist"] for item in items]
     dates = [re.sub("\D", "", item["date"].replace("c.", "").split(".")[0]) for item in items]
     genres = [item["genre"] for item in items]
@@ -62,9 +72,12 @@ def plot_items():
     # print_counted(styles)
     # print_counted(titles)
 
-    plot_hist(list(reversed(sorted(artists))), (25, 80), "Artist")
-    plot_hist(list(reversed(sorted(dates, key=int))), (6, 40), "Year")
-    plot_hist(list(reversed(sorted(genres))), (15, 10), "Genre")
+    # plot_hist(list(reversed(sorted(artists))), (25, 80), "Artist")
+    # plot_hist(list(reversed(sorted(dates, key=int))), (6, 40), "Year")
+    # plot_hist(list(reversed(sorted(genres))), (15, 10), "Genre")
+
+    plot_hist(list(reversed(sorted(artists))), (6, 6), "Artist", 0.34)
+    plot_hist(list(reversed(sorted(dates, key=int))), (6, 6), "Year")
 
 
 def print_counted(input_list):
@@ -73,9 +86,11 @@ def print_counted(input_list):
         print(f"{item}: {count}")
 
 
-def plot_hist(data, size, title):
+def plot_hist(data, size, title, left_adjust=0.0):
     unique_data_len = len(set(data))
     plt.figure(figsize=size)
+    if left_adjust != 0.0:
+        plt.subplots_adjust(left=left_adjust)
     n, bins, patches = plt.hist(x=data,
                                 bins=np.arange(unique_data_len + 1) - 0.5,
                                 color='#0504aa', alpha=0.7, rwidth=0.85,
@@ -84,15 +99,15 @@ def plot_hist(data, size, title):
     plt.xlabel('Frequency')
     plt.ylabel('Data')
     plt.title(title)
-    # plt.xscale("log")
     plt.xlim([0, max(n) + (max(n) * 0.1)])
     plt.ylim([-1, unique_data_len])
     for i in range(len(bins) - 1):
         plt.text(n[i] + (max(n) * 0.01), bins[i] + 0.25, str(round(n[i])))
-
-    plt.show()
+    # plt.show()
+    plt.savefig(f"plot_{title.lower()}")
 
 
 if __name__ == '__main__':
-    # copy_items()
-    plot_items()
+    items_to_process = pick_item_per_genre(filter_items_impressionism(get_items()))
+    plot_items(items_to_process)
+    copy_items(items_to_process)
