@@ -31,11 +31,21 @@ def filter_items_impressionism(items):
 
 
 def pick_item_per_genre(items):
+    block_list = {
+        "caricature",
+        "panorama",
+        "poster",
+        "self-portrait",
+        "sketch and study",
+        "still life",
+        "symbolic painting"
+    }
     output_items = []
     genres = set([item["genre"] for item in items])
-    for genre in genres:
+    for genre in (genres - block_list):
         genre_items = list(filter(lambda item: item["genre"] == genre, items))
-        output_items.append(random.choice(genre_items))
+        for item in random.sample(genre_items, min(10, len(genre_items))):
+            output_items.append(item)
     return output_items
 
 
@@ -54,7 +64,12 @@ def copy_items(input_items):
         shutil.copy2(filepath, output_folder)
         item_extension = os.path.splitext(filepath)[1]
         item_year = re.sub("\D", "", item["date"].replace("c.", "").split(".")[0])
-        new_filename = "{}-{}-{}-{}{}".format(item["artist"], item["title"], item["genre"], item_year, item_extension)
+        new_filename = "{}-{}-{}-{}{}".format(
+            "_".join(item["genre"].split(" ")),
+            "_".join(item["artist"].split(" ")),
+            "_".join(item["title"].split(" ")),
+            item_year,
+            item_extension)
         new_filepath = os.path.join(output_folder, new_filename)
         os.rename(os.path.join(output_folder, og_filename), new_filepath)
 
@@ -62,9 +77,9 @@ def copy_items(input_items):
 def plot_items(items):
     artists = [item["artist"] for item in items]
     dates = [re.sub("\D", "", item["date"].replace("c.", "").split(".")[0]) for item in items]
-    genres = [item["genre"] for item in items]
-    styles = [item["style"] for item in items]
-    titles = [item["title"] for item in items]
+    # genres = [item["genre"] for item in items]
+    # styles = [item["style"] for item in items]
+    # titles = [item["title"] for item in items]
 
     # print_counted(artists)
     # print_counted(dates)
@@ -76,8 +91,8 @@ def plot_items(items):
     # plot_hist(list(reversed(sorted(dates, key=int))), (6, 40), "Year")
     # plot_hist(list(reversed(sorted(genres))), (15, 10), "Genre")
 
-    plot_hist(list(reversed(sorted(artists))), (6, 6), "Artist", 0.34)
-    plot_hist(list(reversed(sorted(dates, key=int))), (6, 6), "Year")
+    plot_hist(list(reversed(sorted(artists))), (6, len(artists) / 10), "Artist", 0.4)
+    plot_hist(list(reversed(sorted(dates, key=int))), (6, len(dates) / 10), "Year")
 
 
 def print_counted(input_list):
