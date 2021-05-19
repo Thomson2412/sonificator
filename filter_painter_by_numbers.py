@@ -30,19 +30,32 @@ def filter_items_impressionism(items):
     return output_items
 
 
-def pick_item_per_genre(items):
+def filter_genre(items):
     block_list = {
         "caricature",
+        "illustration",
+        "nude painting (nu)",
         "panorama",
+        "portrait",
         "poster",
         "self-portrait",
         "sketch and study",
         "still life",
-        "symbolic painting"
+        "symbolic painting",
+        "vanitas"
     }
+
+    output_items = []
+    for item in items:
+        if item["genre"] not in block_list:
+            output_items.append(item)
+    return output_items
+
+
+def pick_item_per_genre(items):
     output_items = []
     genres = set([item["genre"] for item in items])
-    for genre in (genres - block_list):
+    for genre in genres:
         genre_items = list(filter(lambda item: item["genre"] == genre, items))
         for item in random.sample(genre_items, min(10, len(genre_items))):
             output_items.append(item)
@@ -69,7 +82,7 @@ def copy_items(input_items):
             "_".join(item["artist"].split(" ")),
             "_".join(item["title"].split(" ")),
             item_year,
-            item_extension)
+            item_extension).replace("/", "_")
         new_filepath = os.path.join(output_folder, new_filename)
         os.rename(os.path.join(output_folder, og_filename), new_filepath)
 
@@ -77,7 +90,7 @@ def copy_items(input_items):
 def plot_items(items):
     artists = [item["artist"] for item in items]
     dates = [re.sub("\D", "", item["date"].replace("c.", "").split(".")[0]) for item in items]
-    # genres = [item["genre"] for item in items]
+    genres = [item["genre"] for item in items]
     # styles = [item["style"] for item in items]
     # titles = [item["title"] for item in items]
 
@@ -91,8 +104,9 @@ def plot_items(items):
     # plot_hist(list(reversed(sorted(dates, key=int))), (6, 40), "Year")
     # plot_hist(list(reversed(sorted(genres))), (15, 10), "Genre")
 
-    plot_hist(list(reversed(sorted(artists))), (6, len(artists) / 10), "Artist", 0.4)
-    plot_hist(list(reversed(sorted(dates, key=int))), (6, len(dates) / 10), "Year")
+    # plot_hist(list(reversed(sorted(artists))), (6, len(artists) / 10), "Artist", 0.4)
+    plot_hist(list(reversed(sorted(genres))), (7.5, 6), "Genre", 0.25)
+    # plot_hist(list(reversed(sorted(dates, key=int))), (6, len(dates) / 10), "Year")
 
 
 def print_counted(input_list):
@@ -113,7 +127,7 @@ def plot_hist(data, size, title, left_adjust=0.0):
     plt.grid(axis='x', alpha=0.75)
     plt.xlabel('Frequency')
     plt.ylabel('Data')
-    plt.title(title)
+    plt.title(f"{title}\nTotal: {len(data)}")
     plt.xlim([0, max(n) + (max(n) * 0.1)])
     plt.ylim([-1, unique_data_len])
     for i in range(len(bins) - 1):
@@ -123,6 +137,11 @@ def plot_hist(data, size, title, left_adjust=0.0):
 
 
 if __name__ == '__main__':
-    items_to_process = pick_item_per_genre(filter_items_impressionism(get_items()))
+    all_items = get_items()
+    impressionism = filter_items_impressionism(all_items)
+    filtered_genre = filter_genre(impressionism)
+    limit_item_per_genre = pick_item_per_genre(filtered_genre)
+
+    items_to_process = filtered_genre
     plot_items(items_to_process)
-    copy_items(items_to_process)
+    # copy_items(items_to_process)
