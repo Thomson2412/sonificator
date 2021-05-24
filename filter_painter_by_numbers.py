@@ -7,16 +7,30 @@ from collections import Counter
 import matplotlib.pyplot as plt
 import numpy as np
 
-painter_by_numbers_dir = "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers/"
 
-
-def get_items():
+def get_items_all_csv(input_csv):
     items = []
-    with open(f"{painter_by_numbers_dir}all_data_info.csv",
-              mode='r') as csv_file:
+    with open(input_csv, mode='r') as csv_file:
         csv_reader = csv.DictReader(csv_file)
         for item in csv_reader:
             if "" not in item.values():
+                items.append(item)
+    return items
+
+
+def get_items_folder(input_dir, input_csv):
+    filename_list = []
+    for root, dirs, files in os.walk(input_dir):
+        for filename in files:
+            filename_split = filename.split("-")
+            og_filename = filename_split[-1]
+            filename_list.append(og_filename)
+
+    items = []
+    with open(input_csv, mode='r') as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        for item in csv_reader:
+            if item["new_filename"] in filename_list:
                 items.append(item)
     return items
 
@@ -52,39 +66,37 @@ def filter_genre(items):
     return output_items
 
 
-def pick_item_per_genre(items):
+def pick_item_per_genre(items, amount):
     output_items = []
     genres = set([item["genre"] for item in items])
     for genre in genres:
         genre_items = list(filter(lambda item: item["genre"] == genre, items))
-        for item in random.sample(genre_items, min(10, len(genre_items))):
+        for item in random.sample(genre_items, min(amount, len(genre_items))):
             output_items.append(item)
     return output_items
 
 
-def copy_items(input_items):
-    output_folder = "data/impressionism/"
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
+def copy_items(input_items, input_dir, output_dir):
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
     else:
-        shutil.rmtree(output_folder)
-        os.makedirs(output_folder)
+        shutil.rmtree(output_dir)
+        os.makedirs(output_dir)
 
     for item in input_items:
         og_filename = item["new_filename"]
         folder = "train/" if item["in_train"].lower() == "true" else "test/"
-        filepath = os.path.join(f"{painter_by_numbers_dir}{folder}", og_filename)
-        shutil.copy2(filepath, output_folder)
-        item_extension = os.path.splitext(filepath)[1]
+        filepath = os.path.join(f"{input_dir}{folder}", og_filename)
+        shutil.copy2(filepath, output_dir)
         item_year = re.sub("\D", "", item["date"].replace("c.", "").split(".")[0])
-        new_filename = "{}-{}-{}-{}{}".format(
+        new_filename = "{}-{}-{}-{}-{}".format(
             "_".join(item["genre"].split(" ")),
             "_".join(item["artist"].split(" ")),
             "_".join(item["title"].split(" ")),
             item_year,
-            item_extension).replace("/", "_")
-        new_filepath = os.path.join(output_folder, new_filename)
-        os.rename(os.path.join(output_folder, og_filename), new_filepath)
+            og_filename).replace("/", "_")
+        new_filepath = os.path.join(output_dir, new_filename)
+        os.rename(os.path.join(output_dir, og_filename), new_filepath)
 
 
 def plot_items(items):
@@ -132,16 +144,21 @@ def plot_hist(data, size, title, left_adjust=0.0):
     plt.ylim([-1, unique_data_len])
     for i in range(len(bins) - 1):
         plt.text(n[i] + (max(n) * 0.01), bins[i] + 0.25, str(round(n[i])))
-    # plt.show()
-    plt.savefig(f"plot_{title.lower()}")
+    plt.show()
+    # plt.savefig(f"plot_{title.lower()}")
 
 
 if __name__ == '__main__':
-    all_items = get_items()
+    painter_by_numbers_dir = "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers/"
+    painter_by_numbers_csv = f"{painter_by_numbers_dir}all_data_info.csv"
+    to_copy_dir = "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_filtered/"
+
+    all_items = get_items_all_csv(painter_by_numbers_csv)
     impressionism = filter_items_impressionism(all_items)
     filtered_genre = filter_genre(impressionism)
-    limit_item_per_genre = pick_item_per_genre(filtered_genre)
+    limit_item_per_genre = pick_item_per_genre(filtered_genre, 10)
+    folder_items = get_items_folder(to_copy_dir, painter_by_numbers_csv)
 
-    items_to_process = filtered_genre
+    items_to_process = folder_items
     plot_items(items_to_process)
-    # copy_items(items_to_process)
+    # copy_items(items_to_process, painter_by_numbers_dir, to_copy_dir)
