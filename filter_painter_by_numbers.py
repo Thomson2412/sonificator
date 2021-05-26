@@ -80,8 +80,10 @@ def copy_items(input_items, input_dir, output_dir):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     else:
-        shutil.rmtree(output_dir)
-        os.makedirs(output_dir)
+        answer = input("Remove existing dir")
+        if answer.lower() == "y":
+            shutil.rmtree(output_dir)
+            os.makedirs(output_dir)
 
     for item in input_items:
         og_filename = item["new_filename"]
@@ -151,14 +153,16 @@ def plot_hist(data, size, title, left_adjust=0.0):
 if __name__ == '__main__':
     painter_by_numbers_dir = "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers/"
     painter_by_numbers_csv = f"{painter_by_numbers_dir}all_data_info.csv"
-    to_copy_dir = "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_filtered/"
+    copy_to_dir = "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_filtered/"
+    scene_correct_dir = "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/"
 
     all_items = get_items_all_csv(painter_by_numbers_csv)
     impressionism = filter_items_impressionism(all_items)
     filtered_genre = filter_genre(impressionism)
     limit_item_per_genre = pick_item_per_genre(filtered_genre, 10)
-    folder_items = get_items_folder(to_copy_dir, painter_by_numbers_csv)
+    folder_items_copy = get_items_folder(copy_to_dir, painter_by_numbers_csv)
+    folder_items_scene = get_items_folder(scene_correct_dir, painter_by_numbers_csv)
 
-    items_to_process = folder_items
+    items_to_process = folder_items_scene
     plot_items(items_to_process)
     # copy_items(items_to_process, painter_by_numbers_dir, to_copy_dir)
