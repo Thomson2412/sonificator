@@ -1,8 +1,15 @@
 import math
+import os
+import re
+
 import cv2
 import numpy as np
-
+import subprocess
 from DataStructure import DataStructure
+
+for k, v in os.environ.items():
+    if k.startswith("QT_") and "cv2" in v:
+        del os.environ[k]
 
 
 def scan_img(input_img, steps=16):
@@ -84,7 +91,41 @@ def scale_between_range(value, in_min, in_max, out_min, out_max):
     return scaled
 
 
+def convert_paintings_to_txt(input_dir, output_dir):
+    for root, dirs, files in os.walk(input_dir):
+        for filename in files:
+            if ".jpg" in filename or ".png" in filename:
+                file_path = os.path.join(root, filename)
+                img_data = scan_img(file_path)
+                output_file = f"{output_dir}{filename.split('.')[0]}.txt"
+                img_data.write_to_file(output_file)
+
+
+def convert_txt_to_sound(exec_file, input_dir):
+    for root, dirs, files in os.walk(input_dir):
+        for filename in files:
+            print(f"Begin: {filename}")
+            exec_path = os.path.abspath(exec_file)
+            input_file_path = os.path.abspath(os.path.join(root, filename))
+            output_filepath = os.path.abspath(os.path.join(root, f"{filename.split('.')[0]}.wav"))
+            p = subprocess.Popen([
+                "sclang",
+                exec_path,
+                input_file_path,
+                output_filepath
+            ], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            (output, err) = p.communicate()
+            p_status = p.wait()
+            if p_status == 0:
+                r = re.findall('(ERROR)+', str(output), flags=re.IGNORECASE)
+                if r:
+                    print('An ERROR occurred!')
+                else:
+                    print('File is executable!')
+            print("End")
+
+
 if __name__ == '__main__':
-    img_data = scan_img(
-        "data/painter_by_numbers_scene_correct/battle_painting-Konstantin_Korovin-Polovtsian_camp_-1914-70568.jpg")
-    img_data.write_to_file("test.txt")
+    # convert_paintings_to_txt("data/painter_by_numbers_scene_correct/", "converted/")
+    # convert_txt_to_sound("sound_engine.scd", "converted/")
+    convert_paintings_to_txt("data/test/", "data/test/")

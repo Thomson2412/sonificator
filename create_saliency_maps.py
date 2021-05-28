@@ -1,18 +1,17 @@
 import os
 import cv2
-import numpy as np
 
 
 def main():
-    input_folder = "data/impressionism_saliency/"
-    file_blocked_list = ["9989.jpg", "81823.jpg"]
+    input_folder = "data/painter_by_numbers_scene_correct_saliency/"
+    file_blocked_list = []  # ["9989.jpg", "81823.jpg"]
 
     saliency = cv2.saliency.StaticSaliencySpectralResidual_create()
     saliency_fine = cv2.saliency.StaticSaliencyFineGrained_create()
 
     for root, dirs, files in os.walk(input_folder):
         for filename in files:
-            if "_" in filename or filename in file_blocked_list:
+            if "_saliency" in filename or filename in file_blocked_list:
                 continue
             print(f"Working on: {filename}")
             file_path = os.path.join(root, filename)
