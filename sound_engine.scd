@@ -132,7 +132,7 @@ fork{
 			arg s;
 			melody_notes_amount.do({
 				arg i;
-				melody_notes[melody_note_count] = lines[s][(i * (lines[s].size / melody_notes_amount)).round];
+				melody_notes[melody_note_count] = lines[s][(i * (lines[s].size / melody_notes_amount)).trunc];
 				melody_notes_durations[melody_note_count] = durations[s] / melody_notes_amount;
 				// melody_notes_durations[melody_note_count] = exprand((durations[s] / melody_notes_amount) - 0.15, (durations[s] / melody_notes_amount) + 0.15);
 				melody_octaves[melody_note_count] = octaves[s] + 1;

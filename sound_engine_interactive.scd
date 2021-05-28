@@ -241,3 +241,7 @@ b.ratios;
 Env.adsr(0.1, 0.1, 0, 0.2).plot;
 
 [1, 2, 3].normalize(-20, 10);
+
+Platform.userExtensionDir
+
+{CrossoverDistortion.ar(SinOsc.ar([400, 404], 0, 0.2), MouseX.kr(0, 1), MouseY.kr(0, 1))}.play

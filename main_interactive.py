@@ -16,7 +16,7 @@ def scan_img():
     sub_img_duration = 4000
 
     img = cv2.imread(
-        "data/painter_by_numbers_scene_correct/animal_painting-Eugene_Boudin-Cows_in_a_Pasture-1883-50445.jpg")
+        "data/bob_ross/painting10.png")
 
     scale_h = (1080 / 2) / img.shape[0]
     width = int(img.shape[1] * scale_h)
