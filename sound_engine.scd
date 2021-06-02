@@ -67,13 +67,11 @@ fork{
 		var strums;
 		var pans;
 
-		// s.prepareForRecord(path: "/mnt/datadrive/projects/thesis/sonificator/recordings/test.aiff");
-
 		wt[0] = sine;
 		wt[1] = tri;
 		wt[2] = square;
 		wt[3] = saw;
-		//
+
 		buf = Buffer.allocConsecutive(4, s, 2048);
 		buf.do({arg buf, i; buf.loadCollection(wt[i])});
 
@@ -130,8 +128,10 @@ fork{
 		melody_note_count = 0;
 		steps.do({
 			arg s;
+			// s.postln;
 			melody_notes_amount.do({
 				arg i;
+				// i.postln;
 				melody_notes[melody_note_count] = lines[s][(i * (lines[s].size / melody_notes_amount)).trunc];
 				melody_notes_durations[melody_note_count] = durations[s] / melody_notes_amount;
 				// melody_notes_durations[melody_note_count] = exprand((durations[s] / melody_notes_amount) - 0.15, (durations[s] / melody_notes_amount) + 0.15);
