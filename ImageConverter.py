@@ -18,7 +18,7 @@ CV_HSV_MIN_MAX = [(0, 179), (0, 255), (0, 255)]
 ROOT_MIN_MAX = (0, 6)
 SCALE_MIN_MAX = (0, 1)
 KEY_STEP_MIN_MAX = (0, 6)
-LOUDNESS_MIN_MAX = (0, 6)
+LOUDNESS_MIN_MAX = (1, 100)
 OCTAVE_MIN_MAX = (2, 5)
 DURATION = 4
 
@@ -199,7 +199,7 @@ def convert_txt_to_sound(exec_file, input_file_path, output_file_path):
 
 def convert_painting_to_presentation_bulk(input_dir, output_dir, with_saliency, add_audio, include_content,
                                           include_border):
-    saliency_fine = cv2.saliency.StaticSaliencyFineGrained_create()
+    saliency_fine = cv2.saliency.StaticSaliencySpectralResidual_create()
     for root, dirs, files in os.walk(input_dir):
         for filename in files:
             if ".jpg" in filename or ".png" in filename:

@@ -4,7 +4,7 @@ import cv2
 
 def main():
     input_folder = "data/painter_by_numbers_scene_correct_saliency/"
-    file_blocked_list = []  # ["9989.jpg", "81823.jpg"]
+    file_blocked_list = []
 
     saliency = cv2.saliency.StaticSaliencySpectralResidual_create()
     saliency_fine = cv2.saliency.StaticSaliencyFineGrained_create()
@@ -18,7 +18,8 @@ def main():
             img = None
 
             filename_saliency = f"{file_path.split('.')[0]}_saliency.{file_path.split('.')[1]}"
-            if not os.path.exists(filename_saliency):
+            filename_thresh = f"{file_path.split('.')[0]}_saliency_thresh.{file_path.split('.')[1]}"
+            if not os.path.exists(filename_saliency) or not os.path.exists(filename_thresh):
                 if img is None:
                     img = cv2.imread(file_path)
                 (success, saliency_map) = saliency.computeSaliency(img)
@@ -26,10 +27,12 @@ def main():
                 heat_img = cv2.applyColorMap(saliency_map, cv2.COLORMAP_JET)
                 add_img = cv2.addWeighted(img, 0.3, heat_img, 0.7, 0)
                 cv2.imwrite(filename_saliency, add_img)
+                thresh_map = cv2.threshold(saliency_map, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+                cv2.imwrite(filename_thresh, thresh_map)
 
             filename_saliency_fine = f"{file_path.split('.')[0]}_saliency_fine.{file_path.split('.')[1]}"
-            filename_thresh = f"{file_path.split('.')[0]}_saliency_thresh.{file_path.split('.')[1]}"
-            if not os.path.exists(filename_saliency_fine) or not os.path.exists(filename_thresh):
+            filename_thresh_fine = f"{file_path.split('.')[0]}_saliency_thresh_fine.{file_path.split('.')[1]}"
+            if not os.path.exists(filename_saliency_fine) or not os.path.exists(filename_thresh_fine):
                 if img is None:
                     img = cv2.imread(file_path)
                 (success, saliency_map) = saliency_fine.computeSaliency(img)
@@ -38,28 +41,9 @@ def main():
                 add_img = cv2.addWeighted(img, 0.3, heat_img, 0.7, 0)
                 cv2.imwrite(filename_saliency_fine, add_img)
                 thresh_map = cv2.threshold(saliency_map, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
-                cv2.imwrite(filename_thresh, thresh_map)
+                cv2.imwrite(filename_thresh_fine, thresh_map)
 
             print(f"Done: {filename}")
-
-            # saliency = cv2.saliency.ObjectnessBING_create()
-            # saliency.setTrainingPath("model")
-            #
-            # (success, saliencyMap) = saliency.computeSaliency(img)
-            # numDetections = saliencyMap.shape[0]
-            # # loop over the detections
-            # for i in range(0, min(numDetections, 6)):
-            #     # extract the bounding box coordinates
-            #     (startX, startY, endX, endY) = saliencyMap[i].flatten()
-            #
-            #     # randomly generate a color for the object and draw it on the image
-            #     output = img.copy()
-            #     color = np.random.randint(0, 255, size=(3,))
-            #     color = [int(c) for c in color]
-            #     cv2.rectangle(output, (startX, startY), (endX, endY), color, 2)
-            #     # show the output image
-            #     cv2.imshow("Image", output)
-            #     cv2.waitKey(0)
 
 
 if __name__ == '__main__':
