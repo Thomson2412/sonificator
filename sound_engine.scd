@@ -16,7 +16,7 @@ fork{
 	if (thisProcess.argv[0] != nil) {
 		i = thisProcess.argv[0];
 	} {
-		i = "/mnt/datadrive/projects/thesis/sonificator/data/test/painting10.txt"
+		i = "/mnt/datadrive/projects/thesis/sonificator/data/test/allegorical_painting-Arthur_Streeton-Spirit_of_the_drought-1895-65154.txt"
 	};
 
 	if (thisProcess.argv[1] != nil) {
