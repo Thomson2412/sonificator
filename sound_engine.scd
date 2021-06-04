@@ -112,7 +112,7 @@ fork{
 
 		amps = file[4].asInteger / 1000;
 		amps = max(min(amps, 0.1), 0.001);
-		durations = file[5].asInteger;
+		durations = file[6].asInteger;
 		releases = durations * 0.5;
 		strums = Array.fill(steps, {0.08.rand + 0.02});
 		pans = Array.fill(steps, {rrand(-0.5, 0.5)});
@@ -143,6 +143,10 @@ fork{
 			});
 		});
 
+		if(o != nil){
+			s.record(duration: durations.sum + 1, path: o);
+		};
+
 		//Bass
 		Pbind(
 			\instrument, \vosc,
@@ -172,7 +176,7 @@ fork{
 			\strum, Pseq(strums),
 			\amp, Pseq(amps),
 			\att, Pseq(durations * 0.5),
-			\dec, Pseq(durations),
+			// \dec, Pseq(durations),
 			\sus, 0,
 			\rel, Pseq(releases),
 			\buf, buf[0].bufnum,
@@ -202,10 +206,6 @@ fork{
 			\revb, 0.5,
 			\pan, Pseq(melody_pans),
 		).play;
-
-		if(o != nil){
-			s.record(duration: durations.sum + 1, path: o);
-		};
 
 
 		Post << "Scale: " << scale.name << Char.nl;

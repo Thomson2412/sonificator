@@ -3,10 +3,13 @@ from collections import OrderedDict
 
 def dic_to_string(input_dic, line_ending=0, delimiter=" "):
     result = str()
-    for key in sorted(input_dic.keys()):
+    for i, key in enumerate(sorted(input_dic.keys())):
         value = input_dic[key]
         if isinstance(value, (int, float, complex)):
-            result += f"{input_dic[key]}{delimiter}"
+            if len(input_dic) - 1 == i:
+                result += f"{input_dic[key]}"
+            else:
+                result += f"{input_dic[key]}{delimiter}"
 
         elif isinstance(value, list):
             result += f"{delimiter.join(str(v) for v in value)}\r\n"

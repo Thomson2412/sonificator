@@ -1,5 +1,4 @@
 from collections import OrderedDict
-
 import cv2
 import numpy as np
 
@@ -33,7 +32,7 @@ class DataStructureVisual:
         }
         self.append_count += 1
 
-    def get_presentation_for_step(self, step, include_content):
+    def get_presentation_for_step(self, step, include_content, include_border):
         self.assert_condition()
         step += 1
         if step > self.steps:
@@ -47,39 +46,45 @@ class DataStructureVisual:
             x = partial["x"]
             y = partial["y"]
             content = partial["content"]
-            presentation[y:y + content.shape[0], x:x + content.shape[1]] = self.get_segment_for_step(i, include_content)
+            presentation[y:y + content.shape[0], x:x + content.shape[1]] = self.get_segment_for_step(i, include_content,
+                                                                                                     include_border)
         return presentation
 
-    def get_segment_for_step(self, step, include_content):
+    def get_segment_for_step(self, step, include_content, include_border):
         self.assert_condition()
         if step >= self.steps:
             raise AssertionError("Step higher than available")
         if step < 0:
             raise AssertionError("Step can't be below zero")
 
+        segment = None
         partial = self.sub_presentation_img[step]
         x = partial["x"]
         y = partial["y"]
         content = partial["content"]
         if include_content:
-            return content
+            segment = content
         else:
+            segment = np.array(self.original_img, copy=True)
+            segment = segment[y:y + content.shape[0], x:x + content.shape[1]]
+
+        if include_border:
             border_size = 5
             border_color = (0, 255, 0)
-            presentation = np.array(self.original_img, copy=True)
-            presentation = presentation[y:y + content.shape[0], x:x + content.shape[1]]
-            return cv2.rectangle(presentation, (0, 0), (content.shape[1], content.shape[0]), border_color, border_size)
+            segment = cv2.rectangle(segment, (0, 0), (content.shape[1], content.shape[0]), border_color, border_size)
 
-    def generate_presentation_video(self, output_file, include_content):
+        return segment
+
+    def generate_presentation_video(self, output_file, include_content, include_border):
         self.assert_condition()
-        fps = 1
+        fps = 30
         size = (self.original_img.shape[1], self.original_img.shape[0])
         out = cv2.VideoWriter(output_file, cv2.VideoWriter_fourcc(*'DIVX'), fps, size)
 
         for step in range(self.steps):
             partial = self.sub_presentation_img[step]
             duration = partial["duration"]
-            img = self.get_presentation_for_step(step, include_content)
+            img = self.get_presentation_for_step(step, include_content, include_border)
             for i in range(duration * fps):
                 out.write(img)
         out.release()
