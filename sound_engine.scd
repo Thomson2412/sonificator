@@ -5,9 +5,10 @@ steps = [2]
 hue = [3]
 saturation = [4]
 intensity = [5]
-duration = [6]
-edginess = [7]
-line = [8]
+pan = [6]
+duration = [7]
+edginess = [8]
+line = [9]
 */
 
 (
@@ -16,7 +17,7 @@ fork{
 	if (thisProcess.argv[0] != nil) {
 		i = thisProcess.argv[0];
 	} {
-		i = "/mnt/datadrive/projects/thesis/sonificator/data/test/allegorical_painting-Arthur_Streeton-Spirit_of_the_drought-1895-65154.txt"
+		i = "/mnt/datadrive/projects/thesis/sonificator/data/test/painting10.txt"
 	};
 
 	if (thisProcess.argv[1] != nil) {
@@ -99,7 +100,7 @@ fork{
 		scaleSteps = file[3].asInteger;
 
 		if(file[1][0].asInteger == 0) {
-			scale = Scale.minor;
+			scale = Scale.melodicMinor;
 			chords = scaleSteps.collect({arg i; min[i]});
 		} {
 			scale = Scale.major;
@@ -108,16 +109,17 @@ fork{
 
 		octaves = file[5].asInteger;
 
-		edginess = file[7].asFloat.collect({arg i; min(i * buf.size * 2, buf.size - 1.1)});
+		edginess = file[8].asFloat.collect({arg i; min(i * buf.size * 2, buf.size - 1.1)});
 
 		amps = file[4].asInteger / 1000;
 		amps = max(min(amps, 0.1), 0.001);
-		durations = file[6].asInteger;
+		durations = file[7].asInteger;
 		releases = durations * 0.5;
 		strums = Array.fill(steps, {0.08.rand + 0.02});
-		pans = Array.fill(steps, {rrand(-0.5, 0.5)});
+		pans = file[6].asInteger / 1000;
 
-		lines = file[8..23].asInteger;
+
+		lines = file[9..24].asInteger;
 		melody_notes_amount = 12;
 		melody_notes = Array.newClear(steps * melody_notes_amount);
 		melody_notes_durations = Array.newClear(steps * melody_notes_amount);
@@ -132,7 +134,7 @@ fork{
 			melody_notes_amount.do({
 				arg i;
 				// i.postln;
-				melody_notes[melody_note_count] = lines[s][(i * (lines[s].size / melody_notes_amount)).trunc];
+				melody_notes[melody_note_count] = lines[s][(i * (lines[s].size / melody_notes_amount)).trunc];//.nearestInScale(chords[s]);
 				melody_notes_durations[melody_note_count] = durations[s] / melody_notes_amount;
 				// melody_notes_durations[melody_note_count] = exprand((durations[s] / melody_notes_amount) - 0.15, (durations[s] / melody_notes_amount) + 0.15);
 				melody_octaves[melody_note_count] = octaves[s] + 1;
@@ -228,7 +230,7 @@ fork{
 		Post << "Durations: " << durations << Char.nl;
 		Post << "Releases: " << releases << Char.nl;
 		Post << "Strums: " << strums << Char.nl;
-		Post << "Pans: " << strums << Char.nl;
+		Post << "Pans: " << pans << Char.nl;
 		Post << Char.nl;
 
 		if(o != nil){
@@ -237,3 +239,5 @@ fork{
 		};
 	});
 })
+
+16.collect({arg s; s % sqrt(16)})

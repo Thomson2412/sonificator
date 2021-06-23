@@ -29,6 +29,7 @@ class DataStructureAudio:
         self.hue = OrderedDict()
         self.saturation = OrderedDict()
         self.intensity = OrderedDict()
+        self.pan = OrderedDict()
         self.duration = OrderedDict()
         self.edginess = OrderedDict()
         self.line = OrderedDict()
@@ -36,13 +37,14 @@ class DataStructureAudio:
         self.append_count = 0
         self.seen_priorities = []
 
-    def append_sub_img(self, hue, saturation, intensity, duration, edginess, line, priority):
+    def append_sub_img(self, hue, saturation, intensity, pan, duration, edginess, line, priority):
         if priority in self.seen_priorities:
             raise KeyError("Duplicate priority not allowed")
         self.seen_priorities.append(priority)
         self.hue[priority] = hue
         self.saturation[priority] = saturation
         self.intensity[priority] = intensity
+        self.pan[priority] = pan
         self.duration[priority] = duration
         self.edginess[priority] = edginess
         self.line[priority] = line
@@ -62,6 +64,8 @@ class DataStructureAudio:
             file.write(dic_to_string(self.saturation, 2))
 
             file.write(dic_to_string(self.intensity, 2))
+
+            file.write(dic_to_string(self.pan, 2))
 
             file.write(dic_to_string(self.duration, 2))
 

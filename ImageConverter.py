@@ -20,6 +20,7 @@ SCALE_MIN_MAX = (0, 1)
 KEY_STEP_MIN_MAX = (0, 6)
 LOUDNESS_MIN_MAX = (1, 100)
 OCTAVE_MIN_MAX = (2, 5)
+PAN_MIN_MAX = (0, 1500)
 DURATION = 4
 
 
@@ -131,6 +132,11 @@ def scan_img(input_img, steps, saliency, use_saliency):
                 priority_list[current_step]
             )
 
+            pan = int((PAN_MIN_MAX[1] / -2) + Utils.scale_between_range(
+                (priority_list[current_step]) % math.sqrt(steps),
+                (0, math.sqrt(steps) - 1),
+                PAN_MIN_MAX))
+
             inverted_line = [len(sub_edge) - p for p in line]
             scaled_inverted_line = []
             for point in inverted_line:
@@ -141,6 +147,7 @@ def scan_img(input_img, steps, saliency, use_saliency):
                 hue,
                 saturation,
                 intensity,
+                pan,
                 DURATION,
                 edginess,
                 scaled_inverted_line,
@@ -224,8 +231,10 @@ def convert_painting_to_presentation(input_file_path, output_dir, saliency_fine,
         audio_data.write_to_file(output_filepath_txt)
         output_filepath_aiff = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}.aiff")
         convert_txt_to_sound("sound_engine.scd", output_filepath_txt, output_filepath_aiff)
+        convert_aiff_to_ogg(output_filepath_aiff)
         output_file_vid_audio = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}_audio.avi")
         add_audio_to_video(output_file_vid, output_filepath_aiff, output_file_vid_audio)
+        convert_avi_to_webm(output_file_vid_audio)
 
 
 # ffmpeg -i yourvideo.avi -i sound.mp3 -c copy -map 0:v:0 -map 1:a:0 output.avi
@@ -250,6 +259,55 @@ def add_audio_to_video(input_vid, input_audio, output_vid):
         "-c:a",
         "aac",
         output_vid
+    ])  # , stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    (output, err) = p.communicate()
+    p_status = p.wait()
+    if p_status == 0:
+        r = re.findall('(ERROR)+', str(output), flags=re.IGNORECASE)
+        if r:
+            print('An ERROR occurred!')
+        else:
+            print('File is executable!')
+    print("End")
+
+
+# ffmpeg -i audio.wav -acodec libvorbis audio.ogg
+def convert_aiff_to_ogg(input_file_path):
+    print("Begin converting audio")
+    if not os.path.exists(input_file_path):
+        raise FileNotFoundError("Audio file not found")
+    output_file_path = f"{os.path.splitext(input_file_path)[0]}.ogg"
+    p = subprocess.Popen([
+        "ffmpeg",
+        "-y",
+        "-i",
+        input_file_path,
+        "-acodec",
+        "libvorbis",
+        output_file_path
+    ])  # , stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    (output, err) = p.communicate()
+    p_status = p.wait()
+    if p_status == 0:
+        r = re.findall('(ERROR)+', str(output), flags=re.IGNORECASE)
+        if r:
+            print('An ERROR occurred!')
+        else:
+            print('File is executable!')
+    print("End")
+
+
+def convert_avi_to_webm(input_file_path):
+    print("Begin converting audio")
+    if not os.path.exists(input_file_path):
+        raise FileNotFoundError("Audio file not found")
+    output_file_path = f"{os.path.splitext(input_file_path)[0]}.webm"
+    p = subprocess.Popen([
+        "ffmpeg",
+        "-y",
+        "-i",
+        input_file_path,
+        output_file_path
     ])  # , stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (output, err) = p.communicate()
     p_status = p.wait()
