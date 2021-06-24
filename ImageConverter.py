@@ -160,17 +160,17 @@ def scan_img(input_img, steps, saliency, use_saliency):
 
 
 def convert_paintings_to_txt_bulk(input_dir, output_dir, with_saliency=False):
-    saliency_fine = cv2.saliency.StaticSaliencyFineGrained_create()
+    saliency_coarse = cv2.saliency.StaticSaliencySpectralResidual_create()
     for root, dirs, files in os.walk(input_dir):
         for filename in files:
             if ".jpg" in filename or ".png" in filename:
                 input_file_path = os.path.join(root, filename)
                 output_file_path = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}.txt")
-                convert_paintings_to_txt(input_file_path, output_file_path, saliency_fine, with_saliency)
+                convert_paintings_to_txt(input_file_path, output_file_path, saliency_coarse, with_saliency)
 
 
-def convert_paintings_to_txt(input_file_path, output_file_path, saliency_fine, with_saliency=False):
-    audio_data = scan_img(input_file_path, 16, saliency_fine, with_saliency)[0]
+def convert_paintings_to_txt(input_file_path, output_file_path, saliency_coarse, with_saliency=False):
+    audio_data = scan_img(input_file_path, 16, saliency_coarse, with_saliency)[0]
     audio_data.write_to_file(output_file_path)
 
 
@@ -206,20 +206,20 @@ def convert_txt_to_sound(exec_file, input_file_path, output_file_path):
 
 def convert_painting_to_presentation_bulk(input_dir, output_dir, with_saliency, add_audio, include_content,
                                           include_border):
-    saliency_fine = cv2.saliency.StaticSaliencySpectralResidual_create()
+    saliency_coarse = cv2.saliency.StaticSaliencySpectralResidual_create()
     for root, dirs, files in os.walk(input_dir):
         for filename in files:
             if ".jpg" in filename or ".png" in filename:
                 file_path = os.path.join(root, filename)
-                convert_painting_to_presentation(file_path, output_dir, saliency_fine, with_saliency, add_audio,
+                convert_painting_to_presentation(file_path, output_dir, saliency_coarse, with_saliency, add_audio,
                                                  include_content, include_border)
 
 
-def convert_painting_to_presentation(input_file_path, output_dir, saliency_fine, with_saliency, add_audio,
+def convert_painting_to_presentation(input_file_path, output_dir, saliency_coarse, with_saliency, add_audio,
                                      include_content, include_border):
     input_file_path = os.path.abspath(input_file_path)
     filename = os.path.basename(input_file_path)
-    data = scan_img(input_file_path, 16, saliency_fine, with_saliency)
+    data = scan_img(input_file_path, 16, saliency_coarse, with_saliency)
 
     visual_data = data[1]
     output_file_vid = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}.avi")
