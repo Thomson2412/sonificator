@@ -86,7 +86,7 @@ def copy_items(input_items, input_dir, output_dir):
 
 if __name__ == '__main__':
     painter_by_numbers_dir = "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers/"
-    painter_by_numbers_csv = f"{painter_by_numbers_dir}all_data_info.csv"
+    painter_by_numbers_csv = os.path.join(painter_by_numbers_dir, "all_data_info.csv")
     copy_to_dir = "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_filtered/"
 
     all_items = get_items_all_csv(painter_by_numbers_csv)

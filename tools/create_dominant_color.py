@@ -2,10 +2,11 @@ import os
 import cv2
 import numpy as np
 from colorthief import ColorThief
+from matplotlib import pyplot as plt
 
 
 def main():
-    input_folder = "../data/painter_by_numbers_scene_correct_color/"
+    input_folder = "/mnt/datadrive/projects/thesis/sonificator/data/painter_by_numbers_scene_correct_color"
 
     for root, dirs, files in os.walk(input_folder):
         for filename in files:

@@ -3,7 +3,7 @@ import cv2
 
 
 def main():
-    input_folder = "data/painter_by_numbers_scene_correct_saliency/"
+    input_folder = "/mnt/datadrive/projects/thesis/sonificator/data/painter_by_numbers_scene_correct_saliency/"
     file_blocked_list = []
 
     saliency = cv2.saliency.StaticSaliencySpectralResidual_create()

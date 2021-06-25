@@ -1,14 +1,15 @@
 /*
 root = [0]
 scale = [1]
-steps = [2]
-hue = [3]
-saturation = [4]
-intensity = [5]
-pan = [6]
-duration = [7]
-edginess = [8]
-line = [9]
+waveform = [2]
+steps = [3]
+hue = [4]
+saturation = [5]
+intensity = [6]
+pan = [7]
+duration = [8]
+edginess = [9]
+line = [10]
 */
 
 (
@@ -17,7 +18,7 @@ fork{
 	if (thisProcess.argv[0] != nil) {
 		i = thisProcess.argv[0];
 	} {
-		i = "/mnt/datadrive/projects/thesis/sonificator/data/test/painting10.txt"
+		i = "/mnt/datadrive/projects/thesis/sonificator/data/test/allegorical_painting-Arthur_Streeton-Spirit_of_the_drought-1895-65154.txt"
 	};
 
 	if (thisProcess.argv[1] != nil) {
@@ -30,6 +31,7 @@ fork{
 	s.waitForBoot({
 		var buf;
 		var wt = Array.newClear(4);
+		var wave;
 		var sine = Signal.sineFill(1024, [1, 0]).asWavetable;
 		var tri = Env([0, 1 , -1, 0], [1, 2, 1], \lin).asSignal(1024).asWavetable;
 		var saw = Env([0, 1 , -1, 0], [1, 0, 1], \lin).asSignal(1024).asWavetable;
@@ -68,8 +70,11 @@ fork{
 		var strums;
 		var pans;
 
+		wave = file[2].asInteger.normalize(-1, 1);
+		wave = Signal.fill(256, {arg i; wave[i]});
 		wt[0] = sine;
-		wt[1] = tri;
+		wt[1] = wave;
+		// wt[1] = tri;
 		wt[2] = square;
 		wt[3] = saw;
 
@@ -93,11 +98,11 @@ fork{
 			Out.ar(0, sig  * amp);
 		}).add;
 
-		steps = file[2][0].asInteger;
+		steps = file[3][0].asInteger;
 
 		root = file[0][0].asInteger;
 
-		scaleSteps = file[3].asInteger;
+		scaleSteps = file[4].asInteger;
 
 		if(file[1][0].asInteger == 0) {
 			scale = Scale.melodicMinor;
@@ -107,19 +112,18 @@ fork{
 			chords = scaleSteps.collect({arg i; maj[i]});
 		};
 
-		octaves = file[5].asInteger;
+		octaves = file[6].asInteger;
 
-		edginess = file[8].asFloat.collect({arg i; min(i * buf.size * 2, buf.size - 1.1)});
+		edginess = file[9].asFloat.collect({arg i; min(i * buf.size * 2, buf.size - 1.1)});
 
-		amps = file[4].asInteger / 1000;
+		amps = file[5].asInteger / 1000;
 		amps = max(min(amps, 0.1), 0.001);
-		durations = file[7].asInteger;
+		durations = file[8].asInteger;
 		releases = durations * 0.5;
 		strums = Array.fill(steps, {0.08.rand + 0.02});
-		pans = file[6].asInteger / 1000;
+		pans = file[7].asInteger / 1000;
 
-
-		lines = file[9..24].asInteger;
+		lines = steps.collect({arg s; file[s + 10].asInteger;});
 		melody_notes_amount = 12;
 		melody_notes = Array.newClear(steps * melody_notes_amount);
 		melody_notes_durations = Array.newClear(steps * melody_notes_amount);
@@ -130,13 +134,30 @@ fork{
 		melody_note_count = 0;
 		steps.do({
 			arg s;
+			var tempDurArr = Array.newClear(melody_notes_amount - 1);
 			// s.postln;
 			melody_notes_amount.do({
 				arg i;
+				var randDur = exprand((durations[s] / melody_notes_amount) - 0.1, (durations[s] / melody_notes_amount) + 0.05);
+				var lastDur = 0;
 				// i.postln;
-				melody_notes[melody_note_count] = lines[s][(i * (lines[s].size / melody_notes_amount)).trunc];//.nearestInScale(chords[s]);
-				melody_notes_durations[melody_note_count] = durations[s] / melody_notes_amount;
-				// melody_notes_durations[melody_note_count] = exprand((durations[s] / melody_notes_amount) - 0.15, (durations[s] / melody_notes_amount) + 0.15);
+
+				// melody_notes_durations[melody_note_count] = durations[s] / melody_notes_amount;
+				if(i == (melody_notes_amount - 1)) {
+					lastDur = durations[s] - tempDurArr.sum();
+					if(lastDur < 0){
+						melody_notes_durations[melody_note_count - 1] = melody_notes_durations[melody_note_count - 1] - lastDur;
+					} {
+						melody_notes_durations[melody_note_count] = durations[s] - tempDurArr.sum();
+					};
+				} {
+					melody_notes_durations[melody_note_count] = randDur;
+					tempDurArr[i] = randDur;
+				};
+
+				melody_notes[melody_note_count] = lines[s][(i * (lines[s].size / melody_notes_amount)).trunc];
+				//.nearestInScale(chords[s]);
+
 				melody_octaves[melody_note_count] = octaves[s] + 1;
 				melody_amps[melody_note_count] = amps[s];
 				melody_pans[melody_note_count] = rrand(-0.5, 0.5);
@@ -159,7 +180,7 @@ fork{
 			\strum, 0,
 			\amp, Pseq(amps),
 			\att, Pseq(durations * 0.5),
-			\dec, Pseq(durations),
+			\dec, Pseq(durations - releases),
 			\sus, 0,
 			\rel, Pseq(releases),
 			\buf, buf[0].bufnum,
@@ -175,10 +196,10 @@ fork{
 			\root, root,
 			\octave, Pseq(octaves),
 			\dur, Pseq(durations),
-			\strum, Pseq(strums),
+			\strum, 0, // Pseq(strums),
 			\amp, Pseq(amps),
 			\att, Pseq(durations * 0.5),
-			// \dec, Pseq(durations),
+			\dec, Pseq(durations - releases),
 			\sus, 0,
 			\rel, Pseq(releases),
 			\buf, buf[0].bufnum,
@@ -204,7 +225,7 @@ fork{
 			\rel, 0.5,
 			\buf, buf[0].bufnum,
 			\numBufs, buf.size,
-			\bufPos, 0,
+			\bufPos, 1,
 			\revb, 0.5,
 			\pan, Pseq(melody_pans),
 		).play;
@@ -239,5 +260,3 @@ fork{
 		};
 	});
 })
-
-16.collect({arg s; s % sqrt(16)})

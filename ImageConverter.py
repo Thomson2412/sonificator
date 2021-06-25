@@ -66,10 +66,13 @@ def scan_img(input_img, steps, saliency, use_saliency):
 
     root = Utils.scale_between_range(dominant_color_hsv[0], CV_HSV_MIN_MAX[0], ROOT_MIN_MAX)
     scale = Utils.scale_between_range(dominant_color_hsv[2], CV_HSV_MIN_MAX[2], SCALE_MIN_MAX)
+    hist = cv2.calcHist([img], [0], None, [256], [0, 256])
+    wave_str = " ".join([str(int(item[0])) for item in hist])
 
     data_audio = DataStructureAudio(
         root,
         scale,
+        wave_str,
         steps
     )
 
@@ -133,7 +136,7 @@ def scan_img(input_img, steps, saliency, use_saliency):
             )
 
             pan = int((PAN_MIN_MAX[1] / -2) + Utils.scale_between_range(
-                (priority_list[current_step]) % math.sqrt(steps),
+                current_step % math.sqrt(steps),
                 (0, math.sqrt(steps) - 1),
                 PAN_MIN_MAX))
 
@@ -186,12 +189,12 @@ def convert_txt_to_sound(exec_file, input_file_path, output_file_path):
     print(f"Begin: {os.path.splitext(input_file_path)[0]}")
     exec_path = os.path.abspath(exec_file)
     input_file_path = os.path.abspath(input_file_path)
-    output_filepath = os.path.abspath(output_file_path)
+    output_file_path = os.path.abspath(output_file_path)
     p = subprocess.Popen([
         "sclang",
         exec_path,
         input_file_path,
-        output_filepath
+        output_file_path
     ])  # , stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (output, err) = p.communicate()
     p_status = p.wait()

@@ -64,7 +64,7 @@ def plot_hist(data, size, title, left_adjust=0.0):
 
 if __name__ == '__main__':
     painter_by_numbers_dir = "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers/"
-    painter_by_numbers_csv = f"{painter_by_numbers_dir}all_data_info.csv"
+    painter_by_numbers_csv = os.path.join(painter_by_numbers_dir, "all_data_info.csv")
     scene_correct_dir = "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/"
 
     folder_items = get_items_folder(scene_correct_dir, painter_by_numbers_csv)

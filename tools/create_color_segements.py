@@ -5,7 +5,7 @@ import numpy as np
 
 
 def main():
-    input_folder = "../data/painter_by_numbers_scene_correct_segments/"
+    input_folder = "/mnt/datadrive/projects/thesis/sonificator/data/painter_by_numbers_scene_correct_segments/"
     saliency = cv2.saliency.StaticSaliencySpectralResidual_create()
     steps = 16
     for root, dirs, files in os.walk(input_folder):

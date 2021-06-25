@@ -20,9 +20,10 @@ def dic_to_string(input_dic, line_ending=0, delimiter=" "):
 
 
 class DataStructureAudio:
-    def __init__(self, root, scale, steps):
+    def __init__(self, root, scale, waveform, steps):
         self.root = root
         self.scale = scale
+        self.waveform = waveform
 
         self.steps = steps
 
@@ -56,6 +57,8 @@ class DataStructureAudio:
             file.write(f"{self.root}\r\n\r\n")
 
             file.write(f"{self.scale}\r\n\r\n")
+
+            file.write(f"{self.waveform}\r\n\r\n")
 
             file.write(f"{self.steps}\r\n\r\n")
 
