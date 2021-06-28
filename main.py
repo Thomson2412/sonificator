@@ -7,7 +7,7 @@ if __name__ == '__main__':
 
     # ImageConverter.convert_txt_to_sound_bulk("sound_engine.scd", "converted/")
 
-    # ImageConverter.convert_paintings_to_txt_bulk("data/test/", "data/test/", False)
+    # ImageConverter.convert_paintings_to_txt_bulk("data/test/", "data/test/", True)
 
     # ImageConverter.convert_painting_to_presentation_bulk("data/test/", "data/presentation/", False, True, False, True)
 

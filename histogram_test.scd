@@ -1,6 +1,6 @@
 (
-~input = "/mnt/datadrive/projects/thesis/sonificator/data/test/allegorical_painting-Arthur_Streeton-Spirit_of_the_drought-1895-65154_hist.txt";
-~file = FileReader.read(~input, true)[0].asInteger;
+~input = "/Users/thomas/Documents/sonificator/data/test/Edvard_Munch.txt";
+~file = FileReader.read(~input, true)[2].asInteger;
 ~file.postln;
 ~file = ~file.normalize(-1, 1);
 // ~file.plot;
@@ -8,10 +8,10 @@
 // w.plot;
 ~sine = Signal.sineFill(1024, [1], [0]).asWavetable;
 // ~sine.plot;
-b.free;
+//b.free;
 b = Buffer.alloc(s, 512);
 b.loadCollection(~wave);
-b.plot;
+//b.plot;
 )
 
 (
@@ -27,8 +27,9 @@ SynthDef.new(\vosc, {
 	sig = Splay.ar(sig, center:pan);
 	sig = LeakDC.ar(sig);
 	sig = sig * EnvGen.kr(env, gate, doneAction: Done.freeSelf);
-	sig = FreeVerb2.ar(sig, sig, mix: revb, room: 0.5, damp: 0.5, mul: 1.0, add: 0.0);
+	// sig = FreeVerb2.ar(sig, sig, mix: revb, room: 0.5, damp: 0.5, mul: 1.0, add: 0.0);
 	sig = LPF.ar(sig, freq: 16000, mul: 1.0, add: 0.0);
+	sig = CrossoverDistortion.ar(sig, amp: bufPos, smooth: 0.5, mul: 1.0, add: 0);
 	Out.ar(0, sig  * amp);
 }).add;
 )
@@ -39,9 +40,14 @@ Pbind(
 	\degree, Pseq([[0,2,4,6], [2,6,9,11]]),
 	\dur, 3,
 	\amp, 0.5,
-	\att, 1,
+	\att, 0.5,
 	\dec, 3,
 	\rel, 1,
 	\revb, 0.5,
+	\buf, b.bufnum,
+	\numBufs, b.size,
+	\bufPos, 1,
 ).play;
 )
+
+{CrossoverDistortion.ar(SinOsc.ar([400, 404], 0, 0.2), MouseX.kr(0, 1), MouseY.kr(0, 1))}.play

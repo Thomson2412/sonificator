@@ -18,7 +18,7 @@ fork{
 	if (thisProcess.argv[0] != nil) {
 		i = thisProcess.argv[0];
 	} {
-		i = "/mnt/datadrive/projects/thesis/sonificator/data/test/allegorical_painting-Arthur_Streeton-Spirit_of_the_drought-1895-65154.txt"
+		i = "/Users/thomas/Documents/sonificator/data/test/Edvard_Munch.txt"
 	};
 
 	if (thisProcess.argv[1] != nil) {
@@ -32,10 +32,10 @@ fork{
 		var buf;
 		var wt = Array.newClear(4);
 		var wave;
-		var sine = Signal.sineFill(1024, [1, 0]).asWavetable;
-		var tri = Env([0, 1 , -1, 0], [1, 2, 1], \lin).asSignal(1024).asWavetable;
-		var saw = Env([0, 1 , -1, 0], [1, 0, 1], \lin).asSignal(1024).asWavetable;
-		var square = Signal.rectWindow(1024, 512).asWavetable;
+		var sine = Signal.sineFill(256, [1, 0]).asWavetable;
+		var tri = Env([0, 1 , -1, 0], [1, 2, 1], \lin).asSignal(256).asWavetable;
+		var saw = Env([0, 1 , -1, 0], [1, 0, 1], \lin).asSignal(256).asWavetable;
+		var square = Signal.rectWindow(256, 128).asWavetable;
 
 		var maj = [[0,4,7,11], [2,5,9,12], [4,7,11,14], [5,9,12,16], [7,11,14,17], [9,12,16,19], [11,14,17,21]];
 		var min = [[0,3,7,10], [2,5,8,12], [3,7,10,14], [5,8,12,15], [7,10,14,17], [8,12,15,19], [10,14,17,20]];
@@ -75,10 +75,10 @@ fork{
 		wt[0] = sine;
 		wt[1] = wave;
 		// wt[1] = tri;
-		wt[2] = square;
-		wt[3] = saw;
+		// wt[2] = square;
+		// wt[2] = saw;
 
-		buf = Buffer.allocConsecutive(4, s, 2048);
+		buf = Buffer.allocConsecutive(2, s, 512);
 		buf.do({arg buf, i; buf.loadCollection(wt[i])});
 
 		SynthDef.new(\vosc, {
@@ -86,15 +86,17 @@ fork{
 			freq=440, att=0, dec=1, sus = 0, rel=0.2,
 			amp=0.2, revb = 0.33, gate = 1, pan=0;
 			var sig, detuneSig, env;
-			bufPos = buf + bufPos.min(numBufs - 1);
+			bufPos = buf + bufPos.min(numBufs - 1).max(0);
 			env = Env.adsr(att, dec, sus, rel);
 			detuneSig = LFNoise1.kr(0.2!8).bipolar(0.2).midiratio;
-			sig = VOsc.ar(bufPos, freq * detuneSig);
+			sig = VOsc.ar(0.9, freq * detuneSig);
 			sig = Splay.ar(sig, center:pan);
 			sig = LeakDC.ar(sig);
 			sig = sig * EnvGen.kr(env, gate, doneAction: Done.freeSelf);
 			sig = FreeVerb2.ar(sig, sig, mix: revb, room: 0.5, damp: 0.5, mul: 1.0, add: 0.0);
 			sig = LPF.ar(sig, freq: 16000, mul: 1.0, add: 0.0);
+			// sig = CrossoverDistortion.ar(sig, amp: bufPos, smooth: 1.0, mul: 1.0, add: 0);
+			// sig = SmoothDecimator.ar(in, rate: 44100.0, smoothing: 0.5, mul: 1.0, add: 0);
 			Out.ar(0, sig  * amp);
 		}).add;
 
@@ -114,7 +116,9 @@ fork{
 
 		octaves = file[6].asInteger;
 
-		edginess = file[9].asFloat.collect({arg i; min(i * buf.size * 2, buf.size - 1.1)});
+		// edginess = file[9].asFloat.collect({arg i; min(i * buf.size * 2, buf.size - 1.1)});
+		edginess = file[9].asFloat.normalize(0, 0.9);
+		// edginess = file[9].asFloat.collect({arg i; 0.9});
 
 		amps = file[5].asInteger / 1000;
 		amps = max(min(amps, 0.1), 0.001);
@@ -185,7 +189,7 @@ fork{
 			\rel, Pseq(releases),
 			\buf, buf[0].bufnum,
 			\numBufs, buf.size,
-			\bufPos, Pseq(edginess),
+			\bufPos, 0.5, //Pseq(edginess),
 			\pan, 0,
 		).play;
 
@@ -225,7 +229,7 @@ fork{
 			\rel, 0.5,
 			\buf, buf[0].bufnum,
 			\numBufs, buf.size,
-			\bufPos, 1,
+			\bufPos, 0.9,
 			\revb, 0.5,
 			\pan, Pseq(melody_pans),
 		).play;
