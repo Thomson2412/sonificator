@@ -29,7 +29,8 @@ SynthDef.new(\vosc, {
 	sig = sig * EnvGen.kr(env, gate, doneAction: Done.freeSelf);
 	// sig = FreeVerb2.ar(sig, sig, mix: revb, room: 0.5, damp: 0.5, mul: 1.0, add: 0.0);
 	sig = LPF.ar(sig, freq: 16000, mul: 1.0, add: 0.0);
-	sig = CrossoverDistortion.ar(sig, amp: bufPos, smooth: 0.5, mul: 1.0, add: 0);
+	// sig = CrossoverDistortion.ar(sig, amp: bufPos, smooth: 0.5, mul: 1.0, add: 0);
+	sig = SmoothDecimator.ar(sig, rate: (44100.0 / 2), smoothing: 0.5, mul: 1.0, add: 0);
 	Out.ar(0, sig  * amp);
 }).add;
 )
@@ -51,3 +52,5 @@ Pbind(
 )
 
 {CrossoverDistortion.ar(SinOsc.ar([400, 404], 0, 0.2), MouseX.kr(0, 1), MouseY.kr(0, 1))}.play
+{SmoothDecimator.ar(SinOsc.ar([400, 404], 0, 0.2), MouseX.kr(0, 44100), MouseY.kr(0, 1))}.play
+{Decimator.ar(SinOsc.ar([400, 404], 0, 0.2), MouseX.kr(0, 44100), MouseY.kr(0, 31))}.play

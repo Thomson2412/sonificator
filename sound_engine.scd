@@ -97,6 +97,7 @@ fork{
 			sig = LPF.ar(sig, freq: 16000, mul: 1.0, add: 0.0);
 			// sig = CrossoverDistortion.ar(sig, amp: bufPos, smooth: 1.0, mul: 1.0, add: 0);
 			// sig = SmoothDecimator.ar(in, rate: 44100.0, smoothing: 0.5, mul: 1.0, add: 0);
+			sig = Decimator.ar(sig, rate: 44100.0 * bufPos, bits: 24, mul: 1.0, add: 0);
 			Out.ar(0, sig  * amp);
 		}).add;
 
@@ -212,7 +213,7 @@ fork{
 			\revb, 0.6,
 			\pan, Pseq(pans),
 		).play;
-
+/*
 		//Melody
 		Pbind(
 			\instrument, \vosc,
@@ -232,7 +233,7 @@ fork{
 			\bufPos, 0.9,
 			\revb, 0.5,
 			\pan, Pseq(melody_pans),
-		).play;
+		).play;*/
 
 
 		Post << "Scale: " << scale.name << Char.nl;

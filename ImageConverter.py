@@ -207,7 +207,7 @@ def convert_txt_to_sound(exec_file, input_file_path, output_file_path):
     print("End")
 
 
-def convert_painting_to_presentation_bulk(input_dir, output_dir, with_saliency, add_audio, include_content,
+def convert_painting_to_presentation_bulk(input_dir, output_dir, with_saliency, add_audio, web_convert, include_content,
                                           include_border):
     saliency_coarse = cv2.saliency.StaticSaliencySpectralResidual_create()
     for root, dirs, files in os.walk(input_dir):
@@ -215,11 +215,11 @@ def convert_painting_to_presentation_bulk(input_dir, output_dir, with_saliency, 
             if ".jpg" in filename or ".png" in filename:
                 file_path = os.path.join(root, filename)
                 convert_painting_to_presentation(file_path, output_dir, saliency_coarse, with_saliency, add_audio,
-                                                 include_content, include_border)
+                                                 web_convert, include_content, include_border)
 
 
 def convert_painting_to_presentation(input_file_path, output_dir, saliency_coarse, with_saliency, add_audio,
-                                     include_content, include_border):
+                                     web_convert, include_content, include_border):
     input_file_path = os.path.abspath(input_file_path)
     filename = os.path.basename(input_file_path)
     data = scan_img(input_file_path, 16, saliency_coarse, with_saliency)
@@ -234,10 +234,11 @@ def convert_painting_to_presentation(input_file_path, output_dir, saliency_coars
         audio_data.write_to_file(output_filepath_txt)
         output_filepath_aiff = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}.aiff")
         convert_txt_to_sound("sound_engine.scd", output_filepath_txt, output_filepath_aiff)
-        convert_aiff_to_ogg(output_filepath_aiff)
         output_file_vid_audio = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}_audio.avi")
         add_audio_to_video(output_file_vid, output_filepath_aiff, output_file_vid_audio)
-        convert_avi_to_webm(output_file_vid_audio)
+        if web_convert:
+            convert_aiff_to_ogg(output_filepath_aiff)
+            convert_avi_to_webm(output_file_vid_audio)
 
 
 # ffmpeg -i yourvideo.avi -i sound.mp3 -c copy -map 0:v:0 -map 1:a:0 output.avi
