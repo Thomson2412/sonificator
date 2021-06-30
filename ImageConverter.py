@@ -67,7 +67,9 @@ def scan_img(input_img, steps, saliency, use_saliency):
     root = Utils.scale_between_range(dominant_color_hsv[0], CV_HSV_MIN_MAX[0], ROOT_MIN_MAX)
     scale = Utils.scale_between_range(dominant_color_hsv[2], CV_HSV_MIN_MAX[2], SCALE_MIN_MAX)
     hist = cv2.calcHist([img], [0], None, [256], [0, 256])
-    wave_str = " ".join([str(int(item[0])) for item in hist])
+    hist_rev_flip = np.flipud(hist * -1)
+    wave = np.append(hist, hist_rev_flip, 0)
+    wave_str = " ".join([str(int(item[0])) for item in wave])
 
     data_audio = DataStructureAudio(
         root,
@@ -227,6 +229,8 @@ def convert_painting_to_presentation(input_file_path, output_dir, saliency_coars
     visual_data = data[1]
     output_file_vid = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}.avi")
     visual_data.generate_presentation_video(output_file_vid, include_content, include_border)
+    if not add_audio and web_convert:
+        convert_avi_to_webm(output_file_vid)
 
     if add_audio:
         audio_data = data[0]

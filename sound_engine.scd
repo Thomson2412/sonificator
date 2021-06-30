@@ -18,7 +18,7 @@ fork{
 	if (thisProcess.argv[0] != nil) {
 		i = thisProcess.argv[0];
 	} {
-		i = "/Users/thomas/Documents/sonificator/data/test/Edvard_Munch.txt"
+		i = "/mnt/datadrive/projects/thesis/sonificator/data/test/allegorical_painting-Arthur_Streeton-Spirit_of_the_drought-1895-65154.txt"
 	};
 
 	if (thisProcess.argv[1] != nil) {
@@ -28,14 +28,15 @@ fork{
 	i.postln;
 	o.postln;
 
+	Buffer.freeAll(s);
 	s.waitForBoot({
 		var buf;
 		var wt = Array.newClear(4);
 		var wave;
-		var sine = Signal.sineFill(256, [1, 0]).asWavetable;
-		var tri = Env([0, 1 , -1, 0], [1, 2, 1], \lin).asSignal(256).asWavetable;
-		var saw = Env([0, 1 , -1, 0], [1, 0, 1], \lin).asSignal(256).asWavetable;
-		var square = Signal.rectWindow(256, 128).asWavetable;
+		var sine = Signal.sineFill(512, [1, 0]).asWavetable;
+		var tri = Env([0, 1 , -1, 0], [1, 2, 1], \lin).asSignal(512).asWavetable;
+		var saw = Env([0, 1 , -1, 0], [1, 0, 1], \lin).asSignal(512).asWavetable;
+		var square = Signal.rectWindow(512, 256).asWavetable;
 
 		var maj = [[0,4,7,11], [2,5,9,12], [4,7,11,14], [5,9,12,16], [7,11,14,17], [9,12,16,19], [11,14,17,21]];
 		var min = [[0,3,7,10], [2,5,8,12], [3,7,10,14], [5,8,12,15], [7,10,14,17], [8,12,15,19], [10,14,17,20]];
@@ -58,6 +59,7 @@ fork{
 		var melody_notes_amount;
 		var melody_notes_durations;
 		var melody_note_count;
+		var lastMelodyNote;
 		var melody_octaves;
 		var melody_amps;
 		var melody_pans;
@@ -71,14 +73,15 @@ fork{
 		var pans;
 
 		wave = file[2].asInteger.normalize(-1, 1);
-		wave = Signal.fill(256, {arg i; wave[i]});
+		wave = Signal.fill(512, {arg i; wave[i]}).asWavetable;
+		// wave.plot;
 		wt[0] = sine;
 		wt[1] = wave;
 		// wt[1] = tri;
 		// wt[2] = square;
-		// wt[2] = saw;
+		wt[2] = saw;
 
-		buf = Buffer.allocConsecutive(2, s, 512);
+		buf = Buffer.allocConsecutive(3, s, 1024);
 		buf.do({arg buf, i; buf.loadCollection(wt[i])});
 
 		SynthDef.new(\vosc, {
@@ -89,7 +92,7 @@ fork{
 			bufPos = buf + bufPos.min(numBufs - 1).max(0);
 			env = Env.adsr(att, dec, sus, rel);
 			detuneSig = LFNoise1.kr(0.2!8).bipolar(0.2).midiratio;
-			sig = VOsc.ar(0.9, freq * detuneSig);
+			sig = VOsc.ar(bufPos, freq * detuneSig);
 			sig = Splay.ar(sig, center:pan);
 			sig = LeakDC.ar(sig);
 			sig = sig * EnvGen.kr(env, gate, doneAction: Done.freeSelf);
@@ -97,7 +100,7 @@ fork{
 			sig = LPF.ar(sig, freq: 16000, mul: 1.0, add: 0.0);
 			// sig = CrossoverDistortion.ar(sig, amp: bufPos, smooth: 1.0, mul: 1.0, add: 0);
 			// sig = SmoothDecimator.ar(in, rate: 44100.0, smoothing: 0.5, mul: 1.0, add: 0);
-			sig = Decimator.ar(sig, rate: 44100.0 * bufPos, bits: 24, mul: 1.0, add: 0);
+			// sig = Decimator.ar(sig, rate: 44100.0 * bufPos, bits: 24, mul: 1.0, add: 0);
 			Out.ar(0, sig  * amp);
 		}).add;
 
@@ -117,8 +120,8 @@ fork{
 
 		octaves = file[6].asInteger;
 
-		// edginess = file[9].asFloat.collect({arg i; min(i * buf.size * 2, buf.size - 1.1)});
-		edginess = file[9].asFloat.normalize(0, 0.9);
+		edginess = file[9].asFloat.collect({arg i; min(i * buf.size * 2, buf.size - 1.1)});
+		// edginess = file[9].asFloat.normalize(0, 1.99);
 		// edginess = file[9].asFloat.collect({arg i; 0.9});
 
 		amps = file[5].asInteger / 1000;
@@ -145,10 +148,12 @@ fork{
 				arg i;
 				var randDur = exprand((durations[s] / melody_notes_amount) - 0.1, (durations[s] / melody_notes_amount) + 0.05);
 				var lastDur = 0;
+				var melodyNote;
+				var newMelodyNote;
 				// i.postln;
 
-				// melody_notes_durations[melody_note_count] = durations[s] / melody_notes_amount;
-				if(i == (melody_notes_amount - 1)) {
+				melody_notes_durations[melody_note_count] = durations[s] / melody_notes_amount;
+/*				if(i == (melody_notes_amount - 1)) {
 					lastDur = durations[s] - tempDurArr.sum();
 					if(lastDur < 0){
 						melody_notes_durations[melody_note_count - 1] = melody_notes_durations[melody_note_count - 1] - lastDur;
@@ -158,9 +163,12 @@ fork{
 				} {
 					melody_notes_durations[melody_note_count] = randDur;
 					tempDurArr[i] = randDur;
-				};
+				};*/
 
-				melody_notes[melody_note_count] = lines[s][(i * (lines[s].size / melody_notes_amount)).trunc];
+				melodyNote = lines[s][(i * (lines[s].size / melody_notes_amount)).trunc];
+				if(melodyNote == lastMelodyNote) {newMelodyNote = \rest;} {newMelodyNote = melodyNote};
+				melody_notes[melody_note_count] = newMelodyNote;
+				lastMelodyNote = melodyNote;
 				//.nearestInScale(chords[s]);
 
 				melody_octaves[melody_note_count] = octaves[s] + 1;
@@ -190,7 +198,7 @@ fork{
 			\rel, Pseq(releases),
 			\buf, buf[0].bufnum,
 			\numBufs, buf.size,
-			\bufPos, 0.5, //Pseq(edginess),
+			\bufPos, Pseq(edginess),
 			\pan, 0,
 		).play;
 
@@ -213,7 +221,7 @@ fork{
 			\revb, 0.6,
 			\pan, Pseq(pans),
 		).play;
-/*
+
 		//Melody
 		Pbind(
 			\instrument, \vosc,
@@ -233,7 +241,7 @@ fork{
 			\bufPos, 0.9,
 			\revb, 0.5,
 			\pan, Pseq(melody_pans),
-		).play;*/
+		).play;
 
 
 		Post << "Scale: " << scale.name << Char.nl;

@@ -17,12 +17,14 @@ def main():
                 img = cv2.imread(file_path)
 
                 hist = cv2.calcHist([img], [0], None, [bins], [0, bins])
+                hist_flip = np.flipud(hist * -1)
+                hist = np.append(hist, hist_flip, 0)
                 plt.figure()
                 plt.title(f"{filename} Grayscale Histogram")
                 plt.xlabel("Bins")
                 plt.ylabel("% of Pixels")
                 plt.plot(hist)
-                plt.xlim([0, bins])
+                plt.xlim([0, bins * 2])
                 plt.show()
 
                 points = [str(item[0]) for item in hist]

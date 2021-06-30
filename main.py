@@ -11,22 +11,23 @@ if __name__ == '__main__':
 
     # ImageConverter.convert_painting_to_presentation_bulk("data/test/", "data/presentation/", False, True, False, True)
 
-    # ImageConverter.convert_painting_to_presentation_bulk(
-    #     "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/",
-    #     "data/presentation_saliency/",
-    #     True,
-    #     True,
-    #     True,
-    #     False)
-
     ImageConverter.convert_painting_to_presentation_bulk(
-        "data/test",
-        "data/test/",
+        "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/",
+        "data/presentation_saliency/",
         True,
         True,
         False,
         True,
         False)
+
+    # ImageConverter.convert_painting_to_presentation_bulk(
+    #     "data/test",
+    #     "data/test/",
+    #     True,
+    #     True,
+    #     False,
+    #     True,
+    #     False)
 
     # saliency_coarse = cv2.saliency.StaticSaliencySpectralResidual_create()
     # ImageConverter.convert_painting_to_presentation(
