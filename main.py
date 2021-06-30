@@ -16,7 +16,7 @@ if __name__ == '__main__':
         "data/presentation_saliency/",
         True,
         True,
-        False,
+        True,
         True,
         False)
 

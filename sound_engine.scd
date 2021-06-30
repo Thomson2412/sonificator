@@ -173,7 +173,7 @@ fork{
 
 				melody_octaves[melody_note_count] = octaves[s] + 1;
 				melody_amps[melody_note_count] = amps[s];
-				melody_pans[melody_note_count] = rrand(-0.5, 0.5);
+				melody_pans[melody_note_count] = pans[s] + rrand(-0.1, 0.1);
 
 				melody_note_count = melody_note_count + 1;
 			});
