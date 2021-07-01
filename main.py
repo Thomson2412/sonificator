@@ -1,24 +1,32 @@
 import ImageConverter
 import cv2
-
+import SceneDetectionAudio
 
 if __name__ == '__main__':
+    SceneDetectionAudio.update_object_scene_detection_files(
+        "data/test/audio_scene",
+        "soundnet",
+        "data/test/audio_scene/object_audio_detection.json",
+        "data/test/audio_scene/object_scene_detection.json",
+    )
+
     # ImageConverter.convert_paintings_to_txt_bulk("data/painter_by_numbers_scene_correct/", "converted/")
 
     # ImageConverter.convert_txt_to_sound_bulk("sound_engine.scd", "converted/")
 
-    # ImageConverter.convert_paintings_to_txt_bulk("data/test/", "data/test/", True)
+    # ImageConverter.convert_paintings_to_txt_bulk("data/test/", "data/test/", True, True)
 
     # ImageConverter.convert_painting_to_presentation_bulk("data/test/", "data/presentation/", False, True, False, True)
 
-    ImageConverter.convert_painting_to_presentation_bulk(
-        "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/",
-        "data/presentation_saliency/",
-        True,
-        True,
-        True,
-        True,
-        False)
+    # ImageConverter.convert_painting_to_presentation_bulk(
+    #     "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/",
+    #     "data/presentation_saliency/",
+    #     True,
+    #     True,
+    #     True,
+    #     True,
+    #     True,
+    #     False)
 
     # ImageConverter.convert_painting_to_presentation_bulk(
     #     "data/test",
