@@ -114,7 +114,6 @@ def update_object_scene_detection_files(audio_input_dir, soundnet_dir, object_fi
     with open(os.path.join(soundnet_dir, "categories_places2.txt"), 'r') as f:
         scene_categories = f.read().split('\n')
 
-
     for root, dirs, files in os.walk(audio_input_dir):
         for filename in files:
             file_path = os.path.join(root, filename)
@@ -127,7 +126,7 @@ def update_object_scene_detection_files(audio_input_dir, soundnet_dir, object_fi
                 with open(scene_file) as json_file:
                     prediction_result_scene = json.load(json_file)
             if (".wav" in filename or ".mp3" in filename) and (file_path not in prediction_result_object.keys()
-                                       or file_path not in prediction_result_scene.keys()):
+                                                               or file_path not in prediction_result_scene.keys()):
                 duration = librosa.get_duration(filename=file_path)
                 if duration >= 10:
                     print(duration)
