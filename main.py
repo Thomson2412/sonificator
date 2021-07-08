@@ -4,7 +4,7 @@ import SceneDetectionAudio
 
 if __name__ == '__main__':
     SceneDetectionAudio.update_object_scene_detection_files(
-        "data/test/audio_scene",
+        "soundnet/mp3/",
         "soundnet",
         "data/test/audio_scene/object_audio_detection.json",
         "data/test/audio_scene/object_scene_detection.json",

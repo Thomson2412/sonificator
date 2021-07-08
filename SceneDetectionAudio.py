@@ -114,23 +114,23 @@ def update_object_scene_detection_files(audio_input_dir, soundnet_dir, object_fi
     with open(os.path.join(soundnet_dir, "categories_places2.txt"), 'r') as f:
         scene_categories = f.read().split('\n')
 
-    prediction_result_object = {}
-    prediction_result_scene = {}
-
-    if os.path.isfile(object_file):
-        with open(object_file) as json_file:
-            prediction_result_object = json.load(json_file)
-    if os.path.isfile(scene_file):
-        with open(scene_file) as json_file:
-            prediction_result_scene = json.load(json_file)
 
     for root, dirs, files in os.walk(audio_input_dir):
         for filename in files:
             file_path = os.path.join(root, filename)
+            prediction_result_object = {}
+            prediction_result_scene = {}
+            if os.path.isfile(object_file):
+                with open(object_file) as json_file:
+                    prediction_result_object = json.load(json_file)
+            if os.path.isfile(scene_file):
+                with open(scene_file) as json_file:
+                    prediction_result_scene = json.load(json_file)
             if (".wav" in filename or ".mp3" in filename) and (file_path not in prediction_result_object.keys()
                                        or file_path not in prediction_result_scene.keys()):
                 duration = librosa.get_duration(filename=file_path)
-                if duration >= 5.1:
+                if duration >= 10:
+                    print(duration)
                     plain_prediction = model_object.predict(load_audio(file_path))
                     object_pred_cat = predictions_to_categories(plain_prediction[0], object_categories)
                     scene_pred_cat = predictions_to_categories(plain_prediction[1], scene_categories)
@@ -144,10 +144,10 @@ def update_object_scene_detection_files(audio_input_dir, soundnet_dir, object_fi
                         "prediction": scene_pred_cat
                     }
 
-    with open(object_file, "w") as prediction_result_object_outfile:
-        json.dump(prediction_result_object, prediction_result_object_outfile, indent=4)
-    with open(scene_file, "w") as prediction_result_scene_outfile:
-        json.dump(prediction_result_scene, prediction_result_scene_outfile, indent=4)
+                with open(object_file, "w") as prediction_result_object_outfile:
+                    json.dump(prediction_result_object, prediction_result_object_outfile, indent=4)
+                with open(scene_file, "w") as prediction_result_scene_outfile:
+                    json.dump(prediction_result_scene, prediction_result_scene_outfile, indent=4)
 
 
 def get_audio_for_scene(scene_file, scene):
