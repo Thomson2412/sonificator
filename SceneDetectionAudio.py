@@ -127,7 +127,7 @@ def update_object_scene_detection_files(audio_input_dir, soundnet_dir, object_fi
     for root, dirs, files in os.walk(audio_input_dir):
         for filename in files:
             file_path = os.path.join(root, filename)
-            if ".wav" in filename and (file_path not in prediction_result_object.keys()
+            if (".wav" in filename or ".mp3" in filename) and (file_path not in prediction_result_object.keys()
                                        or file_path not in prediction_result_scene.keys()):
                 duration = librosa.get_duration(filename=file_path)
                 if duration >= 5.1:

@@ -254,7 +254,7 @@ def convert_painting_to_presentation(input_file_path, output_dir, saliency_coars
     output_file_vid = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}.avi")
     visual_data.generate_presentation_video(output_file_vid, include_content, include_border)
     if not add_audio and web_convert:
-        convert_avi_to_webm(output_file_vid)
+        convert_avi_to_mp4(output_file_vid)
 
     if add_audio:
         audio_data = data[0]
@@ -265,8 +265,8 @@ def convert_painting_to_presentation(input_file_path, output_dir, saliency_coars
         output_file_vid_audio = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}_audio.avi")
         add_audio_to_video(output_file_vid, output_filepath_aiff, output_file_vid_audio)
         if web_convert:
-            convert_aiff_to_ogg(output_filepath_aiff)
-            convert_avi_to_webm(output_file_vid_audio)
+            convert_aiff_to_mp3(output_filepath_aiff)
+            convert_avi_to_mp4(output_file_vid_audio)
 
 
 # ffmpeg -i yourvideo.avi -i sound.mp3 -c copy -map 0:v:0 -map 1:a:0 output.avi
@@ -329,11 +329,64 @@ def convert_aiff_to_ogg(input_file_path):
     print("End")
 
 
+# ffmpeg -i myinput.aif -f mp3 -acodec libmp3lame -ab 320000 -ar 44100 myoutput.mp3
+def convert_aiff_to_mp3(input_file_path):
+    print("Begin converting audio")
+    if not os.path.exists(input_file_path):
+        raise FileNotFoundError("Audio file not found")
+    output_file_path = f"{os.path.splitext(input_file_path)[0]}.mp3"
+    p = subprocess.Popen([
+        "ffmpeg",
+        "-y",
+        "-i",
+        input_file_path,
+        "-acodec",
+        "libmp3lame",
+        "-ab",
+        "320000",
+        "-ar",
+        "44100",
+        output_file_path
+    ])  # , stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    (output, err) = p.communicate()
+    p_status = p.wait()
+    if p_status == 0:
+        r = re.findall('(ERROR)+', str(output), flags=re.IGNORECASE)
+        if r:
+            print('An ERROR occurred!')
+        else:
+            print('File is executable!')
+    print("End")
+
+
 def convert_avi_to_webm(input_file_path):
     print("Begin converting audio")
     if not os.path.exists(input_file_path):
         raise FileNotFoundError("Audio file not found")
     output_file_path = f"{os.path.splitext(input_file_path)[0]}.webm"
+    p = subprocess.Popen([
+        "ffmpeg",
+        "-y",
+        "-i",
+        input_file_path,
+        output_file_path
+    ])  # , stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    (output, err) = p.communicate()
+    p_status = p.wait()
+    if p_status == 0:
+        r = re.findall('(ERROR)+', str(output), flags=re.IGNORECASE)
+        if r:
+            print('An ERROR occurred!')
+        else:
+            print('File is executable!')
+    print("End")
+
+
+def convert_avi_to_mp4(input_file_path):
+    print("Begin converting audio")
+    if not os.path.exists(input_file_path):
+        raise FileNotFoundError("Audio file not found")
+    output_file_path = f"{os.path.splitext(input_file_path)[0]}.mp4"
     p = subprocess.Popen([
         "ffmpeg",
         "-y",

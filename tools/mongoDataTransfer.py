@@ -21,10 +21,10 @@ def input_from_dir(input_dir, db):
             if ".jpg" in filename or ".png" in filename:
                 q = generate_questions(0, filename)
                 input_question(q, db)
-            if ".ogg" in filename:
+            if ".mp3" in filename:
                 q = generate_questions(1, filename)
                 input_question(q, db)
-            if "_audio.webm" in filename:
+            if "_audio.mp4" in filename:
                 video_filename_list.append(filename)
 
     video_pairs = [[i, j] for i in video_filename_list for j in video_filename_list if i != j]
