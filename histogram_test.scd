@@ -64,5 +64,5 @@ c.play;
 c.pause;
 c.resume;
 c.stop;
-c.close;
 f.close;
+f.free;
