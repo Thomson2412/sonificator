@@ -4,6 +4,8 @@ import re
 import cv2
 import numpy as np
 import subprocess
+
+import SceneDetectionAudio
 import Utils
 from DataStructureAudio import DataStructureAudio
 from DataStructureVisual import DataStructureVisual
@@ -75,7 +77,9 @@ def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_scen
     wave_str = " ".join([str(int(item[0])) for item in wave])
 
     if use_scene:
-        scene_detection.detect(input_img)
+        scene = scene_detection.detect(input_img)
+        audio_paths = SceneDetectionAudio.get_audio_for_scene("soundnet/categories_places2.txt", scene)
+        print(audio_paths)
 
     data_audio = DataStructureAudio(
         root,

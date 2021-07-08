@@ -121,7 +121,7 @@ def update_object_scene_detection_files(audio_input_dir, soundnet_dir, object_fi
         with open(object_file) as json_file:
             prediction_result_object = json.load(json_file)
     if os.path.isfile(scene_file):
-        with open(object_file) as json_file:
+        with open(scene_file) as json_file:
             prediction_result_scene = json.load(json_file)
 
     for root, dirs, files in os.walk(audio_input_dir):
@@ -148,6 +148,30 @@ def update_object_scene_detection_files(audio_input_dir, soundnet_dir, object_fi
         json.dump(prediction_result_object, prediction_result_object_outfile, indent=4)
     with open(scene_file, "w") as prediction_result_scene_outfile:
         json.dump(prediction_result_scene, prediction_result_scene_outfile, indent=4)
+
+
+def get_audio_for_scene(scene_file, scene):
+    scene_results = []
+    prediction_result_scene = {}
+    if os.path.isfile(scene_file):
+        with open(scene_file) as json_file:
+            prediction_result_scene = json.load(json_file)
+    for audio, values in prediction_result_scene.items():
+        if scene in values["prediction"]:
+            scene_results.append(audio)
+    return scene_results
+
+
+def get_audio_for_object(object_file, object_name):
+    object_results = []
+    prediction_result_object = {}
+    if os.path.isfile(object_file):
+        with open(object_file) as json_file:
+            prediction_result_object = json.load(json_file)
+    for audio, values in prediction_result_object.items():
+        if object_name in values["prediction"]:
+            object_results.append(audio)
+    return object_results
 
 
 class SceneDetectionAudio:

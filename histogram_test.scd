@@ -1,5 +1,5 @@
 (
-~input = "/Users/thomas/Documents/sonificator/data/test/Edvard_Munch.txt";
+~input = "/mnt/datadrive/projects/thesis/sonificator/data/test/allegorical_painting-Arthur_Streeton-Spirit_of_the_drought-1895-65154_hist.txt";
 ~file = FileReader.read(~input, true)[2].asInteger;
 ~file.postln;
 ~file = ~file.normalize(-1, 1);
@@ -54,3 +54,15 @@ Pbind(
 {CrossoverDistortion.ar(SinOsc.ar([400, 404], 0, 0.2), MouseX.kr(0, 1), MouseY.kr(0, 1))}.play
 {SmoothDecimator.ar(SinOsc.ar([400, 404], 0, 0.2), MouseX.kr(0, 44100), MouseY.kr(0, 1))}.play
 {Decimator.ar(SinOsc.ar([400, 404], 0, 0.2), MouseX.kr(0, 44100), MouseY.kr(0, 31))}.play
+
+// Reading the file
+f = SoundFile.openRead("/mnt/datadrive/projects/thesis/sonificator/data/test/audio_scene/idea-1.wav");
+f.sampleFormat;
+f.numChannels;
+c = f.cue;
+c.play;
+c.pause;
+c.resume;
+c.stop;
+c.close;
+f.close;

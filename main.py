@@ -3,12 +3,15 @@ import cv2
 import SceneDetectionAudio
 
 if __name__ == '__main__':
-    SceneDetectionAudio.update_object_scene_detection_files(
-        "data/test/audio_scene",
-        "soundnet",
-        "data/test/audio_scene/object_audio_detection.json",
-        "data/test/audio_scene/object_scene_detection.json",
-    )
+    # SceneDetectionAudio.update_object_scene_detection_files(
+    #     "data/test/audio_scene",
+    #     "soundnet",
+    #     "data/test/audio_scene/object_audio_detection.json",
+    #     "data/test/audio_scene/object_scene_detection.json",
+    # )
+
+    audio_paths = SceneDetectionAudio.get_audio_for_scene("data/test/audio_scene/object_scene_detection.json", "/r/railroad_track")
+    print(audio_paths)
 
     # ImageConverter.convert_paintings_to_txt_bulk("data/painter_by_numbers_scene_correct/", "converted/")
 

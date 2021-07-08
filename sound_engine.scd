@@ -31,7 +31,7 @@ fork{
 	Buffer.freeAll(s);
 	s.waitForBoot({
 		var buf;
-		var wt = Array.newClear(4);
+		var wt = Array.newClear(3);
 		var wave;
 		var sine = Signal.sineFill(512, [1, 0]).asWavetable;
 		var tri = Env([0, 1 , -1, 0], [1, 2, 1], \lin).asSignal(512).asWavetable;
@@ -74,12 +74,23 @@ fork{
 
 		wave = file[2].asInteger.normalize(-1, 1);
 		wave = Signal.fill(512, {arg i; wave[i]}).asWavetable;
-		// wave.plot;
 		wt[0] = sine;
 		wt[1] = wave;
 		// wt[1] = tri;
 		// wt[2] = square;
 		wt[2] = saw;
+
+		/*wt.do({
+			arg w;
+			var plt = w.plot;
+			plt.setProperties(
+				// \fontColor, Color.red,
+				\plotColor, Color.green,
+				// \backgroundColor, Color.black,
+				// \gridColorX, Color.white,
+			);
+			plt.refresh;
+		});*/
 
 		buf = Buffer.allocConsecutive(3, s, 1024);
 		buf.do({arg buf, i; buf.loadCollection(wt[i])});
