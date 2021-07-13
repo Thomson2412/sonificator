@@ -143,7 +143,7 @@ fork{
 		pans = file[7].asInteger / 1000;
 
 		lines = steps.collect({arg s; file[s + 10].asInteger;});
-		melody_notes_amount = 12;
+		melody_notes_amount = 16;
 		melody_notes = Array.newClear(steps * melody_notes_amount);
 		melody_notes_durations = Array.newClear(steps * melody_notes_amount);
 		melody_octaves = Array.newClear(steps * melody_notes_amount);
