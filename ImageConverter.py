@@ -4,7 +4,6 @@ import re
 import cv2
 import numpy as np
 import subprocess
-
 import SceneDetectionAudio
 import Utils
 from DataStructureAudio import DataStructureAudio

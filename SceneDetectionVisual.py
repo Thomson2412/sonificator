@@ -48,3 +48,11 @@ class SceneDetectionVisual:
         h_x = F.softmax(logit, 1).data.squeeze()
         _, idx = h_x.sort(0, True)
         return self.classes[idx[0]]
+
+    def detect_bulk(self, input_dir):
+        for root, dirs, files in os.walk(input_dir):
+            for filename in files:
+                if ".jpg" in filename or ".png" in filename:
+                    input_file_path = os.path.join(root, filename)
+                    result = self.detect(input_file_path)
+                    print(f"{filename}: {result}")
