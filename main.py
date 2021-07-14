@@ -2,6 +2,7 @@ import ImageConverter
 import cv2
 import SceneDetectionAudio
 from SceneDetectionVisual import SceneDetectionVisual
+from ObjectDetectionVisual import ObjectDetectionVisual
 
 if __name__ == '__main__':
     # SceneDetectionAudio.update_object_scene_detection_files(
@@ -14,8 +15,12 @@ if __name__ == '__main__':
     # audio_paths = SceneDetectionAudio.get_audio_for_scene("data/test/audio_scene/object_scene_detection.json", "/r/railroad_track")
     # print(audio_paths)
 
-    scene_detection = SceneDetectionVisual("resnet18")
-    scene_detection.detect_bulk("/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/")
+    # scene_detection = SceneDetectionVisual("resnet18")
+    # scene_detection.detect_bulk("/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/")
+
+    object_detection = ObjectDetectionVisual()
+    # object_detection.detect_bulk("/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/")
+    object_detection.detect_bulk("data")
 
     # ImageConverter.convert_paintings_to_txt_bulk("data/painter_by_numbers_scene_correct/", "converted/")
 
