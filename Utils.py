@@ -1,4 +1,5 @@
 import math
+from collections import Counter, OrderedDict
 import numpy as np
 from pythonosc import osc_message_builder
 
@@ -28,7 +29,7 @@ def create_message_from_list(address, data_list):
     return msg.build()
 
 
-def calculate_step_priority(saliency_map, steps):
+def calculate_step_priority_standard(saliency_map, steps):
     sal_list = []
     width = int(saliency_map.shape[1])
     height = int(saliency_map.shape[0])
@@ -42,7 +43,18 @@ def calculate_step_priority(saliency_map, steps):
     to_be_ordered = dict()
     for step in range(steps):
         to_be_ordered[step] = sal_list[step]
-    return list({k: v for k, v in sorted(to_be_ordered.items(), key=lambda item: item[1])}.keys())
+    return list({k: v for k, v in sorted(to_be_ordered.items(), reverse=True, key=lambda item: item[1])}.keys())
+
+
+def calculate_step_priority_object(segmentation_img):
+    counts = Counter(segmentation_img.flatten())
+    keys_by_value = list({k: v for k, v in sorted(counts.items(), reverse=False, key=lambda item: item[1])}.keys())
+
+    # if 0 in keys_by_value:
+    #     keys_by_value.remove(0)
+    #     keys_by_value.append(0)
+
+    return keys_by_value
 
 
 class Utils:

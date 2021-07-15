@@ -7,6 +7,10 @@ from DataStructureVisual import DataStructureVisual
 from colorthief import ColorThief
 import numpy as np
 import math
+import scipy
+import scipy.misc
+import scipy.cluster
+import binascii
 
 CV_HSV_MIN_MAX = [(0, 179), (0, 255), (0, 255)]
 
@@ -19,7 +23,7 @@ PAN_MIN_MAX = (0, 1500)
 DURATION = 4
 
 
-def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_scene):
+def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_scene, use_object_nav=True):
     img = cv2.imread(input_img)
     scale_h = (1080 / 2) / img.shape[0]
     width = int(img.shape[1] * scale_h)
@@ -35,11 +39,6 @@ def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_scen
     saliency_heatmap_img = cv2.applyColorMap(saliency_map, cv2.COLORMAP_JET)
     saliency_heatmap_img = cv2.addWeighted(img, 0.3, saliency_heatmap_img, 0.7, 0)
 
-    if use_saliency:
-        priority_list = Utils.calculate_step_priority(saliency_map, steps)
-    else:
-        priority_list = list(range(steps))
-
     color_thief = ColorThief(input_img)
     dominant_color = color_thief.get_color(quality=1)
     dominant_color_hsv = cv2.cvtColor(np.uint8([[list(dominant_color)]]), cv2.COLOR_RGB2HSV).flatten()
@@ -48,16 +47,6 @@ def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_scen
     dominant_color_img = cv2.cvtColor(dominant_color_img, cv2.COLOR_HSV2BGR)
 
     # mean_hsv_overall = np.round(np.mean(hsv_img.reshape(-1, 3), axis=0)).astype(int)
-
-    data_visual = DataStructureVisual(
-        img,
-        hsv_img,
-        edge_img,
-        dominant_color_img,
-        saliency_heatmap_img,
-        thresh_map,
-        steps
-    )
 
     root = Utils.scale_between_range(dominant_color_hsv[0], CV_HSV_MIN_MAX[0], ROOT_MIN_MAX)
     scale = Utils.scale_between_range(dominant_color_hsv[2], CV_HSV_MIN_MAX[2], SCALE_MIN_MAX)
@@ -71,24 +60,56 @@ def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_scen
         audio_paths = SceneDetectionAudio.get_audio_for_scene("soundnet/categories_places2.txt", scene)
         print(audio_paths)
 
-    data_audio = DataStructureAudio(
-        root,
-        scale,
-        wave_str,
-        steps
-    )
+    if use_object_nav:
+        segmentation_img, segmentation_info = ObjectDetectionVisual.detect_panoptic(img)
 
-    segmentation_img, segmentation_info = ObjectDetectionVisual.detect_panoptic(img)
+        data_visual = DataStructureVisual(
+            img,
+            hsv_img,
+            edge_img,
+            dominant_color_img,
+            saliency_heatmap_img,
+            thresh_map,
+            len(np.unique(segmentation_img))
+        )
 
-    # return scan_img_seg_standard(width, height, steps, img, hsv_img, edge_img, saliency_map, thresh_map,
-    #                              data_visual, data_audio, use_saliency, priority_list)
+        data_audio = DataStructureAudio(
+            root,
+            scale,
+            wave_str,
+            len(np.unique(segmentation_img))
+        )
 
-    return scan_img_seg_object(segmentation_img, segmentation_info, img, hsv_img, edge_img, saliency_map,
-                               thresh_map, data_visual, data_audio, use_saliency, priority_list)
+        return scan_img_seg_object(segmentation_img, segmentation_info, img, hsv_img, edge_img, saliency_map,
+                                   thresh_map, data_visual, data_audio, use_saliency)
+    else:
+        data_visual = DataStructureVisual(
+            img,
+            hsv_img,
+            edge_img,
+            dominant_color_img,
+            saliency_heatmap_img,
+            thresh_map,
+            steps
+        )
+
+        data_audio = DataStructureAudio(
+            root,
+            scale,
+            wave_str,
+            steps
+        )
+        return scan_img_seg_standard(width, height, steps, img, hsv_img, edge_img, saliency_map, thresh_map,
+                                     data_visual, data_audio, use_saliency)
 
 
 def scan_img_seg_standard(width, height, steps, img, hsv_img, edge_img, saliency_map, thresh_map,
-                          data_visual, data_audio, use_saliency, priority_list):
+                          data_visual, data_audio, use_saliency):
+    if use_saliency:
+        priority_list = Utils.calculate_step_priority_standard(saliency_map, steps)
+    else:
+        priority_list = list(range(steps))
+
     current_step = 0
     step_size_x = math.ceil(width / math.sqrt(steps))
     step_size_y = math.ceil(height / math.sqrt(steps))
@@ -176,25 +197,29 @@ def scan_img_seg_standard(width, height, steps, img, hsv_img, edge_img, saliency
 
 
 def scan_img_seg_object(segmentation_img, segmentation_info, img, hsv_img, edge_img, saliency_map, thresh_map,
-                        data_visual, data_audio, use_saliency, priority_list):
-    data_visual.steps = len(segmentation_info)
-    data_audio.steps = len(segmentation_info)
-    for current_step in range(len(segmentation_info)):
-        mask = segmentation_img == current_step
+                        data_visual, data_audio, use_saliency):
+    total_pixels = img.shape[0] * img.shape[1]
+    priority_list = Utils.calculate_step_priority_object(segmentation_img)
+
+    for current_step, mask_id in enumerate(priority_list):
+        mask = segmentation_img == mask_id
+        sub_img_reshape = img[mask]
         sub_sal_reshape = saliency_map[mask]
         sub_thresh_reshape = thresh_map[mask]
         sum_sub_sal = np.round(np.sum(sub_sal_reshape) / sub_sal_reshape.size).astype(int)
-
         sub_hsv_reshape = hsv_img[mask]
 
-        if sum_sub_sal > 127 and use_saliency:
-            to_use_hsv = []
-            for i, item in enumerate(sub_thresh_reshape):
-                if item == 255:
-                    to_use_hsv.append(sub_hsv_reshape[i])
-            mean_hsv = np.round(np.mean(to_use_hsv)).astype(int)
-        else:
-            mean_hsv = np.round(np.mean(sub_hsv_reshape, axis=0)).astype(int)
+        dominant_color = get_dominant_color(sub_img_reshape, 1)
+        mean_hsv = cv2.cvtColor(np.uint8([[dominant_color]]), cv2.COLOR_BGR2HSV).flatten()
+
+        # if sum_sub_sal > 127 and use_saliency:
+        #     to_use_hsv = []
+        #     for i, item in enumerate(sub_thresh_reshape):
+        #         if item == 255:
+        #             to_use_hsv.append(sub_hsv_reshape[i])
+        #     mean_hsv = np.round(np.mean(to_use_hsv, axis=0)).astype(int)
+        # else:
+        #     mean_hsv = np.round(np.mean(sub_hsv_reshape, axis=0)).astype(int)
 
         hue = Utils.scale_between_range(mean_hsv[0], CV_HSV_MIN_MAX[0], KEY_STEP_MIN_MAX)
         saturation = Utils.scale_between_range(mean_hsv[1], CV_HSV_MIN_MAX[1], LOUDNESS_MIN_MAX)
@@ -225,11 +250,15 @@ def scan_img_seg_object(segmentation_img, segmentation_info, img, hsv_img, edge_
         # for i, point in enumerate(line):
         #     presentation[point][i] = inverted_color
 
+        sub_pixels = sub_hsv_reshape.shape[0]
+        area_percentage = (sub_pixels / total_pixels) * 100
+        duration = Utils.scale_between_range(area_percentage, (0, 100), (2, 8))
+
         presentation_img = np.array(img, copy=True)
         presentation_img[mask] = cv2.cvtColor(np.uint8([[mean_hsv]]), cv2.COLOR_HSV2BGR)
         data_visual.append_sub_img(
             presentation_img,
-            DURATION,
+            duration,
             current_step
         )
 
@@ -249,13 +278,23 @@ def scan_img_seg_object(segmentation_img, segmentation_info, img, hsv_img, edge_
             saturation,
             intensity,
             0,
-            DURATION,
+            duration,
             edginess,
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             current_step
         )
 
     return data_audio, data_visual
+
+
+def get_dominant_color(ar, num_clusters):
+    ar = ar.astype(float)
+    codes, dist = scipy.cluster.vq.kmeans2(ar, num_clusters)
+    vecs, dist = scipy.cluster.vq.vq(ar, codes)  # assign codes
+    counts, bins = scipy.histogram(vecs, len(codes))  # count occurrences
+    index_max = scipy.argmax(counts)  # find most frequent
+    peak = codes[index_max]
+    return peak.astype(np.uint8)
 
 
 class ImageScanner:
