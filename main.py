@@ -2,7 +2,7 @@ import ImageConverter
 import cv2
 import SceneDetectionAudio
 from SceneDetectionVisual import SceneDetectionVisual
-from ObjectDetectionVisual import ObjectDetectionVisual
+import ObjectDetectionVisual
 
 if __name__ == '__main__':
     # SceneDetectionAudio.update_object_scene_detection_files(
@@ -18,9 +18,7 @@ if __name__ == '__main__':
     # scene_detection = SceneDetectionVisual("resnet18")
     # scene_detection.detect_bulk("/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/")
 
-    object_detection = ObjectDetectionVisual()
-    # object_detection.detect_bulk("/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/")
-    object_detection.detect_bulk("data")
+    # ObjectDetectionVisual.detect_bulk("/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/")
 
     # ImageConverter.convert_paintings_to_txt_bulk("data/painter_by_numbers_scene_correct/", "converted/")
 
@@ -40,15 +38,15 @@ if __name__ == '__main__':
     #     True,
     #     False)
 
-    # ImageConverter.convert_painting_to_presentation_bulk(
-    #     "data/test",
-    #     "data/test/",
-    #     True,
-    #     False,
-    #     True,
-    #     False,
-    #     True,
-    #     False)
+    ImageConverter.convert_painting_to_presentation_bulk(
+        "data/test/paintings",
+        "data/test/paintings",
+        True,
+        False,
+        True,
+        False,
+        True,
+        False)
 
     # saliency_coarse = cv2.saliency.StaticSaliencySpectralResidual_create()
     # ImageConverter.convert_painting_to_presentation(
