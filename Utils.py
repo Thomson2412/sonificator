@@ -57,5 +57,20 @@ def calculate_step_priority_object(segmentation_img):
     return keys_by_value
 
 
+def merge_segments_by_category(segmentation_img, segmentation_info):
+    ids_for_category = {}
+    for info in segmentation_info:
+        category = info["category_id"]
+        if category in ids_for_category.keys():
+            ids_for_category[category].append(info["id"])
+        else:
+            ids_for_category[category] = [info["id"]]
+    for key, id_values in ids_for_category.items():
+        if len(id_values) > 1:
+            min_id = min(id_values)
+            for id_value in id_values:
+                segmentation_img[segmentation_img == id_value] = min_id
+
+
 class Utils:
     pass

@@ -62,6 +62,8 @@ def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_scen
 
     if use_object_nav:
         segmentation_img, segmentation_info = ObjectDetectionVisual.detect_panoptic(img)
+        Utils.merge_segments_by_category(segmentation_img, segmentation_info)
+        priority_list = Utils.calculate_step_priority_object(segmentation_img)
 
         data_visual = DataStructureVisual(
             img,
@@ -70,19 +72,23 @@ def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_scen
             dominant_color_img,
             saliency_heatmap_img,
             thresh_map,
-            len(np.unique(segmentation_img))
+            len(priority_list)
         )
 
         data_audio = DataStructureAudio(
             root,
             scale,
             wave_str,
-            len(np.unique(segmentation_img))
+            len(priority_list)
         )
 
         return scan_img_seg_object(segmentation_img, segmentation_info, img, hsv_img, edge_img, saliency_map,
-                                   thresh_map, data_visual, data_audio, use_saliency)
+                                   thresh_map, data_visual, data_audio, use_saliency, priority_list)
     else:
+        if use_saliency:
+            priority_list = Utils.calculate_step_priority_standard(saliency_map, steps)
+        else:
+            priority_list = list(range(steps))
         data_visual = DataStructureVisual(
             img,
             hsv_img,
@@ -100,16 +106,11 @@ def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_scen
             steps
         )
         return scan_img_seg_standard(width, height, steps, img, hsv_img, edge_img, saliency_map, thresh_map,
-                                     data_visual, data_audio, use_saliency)
+                                     data_visual, data_audio, use_saliency, priority_list)
 
 
 def scan_img_seg_standard(width, height, steps, img, hsv_img, edge_img, saliency_map, thresh_map,
-                          data_visual, data_audio, use_saliency):
-    if use_saliency:
-        priority_list = Utils.calculate_step_priority_standard(saliency_map, steps)
-    else:
-        priority_list = list(range(steps))
-
+                          data_visual, data_audio, use_saliency, priority_list):
     current_step = 0
     step_size_x = math.ceil(width / math.sqrt(steps))
     step_size_y = math.ceil(height / math.sqrt(steps))
@@ -197,10 +198,8 @@ def scan_img_seg_standard(width, height, steps, img, hsv_img, edge_img, saliency
 
 
 def scan_img_seg_object(segmentation_img, segmentation_info, img, hsv_img, edge_img, saliency_map, thresh_map,
-                        data_visual, data_audio, use_saliency):
+                        data_visual, data_audio, use_saliency, priority_list):
     total_pixels = img.shape[0] * img.shape[1]
-    priority_list = Utils.calculate_step_priority_object(segmentation_img)
-
     for current_step, mask_id in enumerate(priority_list):
         mask = segmentation_img == mask_id
         sub_img_reshape = img[mask]
