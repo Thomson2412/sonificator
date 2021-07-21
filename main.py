@@ -6,10 +6,10 @@ import ObjectDetectionVisual
 
 if __name__ == '__main__':
     # SceneDetectionAudio.update_object_scene_detection_files(
-    #     "soundnet/mp3/",
-    #     "soundnet",
-    #     "data/test/audio_scene/object_audio_detection.json",
-    #     "data/test/audio_scene/object_scene_detection.json",
+    #     "/mnt/datadrive/projects/thesis/Datasets/Audio/",
+    #     "soundnet/",
+    #     "data/test/audio_scene/audio_object_detection.json",
+    #     "data/test/audio_scene/audio_scene_detection.json",
     # )
     #
     # audio_paths = SceneDetectionAudio.get_audio_for_scene("data/test/audio_scene/object_scene_detection.json", "/r/railroad_track")
@@ -28,25 +28,25 @@ if __name__ == '__main__':
 
     # ImageConverter.convert_painting_to_presentation_bulk("data/test/", "data/presentation/", False, True, False, True)
 
+    ImageConverter.convert_painting_to_presentation_bulk(
+        "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/",
+        "data/presentation_saliency/",
+        True,
+        False,
+        True,
+        True,
+        True,
+        False)
+
     # ImageConverter.convert_painting_to_presentation_bulk(
-    #     "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/",
-    #     "data/presentation_saliency/",
+    #     "data/test/paintings",
+    #     "data/test/paintings",
     #     True,
     #     False,
     #     True,
-    #     True,
+    #     False,
     #     True,
     #     False)
-
-    ImageConverter.convert_painting_to_presentation_bulk(
-        "data/test/paintings",
-        "data/test/paintings",
-        True,
-        False,
-        True,
-        False,
-        True,
-        False)
 
     # saliency_coarse = cv2.saliency.StaticSaliencySpectralResidual_create()
     # ImageConverter.convert_painting_to_presentation(

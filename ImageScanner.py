@@ -10,7 +10,6 @@ import math
 import scipy
 import scipy.misc
 import scipy.cluster
-import binascii
 
 CV_HSV_MIN_MAX = [(0, 179), (0, 255), (0, 255)]
 
@@ -288,9 +287,9 @@ def scan_img_seg_object(segmentation_img, segmentation_info, img, hsv_img, edge_
 
 def get_dominant_color(ar, num_clusters):
     ar = ar.astype(float)
-    codes, dist = scipy.cluster.vq.kmeans2(ar, num_clusters)
-    vecs, dist = scipy.cluster.vq.vq(ar, codes)  # assign codes
-    counts, bins = scipy.histogram(vecs, len(codes))  # count occurrences
+    codes, _ = scipy.cluster.vq.kmeans2(ar, num_clusters)
+    vecs, _ = scipy.cluster.vq.vq(ar, codes)  # assign codes
+    counts, _ = scipy.histogram(vecs, len(codes))  # count occurrences
     index_max = scipy.argmax(counts)  # find most frequent
     peak = codes[index_max]
     return peak.astype(np.uint8)

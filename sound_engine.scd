@@ -234,7 +234,7 @@ fork{
 		).play;
 
 		//Melody
-		Pbind(
+/*		Pbind(
 			\instrument, \vosc,
 			\degree, Pseq(melody_notes),
 			\scale, scale,
@@ -252,7 +252,7 @@ fork{
 			\bufPos, 0.9,
 			\revb, 0.5,
 			\pan, Pseq(melody_pans),
-		).play;
+		).play;*/
 
 
 		Post << "Scale: " << scale.name << Char.nl;

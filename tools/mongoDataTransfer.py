@@ -1,3 +1,4 @@
+import csv
 import os
 from pymongo import MongoClient
 
@@ -9,28 +10,56 @@ def main():
         client = MongoClient(lines[0])
         db = client.evaluator
         input_from_dir(
-            "/mnt/datadrive/projects/thesis/evaluator/content/",
-            db
+            "/mnt/datadrive/projects/thesis/sonificator/data/presentation_saliency/",
+            db,
+            "../data/combinations_exclusion.csv"
         )
 
 
-def input_from_dir(input_dir, db):
+def input_from_dir(input_dir, db, exclusion_csv):
+
+    exclusion_dict = {}
+    with open(exclusion_csv, newline='') as csv_file:
+        reader = csv.DictReader(csv_file)
+        for row in reader:
+            for key, value in row.items():
+                if value != "":
+                    if key in exclusion_dict:
+                        exclusion_dict[key].append(value)
+                    else:
+                        exclusion_dict[key] = [value]
+
+    image_filename_list = []
     video_filename_list = []
     for root, dirs, files in os.walk(input_dir):
         for filename in files:
             if ".jpg" in filename or ".png" in filename:
                 q = generate_questions(0, filename)
                 input_question(q, db)
+                image_filename_list.append(filename)
             if ".mp3" in filename:
                 q = generate_questions(1, filename)
                 input_question(q, db)
             if "_audio.mp4" in filename:
                 video_filename_list.append(filename)
 
-    video_pairs = [[i, j] for i in video_filename_list for j in video_filename_list if i != j]
-    for video_filenames in video_pairs:
-        q = generate_questions(2, video_filenames)
-        input_question(q, db)
+    image_pairs = [[i, j] for i in image_filename_list for j in image_filename_list if i != j]
+    for image_filenames in image_pairs:
+        is_same_category = False
+        for values in exclusion_dict.values():
+            if image_filenames[0] in values and image_filenames[1] in values:
+                is_same_category = True
+        if not is_same_category:
+            audio_filename = f"{os.path.splitext(image_filenames[0])[0]}.mp3"
+            image_filenames.append(audio_filename)
+            q = generate_questions(3, image_filenames)
+            input_question(q, db)
+
+
+    # video_pairs = [[i, j] for i in video_filename_list for j in video_filename_list if i != j]
+    # for video_filenames in video_pairs:
+    #     q = generate_questions(2, video_filenames)
+    #     input_question(q, db)
 
 
 def generate_questions(question_type, filename):
@@ -94,7 +123,7 @@ def generate_questions(question_type, filename):
                 "content": filename
             }
         ]
-    else:
+    elif question_type == 2:
         question_list = [
             {
                 "type": 2,
@@ -103,6 +132,17 @@ def generate_questions(question_type, filename):
                 "content": filename
             }
         ]
+    elif question_type == 3:
+        question_list = [
+            {
+                "type": 3,
+                "question": "Which painting is most fitting to the musical piece?",
+                "scale": ["First", "Second"],
+                "content": filename
+            }
+        ]
+    else:
+        raise Exception
     return question_list
 
 

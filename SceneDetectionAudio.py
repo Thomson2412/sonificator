@@ -117,6 +117,7 @@ def update_object_scene_detection_files(audio_input_dir, soundnet_dir, object_fi
     for root, dirs, files in os.walk(audio_input_dir):
         for filename in files:
             file_path = os.path.join(root, filename)
+            key_name = os.path.relpath(file_path, audio_input_dir)
             prediction_result_object = {}
             prediction_result_scene = {}
             if os.path.isfile(object_file):
@@ -125,20 +126,20 @@ def update_object_scene_detection_files(audio_input_dir, soundnet_dir, object_fi
             if os.path.isfile(scene_file):
                 with open(scene_file) as json_file:
                     prediction_result_scene = json.load(json_file)
-            if (".wav" in filename or ".mp3" in filename) and (file_path not in prediction_result_object.keys()
-                                                               or file_path not in prediction_result_scene.keys()):
+            if (".wav" in filename or ".mp3" in filename) and (key_name not in prediction_result_object.keys()
+                                                               or key_name not in prediction_result_scene.keys()):
                 duration = librosa.get_duration(filename=file_path)
-                if duration >= 10:
+                if duration >= 8:
                     print(duration)
                     plain_prediction = model_object.predict(load_audio(file_path))
                     object_pred_cat = predictions_to_categories(plain_prediction[0], object_categories)
                     scene_pred_cat = predictions_to_categories(plain_prediction[1], scene_categories)
 
-                    prediction_result_object[file_path] = {
+                    prediction_result_object[key_name] = {
                         "audio_length": duration,
                         "prediction": object_pred_cat
                     }
-                    prediction_result_scene[file_path] = {
+                    prediction_result_scene[key_name] = {
                         "audio_length": duration,
                         "prediction": scene_pred_cat
                     }
