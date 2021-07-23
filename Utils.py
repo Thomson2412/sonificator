@@ -46,15 +46,16 @@ def calculate_step_priority_standard(saliency_map, steps):
     return list({k: v for k, v in sorted(to_be_ordered.items(), reverse=True, key=lambda item: item[1])}.keys())
 
 
-def calculate_step_priority_object(segmentation_img):
-    counts = Counter(segmentation_img.flatten())
-    keys_by_value = list({k: v for k, v in sorted(counts.items(), reverse=False, key=lambda item: item[1])}.keys())
+def calculate_step_priority_object(segmentation_img, thresh_map):
+    to_be_ordered = dict()
+    for mask_id in np.unique(segmentation_img):
+        mask = segmentation_img == mask_id
+        sal_segment = thresh_map[mask]
+        sal_count = Counter(sal_segment)
+        sal_percentage = round((sal_count[255] / (sal_count[0] + sal_count[255])) * 100)
+        to_be_ordered[mask_id] = sal_percentage
 
-    # if 0 in keys_by_value:
-    #     keys_by_value.remove(0)
-    #     keys_by_value.append(0)
-
-    return keys_by_value
+    return list({k: v for k, v in sorted(to_be_ordered.items(), reverse=True, key=lambda item: item[1])}.keys())
 
 
 def merge_segments_by_category(segmentation_img, segmentation_info):

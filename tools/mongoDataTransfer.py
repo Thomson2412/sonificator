@@ -19,7 +19,7 @@ def main():
 def input_from_dir(input_dir, db, exclusion_csv):
 
     exclusion_dict = {}
-    with open(exclusion_csv, newline='') as csv_file:
+    with open(exclusion_csv) as csv_file:
         reader = csv.DictReader(csv_file)
         for row in reader:
             for key, value in row.items():

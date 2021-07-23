@@ -18,7 +18,7 @@ fork{
 	if (thisProcess.argv[0] != nil) {
 		i = thisProcess.argv[0];
 	} {
-		i = "/mnt/datadrive/projects/thesis/sonificator/data/test/allegorical_painting-Arthur_Streeton-Spirit_of_the_drought-1895-65154.txt"
+		i = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/animal_painting-Eugene_Boudin-Cows_in_a_Pasture-1883-50445.txt"
 	};
 
 	if (thisProcess.argv[1] != nil) {
@@ -140,7 +140,7 @@ fork{
 		durations = file[8].asInteger;
 		releases = durations * 0.5;
 		strums = Array.fill(steps, {0.08.rand + 0.02});
-		pans = file[7].asInteger / 1000;
+		pans = file[7].asFloat;
 
 		lines = steps.collect({arg s; file[s + 10].asInteger;});
 		melody_notes_amount = 16;
