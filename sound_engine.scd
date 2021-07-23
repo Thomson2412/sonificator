@@ -1,16 +1,18 @@
-/*
-root = [0]
-scale = [1]
-waveform = [2]
-steps = [3]
-hue = [4]
-saturation = [5]
-intensity = [6]
-pan = [7]
-duration = [8]
-edginess = [9]
-line = [10]
-*/
+//File offsets
+~root = 0
+~scale = 1
+~melody_note_amount = 2
+~waveform = 3
+~scene_audio_path = 4
+~steps = 5
+~hue = 6
+~saturation = 7
+~intensity = 8
+~pan = 9
+~duration = 10
+~edginess = 11
+~line = 12
+
 
 (
 fork{
@@ -56,7 +58,7 @@ fork{
 
 		var lines;
 		var melody_notes;
-		var melody_notes_amount;
+		var melody_notes_amount_local;
 		var melody_notes_durations;
 		var melody_note_count;
 		var lastMelodyNote;
@@ -115,13 +117,13 @@ fork{
 			Out.ar(0, sig  * amp);
 		}).add;
 
-		steps = file[3][0].asInteger;
+		steps = file[~steps][0].asInteger;
 
-		root = file[0][0].asInteger;
+		root = file[~root][0].asInteger;
 
-		scaleSteps = file[4].asInteger;
+		scaleSteps = file[~hue].asInteger;
 
-		if(file[1][0].asInteger == 0) {
+		if(file[~scale][0].asInteger == 0) {
 			scale = Scale.melodicMinor;
 			chords = scaleSteps.collect({arg i; min[i]});
 		} {
@@ -129,42 +131,42 @@ fork{
 			chords = scaleSteps.collect({arg i; maj[i]});
 		};
 
-		octaves = file[6].asInteger;
+		octaves = file[~intensity].asInteger;
 
-		edginess = file[9].asFloat.collect({arg i; min(i * buf.size * 2, buf.size - 1.1)});
+		edginess = file[~edginess].asFloat.collect({arg i; min(i * buf.size * 2, buf.size - 1.1)});
 		// edginess = file[9].asFloat.normalize(0, 1.99);
 		// edginess = file[9].asFloat.collect({arg i; 0.9});
 
-		amps = file[5].asInteger / 1000;
+		amps = file[~saturation].asInteger / 1000;
 		amps = max(min(amps, 0.1), 0.001);
-		durations = file[8].asInteger;
+		durations = file[~duration].asInteger;
 		releases = durations * 0.5;
 		strums = Array.fill(steps, {0.08.rand + 0.02});
 		pans = file[7].asFloat;
 
-		lines = steps.collect({arg s; file[s + 10].asInteger;});
-		melody_notes_amount = 16;
-		melody_notes = Array.newClear(steps * melody_notes_amount);
-		melody_notes_durations = Array.newClear(steps * melody_notes_amount);
-		melody_octaves = Array.newClear(steps * melody_notes_amount);
-		melody_amps = Array.newClear(steps * melody_notes_amount);
-		melody_pans = Array.newClear(steps * melody_notes_amount);
+		lines = steps.collect({arg s; file[s + ~line].asInteger;});
+		melody_notes_amount_local = file[~melody_note_amount][0].asInteger;
+		melody_notes = Array.newClear(steps * melody_notes_amount_local);
+		melody_notes_durations = Array.newClear(steps * melody_notes_amount_local);
+		melody_octaves = Array.newClear(steps * melody_notes_amount_local);
+		melody_amps = Array.newClear(steps * melody_notes_amount_local);
+		melody_pans = Array.newClear(steps * melody_notes_amount_local);
 
 		melody_note_count = 0;
 		steps.do({
 			arg s;
-			var tempDurArr = Array.newClear(melody_notes_amount - 1);
+			var tempDurArr = Array.newClear(melody_notes_amount_local - 1);
 			// s.postln;
-			melody_notes_amount.do({
+			melody_notes_amount_local.do({
 				arg i;
-				var randDur = exprand((durations[s] / melody_notes_amount) - 0.1, (durations[s] / melody_notes_amount) + 0.05);
+				var randDur = exprand((durations[s] / melody_notes_amount_local) - 0.1, (durations[s] / melody_notes_amount_local) + 0.05);
 				var lastDur = 0;
 				var melodyNote;
 				var newMelodyNote;
 				// i.postln;
 
-				melody_notes_durations[melody_note_count] = durations[s] / melody_notes_amount;
-/*				if(i == (melody_notes_amount - 1)) {
+				melody_notes_durations[melody_note_count] = durations[s] / melody_notes_amount_local;
+/*				if(i == (melody_notes_amount_local - 1)) {
 					lastDur = durations[s] - tempDurArr.sum();
 					if(lastDur < 0){
 						melody_notes_durations[melody_note_count - 1] = melody_notes_durations[melody_note_count - 1] - lastDur;
@@ -176,7 +178,7 @@ fork{
 					tempDurArr[i] = randDur;
 				};*/
 
-				melodyNote = lines[s][(i * (lines[s].size / melody_notes_amount)).trunc];
+				melodyNote = lines[s][(i * (lines[s].size / melody_notes_amount_local)).trunc];
 				if(melodyNote == lastMelodyNote) {newMelodyNote = \rest;} {newMelodyNote = melodyNote};
 				melody_notes[melody_note_count] = newMelodyNote;
 				lastMelodyNote = melodyNote;

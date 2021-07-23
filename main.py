@@ -5,15 +5,13 @@ from SceneDetectionVisual import SceneDetectionVisual
 import ObjectDetectionVisual
 
 if __name__ == '__main__':
-    # SceneDetectionAudio.update_object_scene_detection_files(
-    #     "/mnt/datadrive/projects/thesis/Datasets/Audio/",
-    #     "soundnet/",
-    #     "data/test/audio_scene/audio_object_detection.json",
-    #     "data/test/audio_scene/audio_scene_detection.json",
-    # )
-    #
-    # audio_paths = SceneDetectionAudio.get_audio_for_scene("data/test/audio_scene/object_scene_detection.json", "/r/railroad_track")
-    # print(audio_paths)
+    SceneDetectionAudio.update_object_scene_detection_files(
+        "/mnt/datadrive/projects/thesis/Datasets/Audio/",
+        "soundnet/",
+        "soundnet/audio_object_detection.json",
+        "soundnet/audio_scene_detection.json",
+    )
+
 
     # scene_detection = SceneDetectionVisual("resnet18")
     # scene_detection.detect_bulk("/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/")
@@ -28,21 +26,22 @@ if __name__ == '__main__':
 
     # ImageConverter.convert_painting_to_presentation_bulk("data/test/", "data/presentation/", False, True, False, True)
 
-    ImageConverter.convert_painting_to_presentation_bulk(
-        "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/",
-        "data/presentation_saliency/",
-        True,
-        False,
-        True,
-        True,
-        True,
-        False)
+    # ImageConverter.convert_painting_to_presentation_bulk(
+    #     "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/",
+    #     "data/presentation_saliency/",
+    #     True,
+    #     False,
+    #     True,
+    #     True,
+    #     True,
+    #     False)
 
     # ImageConverter.convert_painting_to_presentation_bulk(
     #     "data/test/paintings",
     #     "data/test/paintings",
     #     True,
-    #     False,
+    #     True,
+    #     True,
     #     True,
     #     False,
     #     True,

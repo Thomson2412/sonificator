@@ -129,25 +129,28 @@ def update_object_scene_detection_files(audio_input_dir, soundnet_dir, object_fi
             if (".wav" in filename or ".mp3" in filename) and (key_name not in prediction_result_object.keys()
                                                                or key_name not in prediction_result_scene.keys()):
                 duration = librosa.get_duration(filename=file_path)
-                if duration >= 8:
+                if duration >= 5.1:
                     print(duration)
-                    plain_prediction = model_object.predict(load_audio(file_path))
-                    object_pred_cat = predictions_to_categories(plain_prediction[0], object_categories)
-                    scene_pred_cat = predictions_to_categories(plain_prediction[1], scene_categories)
+                    try:
+                        plain_prediction = model_object.predict(load_audio(file_path))
+                        object_pred_cat = predictions_to_categories(plain_prediction[0], object_categories)
+                        scene_pred_cat = predictions_to_categories(plain_prediction[1], scene_categories)
 
-                    prediction_result_object[key_name] = {
-                        "audio_length": duration,
-                        "prediction": object_pred_cat
-                    }
-                    prediction_result_scene[key_name] = {
-                        "audio_length": duration,
-                        "prediction": scene_pred_cat
-                    }
+                        prediction_result_object[key_name] = {
+                            "audio_length": duration,
+                            "prediction": object_pred_cat
+                        }
+                        prediction_result_scene[key_name] = {
+                            "audio_length": duration,
+                            "prediction": scene_pred_cat
+                        }
 
-                with open(object_file, "w") as prediction_result_object_outfile:
-                    json.dump(prediction_result_object, prediction_result_object_outfile, indent=4)
-                with open(scene_file, "w") as prediction_result_scene_outfile:
-                    json.dump(prediction_result_scene, prediction_result_scene_outfile, indent=4)
+                        with open(object_file, "w") as prediction_result_object_outfile:
+                            json.dump(prediction_result_object, prediction_result_object_outfile, indent=4)
+                        with open(scene_file, "w") as prediction_result_scene_outfile:
+                            json.dump(prediction_result_scene, prediction_result_scene_outfile, indent=4)
+                    except:
+                        print("Something went wrong")
 
 
 def get_audio_for_scene(scene_file, scene):
@@ -157,8 +160,9 @@ def get_audio_for_scene(scene_file, scene):
         with open(scene_file) as json_file:
             prediction_result_scene = json.load(json_file)
     for audio, values in prediction_result_scene.items():
-        if scene in values["prediction"]:
-            scene_results.append(audio)
+        for pred in values["prediction"]:
+            if scene in pred:
+                scene_results.append(audio)
     return scene_results
 
 

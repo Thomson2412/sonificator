@@ -1,3 +1,4 @@
+import random
 from collections import Counter
 import cv2
 import ObjectDetectionVisual
@@ -20,10 +21,11 @@ KEY_STEP_MIN_MAX = (0, 6)
 LOUDNESS_MIN_MAX = (1, 100)
 OCTAVE_MIN_MAX = (2, 5)
 PAN_MIN_MAX = (0, 1500)
+MELODY_NOTE_AMOUNT = 16
 DURATION = 4
 
 
-def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_scene, use_object_nav=True):
+def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_scene, use_object_nav):
     img = cv2.imread(input_img)
     scale_h = (1080 / 2) / img.shape[0]
     width = int(img.shape[1] * scale_h)
@@ -55,10 +57,11 @@ def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_scen
     wave = np.append(hist, hist_rev_flip, 0)
     wave_str = " ".join([str(int(item[0])) for item in wave])
 
+    scene_audio_path = ""
     if use_scene:
         scene = scene_detection.detect(input_img)
-        audio_paths = SceneDetectionAudio.get_audio_for_scene("soundnet/categories_places2.txt", scene)
-        print(audio_paths)
+        scene_audio_paths = SceneDetectionAudio.get_audio_for_scene("soundnet/audio_scene_detection.json", scene)
+        scene_audio_path = random.choice(scene_audio_paths)
 
     if use_object_nav:
         segmentation_img, segmentation_info = ObjectDetectionVisual.detect_panoptic(img)
@@ -83,7 +86,9 @@ def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_scen
         data_audio = DataStructureAudio(
             root,
             scale,
+            MELODY_NOTE_AMOUNT,
             wave_str,
+            scene_audio_path,
             len(priority_list)
         )
 
@@ -106,7 +111,9 @@ def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_scen
         data_audio = DataStructureAudio(
             root,
             scale,
+            0,
             wave_str,
+            scene_audio_path,
             steps
         )
         return scan_img_seg_standard(width, height, steps, img, hsv_img, edge_img, saliency_map, thresh_map,

@@ -12,7 +12,7 @@ for k, v in os.environ.items():
 STEPS = 16
 
 
-def convert_paintings_to_txt_bulk(input_dir, output_dir, with_saliency, use_scene):
+def convert_paintings_to_txt_bulk(input_dir, output_dir, with_saliency, use_scene, use_object_nav):
     saliency_coarse = None
     if with_saliency:
         saliency_coarse = cv2.saliency.StaticSaliencySpectralResidual_create()
@@ -25,13 +25,13 @@ def convert_paintings_to_txt_bulk(input_dir, output_dir, with_saliency, use_scen
                 input_file_path = os.path.join(root, filename)
                 output_file_path = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}.txt")
                 convert_paintings_to_txt(input_file_path, output_file_path, saliency_coarse, with_saliency,
-                                         scene_detection, use_scene)
+                                         scene_detection, use_scene, use_object_nav)
 
 
 def convert_paintings_to_txt(input_file_path, output_file_path, saliency_coarse, with_saliency, scene_detection,
-                             use_scene):
+                             use_scene, use_object_nav):
     audio_data = ImageScanner.scan_img(
-        input_file_path, STEPS, saliency_coarse, with_saliency, scene_detection, use_scene)[0]
+        input_file_path, STEPS, saliency_coarse, with_saliency, scene_detection, use_scene, use_object_nav)[0]
     audio_data.write_to_file(output_file_path)
 
 
@@ -65,8 +65,8 @@ def convert_txt_to_sound(exec_file, input_file_path, output_file_path):
     print("End")
 
 
-def convert_painting_to_presentation_bulk(input_dir, output_dir, with_saliency, use_scene, add_audio, web_convert,
-                                          include_content, include_border):
+def convert_painting_to_presentation_bulk(input_dir, output_dir, with_saliency, use_scene, use_object_nav, add_audio,
+                                          web_convert, include_content, include_border):
     saliency_coarse = None
     if with_saliency:
         saliency_coarse = cv2.saliency.StaticSaliencySpectralResidual_create()
@@ -78,16 +78,17 @@ def convert_painting_to_presentation_bulk(input_dir, output_dir, with_saliency, 
             if ".jpg" in filename or ".png" in filename:
                 file_path = os.path.join(root, filename)
                 convert_painting_to_presentation(file_path, output_dir, saliency_coarse, with_saliency,
-                                                 scene_detection, use_scene, add_audio,
+                                                 scene_detection, use_scene, use_object_nav, add_audio,
                                                  web_convert, include_content, include_border)
 
 
 def convert_painting_to_presentation(input_file_path, output_dir, saliency_coarse, with_saliency,
-                                     scene_detection, use_scene, add_audio, web_convert,
+                                     scene_detection, use_scene, use_object_nav, add_audio, web_convert,
                                      include_content, include_border):
     input_file_path = os.path.abspath(input_file_path)
     filename = os.path.basename(input_file_path)
-    data = ImageScanner.scan_img(input_file_path, STEPS, saliency_coarse, with_saliency, scene_detection, use_scene)
+    data = ImageScanner.scan_img(input_file_path, STEPS, saliency_coarse, with_saliency, scene_detection, use_scene,
+                                 use_object_nav)
 
     visual_data = data[1]
     output_file_vid = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}.avi")
