@@ -60,6 +60,8 @@ class DataStructureAudio:
 
             file.write(f"{self.scale}\r\n\r\n")
 
+            file.write(f"{self.melody_note_amount}\r\n\r\n")
+
             file.write(f"{self.waveform}\r\n\r\n")
 
             file.write(f"{self.scene_audio_path}\r\n\r\n")

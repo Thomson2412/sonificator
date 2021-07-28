@@ -56,7 +56,7 @@ Pbind(
 {Decimator.ar(SinOsc.ar([400, 404], 0, 0.2), MouseX.kr(0, 44100), MouseY.kr(0, 31))}.play
 
 // Reading the file
-f = SoundFile.openRead("/mnt/datadrive/projects/thesis/sonificator/data/test/audio_scene/idea-1.wav");
+f = SoundFile.openRead("/mnt/datadrive/projects/thesis/Datasets/Audio/FSD50K/FSD50K.dev_audio/158986.wav");
 f.sampleFormat;
 f.numChannels;
 c = f.cue;
@@ -66,3 +66,17 @@ c.resume;
 c.stop;
 f.close;
 f.free;
+
+(
+SynthDef(\audioFileMono, {
+	arg out, amp=1, bufnum, sustainTime, atk=0, rel=0, gate=1, rate=1, t_trig=1, start=0, loop=1;
+	var sig = PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum) * rate, t_trig, start, loop)!2;
+	var gateEnv = EnvGen.kr(Env([1, 1, 0], [sustainTime-rel, 0]));
+    var env = EnvGen.kr(Env.asr(atk, 1, rel), gate * gateEnv, doneAction: Done.freeSelf);
+	Out.ar(out, sig * env * amp);
+}).add;
+)
+k = SoundFile.openRead("/mnt/datadrive/projects/thesis/Datasets/Audio/FSD50K/FSD50K.dev_audio/158986.wav").asBuffer;
+k.query;
+Synth.new(\audioFileMono, [\bufnum, k.bufnum, \sustainTime, 30]);
+

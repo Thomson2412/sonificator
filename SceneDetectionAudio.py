@@ -153,7 +153,7 @@ def update_object_scene_detection_files(audio_input_dir, soundnet_dir, object_fi
                         print("Something went wrong")
 
 
-def get_audio_for_scene(scene_file, scene):
+def get_audio_for_scene(scene_file, dataset_base_dir, scene):
     scene_results = []
     prediction_result_scene = {}
     if os.path.isfile(scene_file):
@@ -162,7 +162,7 @@ def get_audio_for_scene(scene_file, scene):
     for audio, values in prediction_result_scene.items():
         for pred in values["prediction"]:
             if scene in pred:
-                scene_results.append(audio)
+                scene_results.append(os.path.join(dataset_base_dir, audio))
     return scene_results
 
 

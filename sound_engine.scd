@@ -1,26 +1,27 @@
-//File offsets
-~root = 0
-~scale = 1
-~melody_note_amount = 2
-~waveform = 3
-~scene_audio_path = 4
-~steps = 5
-~hue = 6
-~saturation = 7
-~intensity = 8
-~pan = 9
-~duration = 10
-~edginess = 11
-~line = 12
-
-
 (
+//File offsets
+~root = 0;
+~scale = 1;
+~melody_note_amount = 2;
+~waveform = 3;
+~scene_audio_path = 4;
+~steps = 5;
+~hue = 6;
+~saturation = 7;
+~intensity = 8;
+~pan = 9;
+~duration = 10;
+~edginess = 11;
+~line = 12;
+
 fork{
 
 	if (thisProcess.argv[0] != nil) {
 		i = thisProcess.argv[0];
 	} {
-		i = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/animal_painting-Eugene_Boudin-Cows_in_a_Pasture-1883-50445.txt"
+		// i = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/animal_painting-Eugene_Boudin-Cows_in_a_Pasture-1883-50445.txt"
+		i = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/allegorical_painting-Arthur_Streeton-Spirit_of_the_drought-1895-65154.txt"
+
 	};
 
 	if (thisProcess.argv[1] != nil) {
@@ -48,6 +49,10 @@ fork{
 		var root;
 		var scale;
 
+		var scene_path;
+		var scene_buffer;
+		var scene_args;
+
 		var steps;
 
 		var octaves;
@@ -74,7 +79,7 @@ fork{
 		var strums;
 		var pans;
 
-		wave = file[2].asInteger.normalize(-1, 1);
+		wave = file[~waveform].asInteger.normalize(-1, 1);
 		wave = Signal.fill(512, {arg i; wave[i]}).asWavetable;
 		wt[0] = sine;
 		wt[1] = wave;
@@ -83,17 +88,16 @@ fork{
 		wt[2] = saw;
 
 		/*wt.do({
-			arg w;
-			var plt = w.plot;
-			plt.setProperties(
-				// \fontColor, Color.red,
-				\plotColor, Color.green,
-				// \backgroundColor, Color.black,
-				// \gridColorX, Color.white,
-			);
-			plt.refresh;
+		arg w;
+		var plt = w.plot;
+		plt.setProperties(
+		// \fontColor, Color.red,
+		\plotColor, Color.green,
+		// \backgroundColor, Color.black,
+		// \gridColorX, Color.white,
+		);
+		plt.refresh;
 		});*/
-
 		buf = Buffer.allocConsecutive(3, s, 1024);
 		buf.do({arg buf, i; buf.loadCollection(wt[i])});
 
@@ -117,9 +121,27 @@ fork{
 			Out.ar(0, sig  * amp);
 		}).add;
 
+		SynthDef(\audioFileMono, {
+			arg out, amp=1, bufnum, sustainTime, atk=0, rel=0, gate=1, rate=1, t_trig=1, start=0, loop=1;
+			var sig = PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum) * rate, t_trig, start, loop)!2;
+			var gateEnv = EnvGen.kr(Env([1, 1, 0], [sustainTime-rel, 0]));
+			var env = EnvGen.kr(Env.asr(atk, 1, rel), gate * gateEnv, doneAction: Done.freeSelf);
+			Out.ar(out, sig * env * amp);
+		}).add;
+
+		SynthDef(\audioFileStereo, {
+			arg out, amp=1, bufnum, sustainTime, atk=0, rel=0, gate=1, rate=1, t_trig=1, start=0, loop=1;
+			var sig = PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum) * rate, t_trig, start, loop);
+			var gateEnv = EnvGen.kr(Env([1, 1, 0], [sustainTime-rel, 0]));
+			var env = EnvGen.kr(Env.asr(atk, 1, rel), gate * gateEnv, doneAction: Done.freeSelf);
+			Out.ar(out, sig * env * amp);
+		}).add;
+
 		steps = file[~steps][0].asInteger;
 
 		root = file[~root][0].asInteger;
+
+		scene_path = file[~scene_audio_path][0];
 
 		scaleSteps = file[~hue].asInteger;
 
@@ -142,7 +164,13 @@ fork{
 		durations = file[~duration].asInteger;
 		releases = durations * 0.5;
 		strums = Array.fill(steps, {0.08.rand + 0.02});
-		pans = file[7].asFloat;
+		pans = file[~pan].asFloat;
+
+		if(scene_path != " " && scene_path != "") {
+			scene_buffer = Buffer.read(s, scene_path);
+			scene_buffer = scene_buffer.normalize;
+			scene_args = [\bufnum, scene_buffer.bufnum, \sustainTime, durations.sum, \amp, 0.1];
+		};
 
 		lines = steps.collect({arg s; file[s + ~line].asInteger;});
 		melody_notes_amount_local = file[~melody_note_amount][0].asInteger;
@@ -166,16 +194,16 @@ fork{
 				// i.postln;
 
 				melody_notes_durations[melody_note_count] = durations[s] / melody_notes_amount_local;
-/*				if(i == (melody_notes_amount_local - 1)) {
-					lastDur = durations[s] - tempDurArr.sum();
-					if(lastDur < 0){
-						melody_notes_durations[melody_note_count - 1] = melody_notes_durations[melody_note_count - 1] - lastDur;
-					} {
-						melody_notes_durations[melody_note_count] = durations[s] - tempDurArr.sum();
-					};
+				/*				if(i == (melody_notes_amount_local - 1)) {
+				lastDur = durations[s] - tempDurArr.sum();
+				if(lastDur < 0){
+				melody_notes_durations[melody_note_count - 1] = melody_notes_durations[melody_note_count - 1] - lastDur;
 				} {
-					melody_notes_durations[melody_note_count] = randDur;
-					tempDurArr[i] = randDur;
+				melody_notes_durations[melody_note_count] = durations[s] - tempDurArr.sum();
+				};
+				} {
+				melody_notes_durations[melody_note_count] = randDur;
+				tempDurArr[i] = randDur;
 				};*/
 
 				melodyNote = lines[s][(i * (lines[s].size / melody_notes_amount_local)).trunc];
@@ -191,6 +219,9 @@ fork{
 				melody_note_count = melody_note_count + 1;
 			});
 		});
+
+		//Wait to make sure scene_buffer is loaded
+		1.wait;
 
 		if(o != nil){
 			s.record(duration: durations.sum + 1, path: o);
@@ -236,29 +267,38 @@ fork{
 		).play;
 
 		//Melody
-/*		Pbind(
-			\instrument, \vosc,
-			\degree, Pseq(melody_notes),
-			\scale, scale,
-			\root, root,
-			\octave, Pseq(melody_octaves),
-			\dur, Pseq(melody_notes_durations),
-			\strum, 0,
-			\amp, Pseq(melody_amps),
-			\att, 0.08,
-			\dec, 0.5,
-			\sus, 0,
-			\rel, 0.5,
-			\buf, buf[0].bufnum,
-			\numBufs, buf.size,
-			\bufPos, 0.9,
-			\revb, 0.5,
-			\pan, Pseq(melody_pans),
+		/*		Pbind(
+		\instrument, \vosc,
+		\degree, Pseq(melody_notes),
+		\scale, scale,
+		\root, root,
+		\octave, Pseq(melody_octaves),
+		\dur, Pseq(melody_notes_durations),
+		\strum, 0,
+		\amp, Pseq(melody_amps),
+		\att, 0.08,
+		\dec, 0.5,
+		\sus, 0,
+		\rel, 0.5,
+		\buf, buf[0].bufnum,
+		\numBufs, buf.size,
+		\bufPos, 0.9,
+		\revb, 0.5,
+		\pan, Pseq(melody_pans),
 		).play;*/
+
+		if(scene_buffer != nil){
+			if(scene_buffer.numChannels == 1) {
+				Synth.new(\audioFileMono, scene_args);
+			} {
+				Synth.new(\audioFileStereo, scene_args);
+			};
+		};
 
 
 		Post << "Scale: " << scale.name << Char.nl;
 		Post << "Root: " << root << Char.nl;
+		Post << "Scene: " << scene_path << Char.nl;
 		Post << "Steps: " << root << Char.nl;
 		Post << "Octaves: " << octaves << Char.nl;
 		Post << "ScaleSteps: " << scaleSteps << Char.nl;

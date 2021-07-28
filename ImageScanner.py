@@ -57,11 +57,15 @@ def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_scen
     wave = np.append(hist, hist_rev_flip, 0)
     wave_str = " ".join([str(int(item[0])) for item in wave])
 
-    scene_audio_path = ""
+    scene_audio_path = " "
     if use_scene:
         scene = scene_detection.detect(input_img)
-        scene_audio_paths = SceneDetectionAudio.get_audio_for_scene("soundnet/audio_scene_detection.json", scene)
-        scene_audio_path = random.choice(scene_audio_paths)
+        scene_audio_paths = SceneDetectionAudio.get_audio_for_scene("soundnet/audio_scene_detection.json",
+                                                                    "/mnt/datadrive/projects/thesis/Datasets/Audio",
+                                                                    scene)
+        if len(scene_audio_paths) > 0:
+            scene_audio_path = random.choice(scene_audio_paths)
+            print(f"{scene}: {scene_audio_path}")
 
     if use_object_nav:
         segmentation_img, segmentation_info = ObjectDetectionVisual.detect_panoptic(img)
@@ -86,7 +90,7 @@ def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_scen
         data_audio = DataStructureAudio(
             root,
             scale,
-            MELODY_NOTE_AMOUNT,
+            0,
             wave_str,
             scene_audio_path,
             len(priority_list)
@@ -111,7 +115,7 @@ def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_scen
         data_audio = DataStructureAudio(
             root,
             scale,
-            0,
+            MELODY_NOTE_AMOUNT,
             wave_str,
             scene_audio_path,
             steps
