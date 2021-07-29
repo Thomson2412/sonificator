@@ -9,11 +9,11 @@ from PIL import Image
 
 class SceneDetectionVisual:
 
-    def __init__(self, arch):
+    def __init__(self, path, arch):
         self.arch = arch
 
         # load the pre-trained weights
-        model_file = os.path.abspath(f"places/{arch}_places365.pth.tar")
+        model_file = os.path.abspath(os.path.join(path, f"{arch}_places365.pth.tar"))
 
         self.model = models.__dict__[arch](num_classes=365)
         checkpoint = torch.load(model_file, map_location=lambda storage, loc: storage)
@@ -30,7 +30,7 @@ class SceneDetectionVisual:
         ])
 
         # load the class label
-        categories_file_name = 'places/categories_places365.txt'
+        categories_file_name = os.path.join(path, "categories_places365.txt")
         self.classes = list()
         with open(categories_file_name) as class_file:
             for line in class_file:

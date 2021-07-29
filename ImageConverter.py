@@ -18,7 +18,7 @@ def convert_paintings_to_txt_bulk(input_dir, output_dir, with_saliency, use_scen
         saliency_coarse = cv2.saliency.StaticSaliencySpectralResidual_create()
     scene_detection = None
     if use_scene:
-        scene_detection = SceneDetectionVisual("resnet18")
+        scene_detection = SceneDetectionVisual("places", "resnet18")
     for root, dirs, files in os.walk(input_dir):
         for filename in files:
             if ".jpg" in filename or ".png" in filename:
@@ -72,7 +72,7 @@ def convert_painting_to_presentation_bulk(input_dir, output_dir, with_saliency, 
         saliency_coarse = cv2.saliency.StaticSaliencySpectralResidual_create()
     scene_detection = None
     if use_scene:
-        scene_detection = SceneDetectionVisual("resnet18")
+        scene_detection = SceneDetectionVisual("places", "resnet18")
     for root, dirs, files in os.walk(input_dir):
         for filename in files:
             if ".jpg" in filename or ".png" in filename:
