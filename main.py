@@ -31,7 +31,7 @@ if __name__ == '__main__':
 
     ImageConverter.convert_painting_to_presentation_bulk(
         "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/",
-        "data/presentation_saliency/",
+        "data/presentation_scene/",
         saliency_coarse,
         True,
         (scene_detection_visual, scene_detection_audio),
