@@ -1,0 +1,696 @@
+{
+    "hot_spring/208842.wav": {
+        "audio_length": 11.42421768707483,
+        "prediction": [
+            "/h/hot_spring"
+        ]
+    },
+    "hot_spring/245680.wav": {
+        "audio_length": 16.340861678004536,
+        "prediction": [
+            "/h/hot_spring",
+            "/t/train_railway",
+            "/m/museum/indoor"
+        ]
+    },
+    "catacomb/105117.wav": {
+        "audio_length": 20.504920634920634,
+        "prediction": [
+            "/c/catacomb",
+            "/s/sky",
+            "/c/catacomb",
+            "/s/sky"
+        ]
+    },
+    "catacomb/264978.wav": {
+        "audio_length": 26.32761904761905,
+        "prediction": [
+            "/m/music_studio",
+            "/s/stage/indoor",
+            "/m/music_studio",
+            "/m/music_studio",
+            "/c/catacomb",
+            "/s/sky"
+        ]
+    },
+    "catacomb/15363.wav": {
+        "audio_length": 18.0,
+        "prediction": [
+            "/s/sky",
+            "/s/sky",
+            "/s/sky"
+        ]
+    },
+    "catacomb/418545.wav": {
+        "audio_length": 12.584013605442177,
+        "prediction": [
+            "/c/catacomb",
+            "/p/parking_garage/outdoor"
+        ]
+    },
+    "courtyard/239162.wav": {
+        "audio_length": 25.201451247165533,
+        "prediction": [
+            "/p/plaza",
+            "/c/courtyard",
+            "/a/aquarium",
+            "/a/aquarium",
+            "/a/aquarium",
+            "/m/museum/indoor"
+        ]
+    },
+    "mountain_snowy/253715.wav": {
+        "audio_length": 24.253469387755104,
+        "prediction": [
+            "/s/ski_slope",
+            "/m/mountain_snowy",
+            "/m/mountain_snowy",
+            "/m/mountain_snowy",
+            "/s/ski_slope"
+        ]
+    },
+    "harbor/137771.wav": {
+        "audio_length": 23.548480725623584,
+        "prediction": [
+            "/g/golf_course",
+            "/p/parking_lot",
+            "/p/parking_lot",
+            "/p/parking_lot",
+            "/h/harbor"
+        ]
+    },
+    "wave/320029.wav": {
+        "audio_length": 20.735986394557823,
+        "prediction": [
+            "/o/ocean",
+            "/o/ocean",
+            "/w/wave",
+            "/w/wave"
+        ]
+    },
+    "wave/1-51037-A-16.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "/w/wave",
+            "/o/ocean"
+        ]
+    },
+    "wave/194557.wav": {
+        "audio_length": 12.66938775510204,
+        "prediction": [
+            "/w/wave",
+            "/p/parking_garage/outdoor"
+        ]
+    },
+    "wave/194558.wav": {
+        "audio_length": 12.586666666666666,
+        "prediction": [
+            "/w/wave",
+            "/p/parking_garage/outdoor"
+        ]
+    },
+    "wave/2-137162-A-11.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "/w/wave",
+            "/o/ocean"
+        ]
+    },
+    "wave/28657.wav": {
+        "audio_length": 24.793968253968252,
+        "prediction": [
+            "/c/creek",
+            "/c/creek",
+            "/w/wave",
+            "/w/wave",
+            "/w/wave",
+            "/p/parking_garage/outdoor"
+        ]
+    },
+    "wave/222468.wav": {
+        "audio_length": 15.148390022675738,
+        "prediction": [
+            "/w/wave",
+            "/o/ocean"
+        ]
+    },
+    "wave/410832.wav": {
+        "audio_length": 20.0,
+        "prediction": [
+            "/b/beach",
+            "/w/wave",
+            "/w/wave",
+            "/w/wave"
+        ]
+    },
+    "wave/58273.wav": {
+        "audio_length": 28.828934240362813,
+        "prediction": [
+            "/w/wave",
+            "/c/creek",
+            "/w/wave",
+            "/w/wave",
+            "/w/wave",
+            "/w/wave",
+            "/w/wave"
+        ]
+    },
+    "hayfield/17505.wav": {
+        "audio_length": 12.265147392290249,
+        "prediction": [
+            "/p/pond"
+        ]
+    },
+    "boat_deck/254714.wav": {
+        "audio_length": 23.182698412698414,
+        "prediction": [
+            "/p/parking_lot",
+            "/b/boat_deck",
+            "/p/parking_lot",
+            "/p/parking_lot",
+            "/h/highway"
+        ]
+    },
+    "boat_deck/80700.wav": {
+        "audio_length": 16.947120181405896,
+        "prediction": [
+            "/b/boat_deck",
+            "/b/boat_deck",
+            "/p/pond"
+        ]
+    },
+    "boat_deck/21851.wav": {
+        "audio_length": 26.626643990929704,
+        "prediction": [
+            "/b/boat_deck",
+            "/b/boat_deck",
+            "/s/ski_slope",
+            "/o/ocean",
+            "/s/sky",
+            "/o/ocean"
+        ]
+    },
+    "boat_deck/2-132157-A-11.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "/t/train_railway",
+            "/b/boat_deck"
+        ]
+    },
+    "creek/92023.wav": {
+        "audio_length": 28.545668934240364,
+        "prediction": [
+            "/c/creek",
+            "/c/creek",
+            "/c/creek",
+            "/c/creek",
+            "/c/creek",
+            "/c/creek",
+            "/p/parking_garage/outdoor"
+        ]
+    },
+    "creek/111639.wav": {
+        "audio_length": 20.32,
+        "prediction": [
+            "/c/creek",
+            "/c/creek",
+            "/c/creek",
+            "/c/creek"
+        ]
+    },
+    "creek/20788.wav": {
+        "audio_length": 29.95374149659864,
+        "prediction": [
+            "/c/creek",
+            "/c/creek",
+            "/c/creek",
+            "/c/creek",
+            "/c/creek",
+            "/c/creek",
+            "/c/creek"
+        ]
+    },
+    "creek/20787.wav": {
+        "audio_length": 30.0,
+        "prediction": [
+            "/c/creek",
+            "/c/creek",
+            "/c/creek",
+            "/c/creek",
+            "/c/creek",
+            "/c/creek",
+            "/c/creek"
+        ]
+    },
+    "creek/98454.wav": {
+        "audio_length": 20.901791383219955,
+        "prediction": [
+            "/c/creek",
+            "/c/creek",
+            "/c/creek",
+            "/c/creek"
+        ]
+    },
+    "creek/75099.wav": {
+        "audio_length": 28.41687074829932,
+        "prediction": [
+            "/a/aquarium",
+            "/c/creek",
+            "/c/creek",
+            "/p/pond",
+            "/p/pond",
+            "/a/aquarium",
+            "/m/museum/indoor"
+        ]
+    },
+    "creek/13552.wav": {
+        "audio_length": 19.997687074829933,
+        "prediction": [
+            "/c/creek",
+            "/c/creek",
+            "/c/creek",
+            "/c/creek"
+        ]
+    },
+    "creek/71521.wav": {
+        "audio_length": 17.420816326530613,
+        "prediction": [
+            "/c/creek",
+            "/c/creek",
+            "/c/creek"
+        ]
+    },
+    "creek/17509.wav": {
+        "audio_length": 30.0,
+        "prediction": [
+            "/e/engine_room",
+            "/e/engine_room",
+            "/e/engine_room",
+            "/e/engine_room",
+            "/c/creek",
+            "/c/creek",
+            "/c/creek"
+        ]
+    },
+    "creek/110351.wav": {
+        "audio_length": 20.0,
+        "prediction": [
+            "/c/creek",
+            "/c/creek",
+            "/c/creek",
+            "/c/creek"
+        ]
+    },
+    "creek/54272.wav": {
+        "audio_length": 23.684353741496597,
+        "prediction": [
+            "/c/creek",
+            "/c/creek",
+            "/c/creek",
+            "/c/creek",
+            "/c/creek"
+        ]
+    },
+    "creek/94380.wav": {
+        "audio_length": 27.48458049886621,
+        "prediction": [
+            "/c/creek",
+            "/c/creek",
+            "/c/creek",
+            "/c/creek",
+            "/c/creek",
+            "/c/creek",
+            "/p/parking_garage/outdoor"
+        ]
+    },
+    "creek/15473.wav": {
+        "audio_length": 20.015736961451246,
+        "prediction": [
+            "/c/creek",
+            "/f/fountain",
+            "/c/creek",
+            "/c/creek"
+        ]
+    },
+    "creek/82084.wav": {
+        "audio_length": 13.699773242630386,
+        "prediction": [
+            "/c/creek",
+            "/s/sky"
+        ]
+    },
+    "creek/95087.wav": {
+        "audio_length": 16.688253968253967,
+        "prediction": [
+            "/c/creek",
+            "/c/creek",
+            "/a/aquarium"
+        ]
+    },
+    "creek/38388.wav": {
+        "audio_length": 26.717573696145124,
+        "prediction": [
+            "/c/creek",
+            "/c/creek",
+            "/c/creek",
+            "/c/creek",
+            "/c/creek",
+            "/c/creek"
+        ]
+    },
+    "creek/67114.wav": {
+        "audio_length": 22.67108843537415,
+        "prediction": [
+            "/c/creek",
+            "/c/creek",
+            "/c/creek",
+            "/c/creek",
+            "/m/museum/indoor"
+        ]
+    },
+    "sky/3-103051-C-19.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "/s/sky",
+            "/s/sky"
+        ]
+    },
+    "sky/125634.wav": {
+        "audio_length": 14.655986394557823,
+        "prediction": [
+            "/s/sky",
+            "/s/sky"
+        ]
+    },
+    "sky/1-23222-B-19.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "/s/sky",
+            "/s/sky"
+        ]
+    },
+    "sky/1-24524-A-19.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "/s/sky",
+            "/s/sky"
+        ]
+    },
+    "sky/2-205966-A-16.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "/s/stage/indoor",
+            "/s/sky"
+        ]
+    },
+    "sky/1-101296-A-19.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "/s/sky",
+            "/s/sky"
+        ]
+    },
+    "sky/1-101296-B-19.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "/s/sky",
+            "/s/sky"
+        ]
+    },
+    "sky/1-24524-C-19.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "/s/sky",
+            "/s/sky"
+        ]
+    },
+    "pasture/park02.wav": {
+        "audio_length": 30.0,
+        "prediction": [
+            "/a/aquarium",
+            "/p/pasture",
+            "/p/pond",
+            "/p/pond",
+            "/a/aquarium",
+            "/a/aquarium",
+            "/a/aquarium"
+        ]
+    },
+    "pasture/3-83527-A-4.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "/p/pasture",
+            "/p/pasture"
+        ]
+    },
+    "pasture/32408.wav": {
+        "audio_length": 27.910385487528345,
+        "prediction": [
+            "/r/rainforest",
+            "/p/pasture",
+            "/p/pasture",
+            "/p/pasture",
+            "/p/pasture",
+            "/p/pasture",
+            "/p/parking_garage/outdoor"
+        ]
+    },
+    "pasture/72536.wav": {
+        "audio_length": 30.0,
+        "prediction": [
+            "/p/pasture",
+            "/p/pasture",
+            "/p/pasture",
+            "/p/pasture",
+            "/p/pasture",
+            "/p/pasture",
+            "/p/pasture"
+        ]
+    },
+    "pasture/63618.wav": {
+        "audio_length": 24.59514739229025,
+        "prediction": [
+            "/p/pasture",
+            "/p/pasture",
+            "/r/rainforest",
+            "/a/aquarium",
+            "/a/aquarium",
+            "/p/parking_garage/outdoor"
+        ]
+    },
+    "pasture/4-200330-B-6.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "/p/pasture",
+            "/p/pasture"
+        ]
+    },
+    "pasture/105236.wav": {
+        "audio_length": 19.54784580498866,
+        "prediction": [
+            "/r/rainforest",
+            "/p/pasture",
+            "/p/pasture",
+            "/p/parking_garage/outdoor"
+        ]
+    },
+    "pasture/58391.wav": {
+        "audio_length": 27.381337868480724,
+        "prediction": [
+            "/p/pasture",
+            "/p/pasture",
+            "/p/pasture",
+            "/p/pasture",
+            "/p/pasture",
+            "/m/marsh",
+            "/p/parking_garage/outdoor"
+        ]
+    },
+    "pasture/4-196671-A-8.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "/p/playground",
+            "/p/pasture"
+        ]
+    },
+    "pasture/121949.wav": {
+        "audio_length": 26.72326530612245,
+        "prediction": [
+            "/r/rainforest",
+            "/r/rainforest",
+            "/r/rainforest",
+            "/r/rainforest",
+            "/p/pasture",
+            "/p/pasture"
+        ]
+    },
+    "forest_path/3-94344-A-25.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "/f/forest_path",
+            "/f/forest_path"
+        ]
+    },
+    "forest_path/33521.wav": {
+        "audio_length": 18.474671201814058,
+        "prediction": [
+            "/f/forest_path",
+            "/f/forest_path",
+            "/f/forest_path",
+            "/p/parking_garage/outdoor"
+        ]
+    },
+    "forest_path/4-218304-A-25.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "/f/forest_path",
+            "/f/forest_path"
+        ]
+    },
+    "forest_path/16398.wav": {
+        "audio_length": 17.408344671201814,
+        "prediction": [
+            "/f/forest_path",
+            "/f/forest_path",
+            "/d/driveway"
+        ]
+    },
+    "forest_path/5-263491-A-25.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "/m/mountain_path",
+            "/f/forest_path"
+        ]
+    },
+    "forest_path/3-103598-A-25.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "/f/forest_path",
+            "/f/forest_path"
+        ]
+    },
+    "forest_path/5-243025-A-25.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "/f/forest_path",
+            "/f/forest_path"
+        ]
+    },
+    "pond/33531.wav": {
+        "audio_length": 26.65299319727891,
+        "prediction": [
+            "/p/pond",
+            "/p/pond",
+            "/r/rainforest",
+            "/u/underwater/coral_reef",
+            "/u/underwater/coral_reef",
+            "/u/underwater/coral_reef"
+        ]
+    },
+    "pond/15471.wav": {
+        "audio_length": 29.561020408163266,
+        "prediction": [
+            "/u/underwater/coral_reef",
+            "/u/underwater/coral_reef",
+            "/u/underwater/coral_reef",
+            "/u/underwater/coral_reef",
+            "/p/pond",
+            "/p/pond",
+            "/a/aquarium"
+        ]
+    },
+    "pond/a014_120_150.wav": {
+        "audio_length": 30.00002267573696,
+        "prediction": [
+            "/r/rainforest",
+            "/r/rainforest",
+            "/r/rainforest",
+            "/r/rainforest",
+            "/r/rainforest",
+            "/r/rainforest",
+            "/p/pond"
+        ]
+    },
+    "pond/75099.wav": {
+        "audio_length": 28.41687074829932,
+        "prediction": [
+            "/a/aquarium",
+            "/c/creek",
+            "/c/creek",
+            "/p/pond",
+            "/p/pond",
+            "/a/aquarium",
+            "/m/museum/indoor"
+        ]
+    },
+    "pond/38285.wav": {
+        "audio_length": 28.5997052154195,
+        "prediction": [
+            "/r/rainforest",
+            "/p/pond",
+            "/p/pond",
+            "/p/pond",
+            "/p/pond",
+            "/p/pond",
+            "/p/parking_garage/outdoor"
+        ]
+    },
+    "pond/79355.wav": {
+        "audio_length": 24.39643990929705,
+        "prediction": [
+            "/h/hot_spring",
+            "/o/ocean",
+            "/o/ocean",
+            "/o/ocean",
+            "/p/pond",
+            "/p/parking_garage/outdoor"
+        ]
+    },
+    "pond/1-31836-A-4.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "/p/pond",
+            "/p/pond"
+        ]
+    },
+    "pond/5-262641-A-15.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "/p/pond",
+            "/p/pond"
+        ]
+    },
+    "pond/a014_180_210.wav": {
+        "audio_length": 30.00002267573696,
+        "prediction": [
+            "/a/aquarium",
+            "/a/aquarium",
+            "/a/aquarium",
+            "/a/aquarium",
+            "/r/rainforest",
+            "/r/rainforest",
+            "/p/pond"
+        ]
+    },
+    "pond/13655.wav": {
+        "audio_length": 28.44734693877551,
+        "prediction": [
+            "/p/pond",
+            "/p/pond",
+            "/p/pond",
+            "/p/pond",
+            "/p/pond",
+            "/p/pond",
+            "/h/hunting_lodge/outdoor"
+        ]
+    },
+    "pond/43778.wav": {
+        "audio_length": 19.843356009070295,
+        "prediction": [
+            "/p/pond",
+            "/p/pond",
+            "/p/pond",
+            "/a/aquarium"
+        ]
+    }
+}

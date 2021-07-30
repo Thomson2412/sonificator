@@ -12,27 +12,23 @@ for k, v in os.environ.items():
 STEPS = 16
 
 
-def convert_paintings_to_txt_bulk(input_dir, output_dir, with_saliency, use_scene, use_object_nav):
-    saliency_coarse = None
-    if with_saliency:
-        saliency_coarse = cv2.saliency.StaticSaliencySpectralResidual_create()
-    scene_detection = None
-    if use_scene:
-        scene_detection = SceneDetectionVisual("places", "resnet18")
+def convert_paintings_to_txt_bulk(input_dir, output_dir, saliency_coarse, with_saliency, scene_detection,
+                                  use_object_nav):
     for root, dirs, files in os.walk(input_dir):
         for filename in files:
             if ".jpg" in filename or ".png" in filename:
                 input_file_path = os.path.join(root, filename)
                 output_file_path = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}.txt")
                 convert_paintings_to_txt(input_file_path, output_file_path, saliency_coarse, with_saliency,
-                                         scene_detection, use_scene, use_object_nav)
+                                         scene_detection, use_object_nav)
 
 
 def convert_paintings_to_txt(input_file_path, output_file_path, saliency_coarse, with_saliency, scene_detection,
-                             use_scene, use_object_nav):
-    audio_data = ImageScanner.scan_img(
-        input_file_path, STEPS, saliency_coarse, with_saliency, scene_detection, use_scene, use_object_nav)[0]
-    audio_data.write_to_file(output_file_path)
+                             use_object_nav):
+    data = ImageScanner.scan_img(
+        input_file_path, STEPS, saliency_coarse, with_saliency, scene_detection, use_object_nav)
+    if data:
+        data[0].write_to_file(output_file_path)
 
 
 def convert_txt_to_sound_bulk(exec_file, input_dir):
@@ -65,48 +61,43 @@ def convert_txt_to_sound(exec_file, input_file_path, output_file_path):
     print("End")
 
 
-def convert_painting_to_presentation_bulk(input_dir, output_dir, with_saliency, use_scene, use_object_nav, add_audio,
-                                          web_convert, include_content, include_border):
-    saliency_coarse = None
-    if with_saliency:
-        saliency_coarse = cv2.saliency.StaticSaliencySpectralResidual_create()
-    scene_detection = None
-    if use_scene:
-        scene_detection = SceneDetectionVisual("places", "resnet18")
+def convert_painting_to_presentation_bulk(input_dir, output_dir, saliency_coarse, with_saliency, scene_detection,
+                                          use_object_nav, add_audio, web_convert, include_content, include_border):
     for root, dirs, files in os.walk(input_dir):
         for filename in files:
             if ".jpg" in filename or ".png" in filename:
                 file_path = os.path.join(root, filename)
                 convert_painting_to_presentation(file_path, output_dir, saliency_coarse, with_saliency,
-                                                 scene_detection, use_scene, use_object_nav, add_audio,
+                                                 scene_detection, use_object_nav, add_audio,
                                                  web_convert, include_content, include_border)
 
 
 def convert_painting_to_presentation(input_file_path, output_dir, saliency_coarse, with_saliency,
-                                     scene_detection, use_scene, use_object_nav, add_audio, web_convert,
+                                     scene_detection, use_object_nav, add_audio, web_convert,
                                      include_content, include_border):
     input_file_path = os.path.abspath(input_file_path)
     filename = os.path.basename(input_file_path)
-    data = ImageScanner.scan_img(input_file_path, STEPS, saliency_coarse, with_saliency, scene_detection, use_scene,
+    data = ImageScanner.scan_img(input_file_path, STEPS, saliency_coarse, with_saliency, scene_detection,
                                  use_object_nav)
 
-    visual_data = data[1]
-    output_file_vid = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}.avi")
-    visual_data.generate_presentation_video(output_file_vid, include_content, include_border)
-    if not add_audio and web_convert:
-        convert_avi_to_mp4(output_file_vid)
+    if data:
+        visual_data = data[1]
+        output_file_vid = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}.avi")
+        visual_data.generate_presentation_video(output_file_vid, include_content, include_border)
+        if not add_audio and web_convert:
+            convert_avi_to_mp4(output_file_vid)
 
-    if add_audio:
-        audio_data = data[0]
-        output_filepath_txt = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}.txt")
-        audio_data.write_to_file(output_filepath_txt)
-        output_filepath_aiff = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}.aiff")
-        convert_txt_to_sound("sound_engine.scd", output_filepath_txt, output_filepath_aiff)
-        output_file_vid_audio = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}_audio.avi")
-        add_audio_to_video(output_file_vid, output_filepath_aiff, output_file_vid_audio)
-        if web_convert:
-            convert_aiff_to_mp3(output_filepath_aiff)
-            convert_avi_to_mp4(output_file_vid_audio)
+        if add_audio:
+            audio_data = data[0]
+            output_filepath_txt = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}.txt")
+            audio_data.write_to_file(output_filepath_txt)
+            output_filepath_aiff = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}.aiff")
+            convert_txt_to_sound("sound_engine.scd", output_filepath_txt, output_filepath_aiff)
+            output_file_vid_audio = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}_audio.avi")
+            add_audio_to_video(output_file_vid, output_filepath_aiff, output_file_vid_audio)
+            if web_convert:
+                convert_aiff_to_mp3(output_filepath_aiff)
+                convert_avi_to_mp4(output_file_vid_audio)
 
 
 # ffmpeg -i yourvideo.avi -i sound.mp3 -c copy -map 0:v:0 -map 1:a:0 output.avi

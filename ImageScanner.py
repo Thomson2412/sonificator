@@ -25,7 +25,7 @@ MELODY_NOTE_AMOUNT = 16
 DURATION = 4
 
 
-def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_scene, use_object_nav):
+def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_object_nav):
     img = cv2.imread(input_img)
     scale_h = (1080 / 2) / img.shape[0]
     width = int(img.shape[1] * scale_h)
@@ -38,8 +38,6 @@ def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_scen
     (success, saliency_map) = saliency.computeSaliency(img)
     saliency_map = cv2.normalize(saliency_map, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
     thresh_map = cv2.threshold(saliency_map, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
-    saliency_heatmap_img = cv2.applyColorMap(saliency_map, cv2.COLORMAP_JET)
-    saliency_heatmap_img = cv2.addWeighted(img, 0.3, saliency_heatmap_img, 0.7, 0)
 
     color_thief = ColorThief(input_img)
     dominant_color = color_thief.get_color(quality=1)
@@ -58,14 +56,14 @@ def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_scen
     wave_str = " ".join([str(int(item[0])) for item in wave])
 
     scene_audio_path = " "
-    if use_scene:
-        scene = scene_detection.detect(input_img)
-        scene_audio_paths = SceneDetectionAudio.get_audio_for_scene("soundnet/audio_scene_detection.json",
-                                                                    "/mnt/datadrive/projects/thesis/Datasets/Audio",
-                                                                    scene)
+    if scene_detection:
+        scene = scene_detection[0].detect(input_img)
+        scene_audio_paths = scene_detection[1].get_audio_for_scene(scene)
         if len(scene_audio_paths) > 0:
             scene_audio_path = random.choice(scene_audio_paths)
             print(f"{scene}: {scene_audio_path}")
+        else:
+            return None
 
     if use_object_nav:
         segmentation_img, segmentation_info = ObjectDetectionVisual.detect_panoptic(img)
@@ -82,8 +80,6 @@ def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_scen
             hsv_img,
             edge_img,
             dominant_color_img,
-            saliency_heatmap_img,
-            thresh_map,
             len(priority_list)
         )
 
@@ -107,8 +103,6 @@ def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_scen
             hsv_img,
             edge_img,
             dominant_color_img,
-            saliency_heatmap_img,
-            thresh_map,
             steps
         )
 

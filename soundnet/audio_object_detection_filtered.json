@@ -1,0 +1,696 @@
+{
+    "hot_spring/208842.wav": {
+        "audio_length": 11.42421768707483,
+        "prediction": [
+            "n09288635 geyser"
+        ]
+    },
+    "hot_spring/245680.wav": {
+        "audio_length": 16.340861678004536,
+        "prediction": [
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n03976657 pole"
+        ]
+    },
+    "catacomb/105117.wav": {
+        "audio_length": 20.504920634920634,
+        "prediction": [
+            "n03729826 matchstick",
+            "n06359193 web site, website, internet site, site",
+            "n03729826 matchstick",
+            "n06359193 web site, website, internet site, site"
+        ]
+    },
+    "catacomb/264978.wav": {
+        "audio_length": 26.32761904761905,
+        "prediction": [
+            "n04296562 stage",
+            "n04296562 stage",
+            "n02948072 candle, taper, wax light",
+            "n04456115 torch",
+            "n04456115 torch",
+            "n04456115 torch"
+        ]
+    },
+    "catacomb/15363.wav": {
+        "audio_length": 18.0,
+        "prediction": [
+            "n06359193 web site, website, internet site, site",
+            "n04286575 spotlight, spot",
+            "n04286575 spotlight, spot"
+        ]
+    },
+    "catacomb/418545.wav": {
+        "audio_length": 12.584013605442177,
+        "prediction": [
+            "n04286575 spotlight, spot",
+            "n02094114 Norfolk terrier"
+        ]
+    },
+    "courtyard/239162.wav": {
+        "audio_length": 25.201451247165533,
+        "prediction": [
+            "n03877845 palace",
+            "n03877845 palace",
+            "n03877845 palace",
+            "n04005630 prison, prison house",
+            "n03877845 palace",
+            "n03976657 pole"
+        ]
+    },
+    "mountain_snowy/253715.wav": {
+        "audio_length": 24.253469387755104,
+        "prediction": [
+            "n09193705 alp",
+            "n09193705 alp",
+            "n09193705 alp",
+            "n09193705 alp",
+            "n09193705 alp"
+        ]
+    },
+    "harbor/137771.wav": {
+        "audio_length": 23.548480725623584,
+        "prediction": [
+            "n03134739 croquet ball",
+            "n03134739 croquet ball",
+            "n04371774 swing",
+            "n09332890 lakeside, lakeshore",
+            "n03216828 dock, dockage, docking facility"
+        ]
+    },
+    "wave/320029.wav": {
+        "audio_length": 20.735986394557823,
+        "prediction": [
+            "n09428293 seashore, coast, seacoast, sea-coast",
+            "n09428293 seashore, coast, seacoast, sea-coast",
+            "n09428293 seashore, coast, seacoast, sea-coast",
+            "n09428293 seashore, coast, seacoast, sea-coast"
+        ]
+    },
+    "wave/1-51037-A-16.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "n09428293 seashore, coast, seacoast, sea-coast",
+            "n09428293 seashore, coast, seacoast, sea-coast"
+        ]
+    },
+    "wave/194557.wav": {
+        "audio_length": 12.66938775510204,
+        "prediction": [
+            "n09428293 seashore, coast, seacoast, sea-coast",
+            "n02094114 Norfolk terrier"
+        ]
+    },
+    "wave/194558.wav": {
+        "audio_length": 12.586666666666666,
+        "prediction": [
+            "n09428293 seashore, coast, seacoast, sea-coast",
+            "n02094114 Norfolk terrier"
+        ]
+    },
+    "wave/2-137162-A-11.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "n09428293 seashore, coast, seacoast, sea-coast",
+            "n09428293 seashore, coast, seacoast, sea-coast"
+        ]
+    },
+    "wave/28657.wav": {
+        "audio_length": 24.793968253968252,
+        "prediction": [
+            "n09288635 geyser",
+            "n09428293 seashore, coast, seacoast, sea-coast",
+            "n09428293 seashore, coast, seacoast, sea-coast",
+            "n09428293 seashore, coast, seacoast, sea-coast",
+            "n09428293 seashore, coast, seacoast, sea-coast",
+            "n02094114 Norfolk terrier"
+        ]
+    },
+    "wave/222468.wav": {
+        "audio_length": 15.148390022675738,
+        "prediction": [
+            "n09428293 seashore, coast, seacoast, sea-coast",
+            "n09428293 seashore, coast, seacoast, sea-coast"
+        ]
+    },
+    "wave/410832.wav": {
+        "audio_length": 20.0,
+        "prediction": [
+            "n09428293 seashore, coast, seacoast, sea-coast",
+            "n09428293 seashore, coast, seacoast, sea-coast",
+            "n09428293 seashore, coast, seacoast, sea-coast",
+            "n09428293 seashore, coast, seacoast, sea-coast"
+        ]
+    },
+    "wave/58273.wav": {
+        "audio_length": 28.828934240362813,
+        "prediction": [
+            "n09428293 seashore, coast, seacoast, sea-coast",
+            "n09288635 geyser",
+            "n09428293 seashore, coast, seacoast, sea-coast",
+            "n09428293 seashore, coast, seacoast, sea-coast",
+            "n09428293 seashore, coast, seacoast, sea-coast",
+            "n09428293 seashore, coast, seacoast, sea-coast",
+            "n09428293 seashore, coast, seacoast, sea-coast"
+        ]
+    },
+    "hayfield/17505.wav": {
+        "audio_length": 12.265147392290249,
+        "prediction": [
+            "n09332890 lakeside, lakeshore"
+        ]
+    },
+    "boat_deck/254714.wav": {
+        "audio_length": 23.182698412698414,
+        "prediction": [
+            "n02965783 car mirror",
+            "n02965783 car mirror",
+            "n02965783 car mirror",
+            "n02965783 car mirror",
+            "n02965783 car mirror"
+        ]
+    },
+    "boat_deck/80700.wav": {
+        "audio_length": 16.947120181405896,
+        "prediction": [
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore"
+        ]
+    },
+    "boat_deck/21851.wav": {
+        "audio_length": 26.626643990929704,
+        "prediction": [
+            "n09288635 geyser",
+            "n09288635 geyser",
+            "n04228054 ski",
+            "n09288635 geyser",
+            "n09288635 geyser",
+            "n09288635 geyser"
+        ]
+    },
+    "boat_deck/2-132157-A-11.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "n03895866 passenger car, coach, carriage",
+            "n04252225 snowplow, snowplough"
+        ]
+    },
+    "creek/92023.wav": {
+        "audio_length": 28.545668934240364,
+        "prediction": [
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n03976657 pole"
+        ]
+    },
+    "creek/111639.wav": {
+        "audio_length": 20.32,
+        "prediction": [
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale"
+        ]
+    },
+    "creek/20788.wav": {
+        "audio_length": 29.95374149659864,
+        "prediction": [
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale"
+        ]
+    },
+    "creek/20787.wav": {
+        "audio_length": 30.0,
+        "prediction": [
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale"
+        ]
+    },
+    "creek/98454.wav": {
+        "audio_length": 20.901791383219955,
+        "prediction": [
+            "n04465501 tractor",
+            "n04465501 tractor",
+            "n04326547 stone wall",
+            "n09468604 valley, vale"
+        ]
+    },
+    "creek/75099.wav": {
+        "audio_length": 28.41687074829932,
+        "prediction": [
+            "n09332890 lakeside, lakeshore",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n03976657 pole"
+        ]
+    },
+    "creek/13552.wav": {
+        "audio_length": 19.997687074829933,
+        "prediction": [
+            "n04326547 stone wall",
+            "n04326547 stone wall",
+            "n04326547 stone wall",
+            "n04326547 stone wall"
+        ]
+    },
+    "creek/71521.wav": {
+        "audio_length": 17.420816326530613,
+        "prediction": [
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale"
+        ]
+    },
+    "creek/17509.wav": {
+        "audio_length": 30.0,
+        "prediction": [
+            "n04179913 sewing machine",
+            "n03388043 fountain",
+            "n03388043 fountain",
+            "n03388043 fountain",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale"
+        ]
+    },
+    "creek/110351.wav": {
+        "audio_length": 20.0,
+        "prediction": [
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale"
+        ]
+    },
+    "creek/54272.wav": {
+        "audio_length": 23.684353741496597,
+        "prediction": [
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale"
+        ]
+    },
+    "creek/94380.wav": {
+        "audio_length": 27.48458049886621,
+        "prediction": [
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n02094114 Norfolk terrier"
+        ]
+    },
+    "creek/15473.wav": {
+        "audio_length": 20.015736961451246,
+        "prediction": [
+            "n03388043 fountain",
+            "n03388043 fountain",
+            "n03388043 fountain",
+            "n03388043 fountain"
+        ]
+    },
+    "creek/82084.wav": {
+        "audio_length": 13.699773242630386,
+        "prediction": [
+            "n09468604 valley, vale",
+            "n03976657 pole"
+        ]
+    },
+    "creek/95087.wav": {
+        "audio_length": 16.688253968253967,
+        "prediction": [
+            "n04326547 stone wall",
+            "n04326547 stone wall",
+            "n03976657 pole"
+        ]
+    },
+    "creek/38388.wav": {
+        "audio_length": 26.717573696145124,
+        "prediction": [
+            "n04326547 stone wall",
+            "n04326547 stone wall",
+            "n04326547 stone wall",
+            "n04326547 stone wall",
+            "n04326547 stone wall",
+            "n09468604 valley, vale"
+        ]
+    },
+    "creek/67114.wav": {
+        "audio_length": 22.67108843537415,
+        "prediction": [
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n03976657 pole"
+        ]
+    },
+    "sky/3-103051-C-19.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "n09288635 geyser",
+            "n09332890 lakeside, lakeshore"
+        ]
+    },
+    "sky/125634.wav": {
+        "audio_length": 14.655986394557823,
+        "prediction": [
+            "n09288635 geyser",
+            "n09288635 geyser"
+        ]
+    },
+    "sky/1-23222-B-19.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "n09428293 seashore, coast, seacoast, sea-coast",
+            "n02965783 car mirror"
+        ]
+    },
+    "sky/1-24524-A-19.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "n09288635 geyser",
+            "n09288635 geyser"
+        ]
+    },
+    "sky/2-205966-A-16.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "n04296562 stage",
+            "n04296562 stage"
+        ]
+    },
+    "sky/1-101296-A-19.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "n09288635 geyser",
+            "n09332890 lakeside, lakeshore"
+        ]
+    },
+    "sky/1-101296-B-19.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "n09288635 geyser",
+            "n03895866 passenger car, coach, carriage"
+        ]
+    },
+    "sky/1-24524-C-19.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "n09288635 geyser",
+            "n09288635 geyser"
+        ]
+    },
+    "pasture/park02.wav": {
+        "audio_length": 30.0,
+        "prediction": [
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore"
+        ]
+    },
+    "pasture/3-83527-A-4.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "n02102040 English springer, English springer spaniel",
+            "n02102040 English springer, English springer spaniel"
+        ]
+    },
+    "pasture/32408.wav": {
+        "audio_length": 27.910385487528345,
+        "prediction": [
+            "n09332890 lakeside, lakeshore",
+            "n09193705 alp",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n02094114 Norfolk terrier"
+        ]
+    },
+    "pasture/72536.wav": {
+        "audio_length": 30.0,
+        "prediction": [
+            "n09193705 alp",
+            "n09193705 alp",
+            "n09193705 alp",
+            "n09193705 alp",
+            "n09193705 alp",
+            "n09193705 alp",
+            "n09193705 alp"
+        ]
+    },
+    "pasture/63618.wav": {
+        "audio_length": 24.59514739229025,
+        "prediction": [
+            "n04371774 swing",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n04371774 swing",
+            "n04371774 swing",
+            "n02094114 Norfolk terrier"
+        ]
+    },
+    "pasture/4-200330-B-6.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "n02109047 Great Dane",
+            "n02109047 Great Dane"
+        ]
+    },
+    "pasture/105236.wav": {
+        "audio_length": 19.54784580498866,
+        "prediction": [
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n03976657 pole"
+        ]
+    },
+    "pasture/58391.wav": {
+        "audio_length": 27.381337868480724,
+        "prediction": [
+            "n09193705 alp",
+            "n09193705 alp",
+            "n09193705 alp",
+            "n09193705 alp",
+            "n09332890 lakeside, lakeshore",
+            "n09193705 alp",
+            "n02094114 Norfolk terrier"
+        ]
+    },
+    "pasture/4-196671-A-8.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "n04162706 seat belt, seatbelt",
+            "n04162706 seat belt, seatbelt"
+        ]
+    },
+    "pasture/121949.wav": {
+        "audio_length": 26.72326530612245,
+        "prediction": [
+            "n09193705 alp",
+            "n09193705 alp",
+            "n09193705 alp",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore"
+        ]
+    },
+    "forest_path/3-94344-A-25.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "n03792782 mountain bike, all-terrain bike, off-roader",
+            "n03792782 mountain bike, all-terrain bike, off-roader"
+        ]
+    },
+    "forest_path/33521.wav": {
+        "audio_length": 18.474671201814058,
+        "prediction": [
+            "n09193705 alp",
+            "n09193705 alp",
+            "n09193705 alp",
+            "n02094114 Norfolk terrier"
+        ]
+    },
+    "forest_path/4-218304-A-25.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "n09193705 alp",
+            "n09193705 alp"
+        ]
+    },
+    "forest_path/16398.wav": {
+        "audio_length": 17.408344671201814,
+        "prediction": [
+            "n03792782 mountain bike, all-terrain bike, off-roader",
+            "n03792782 mountain bike, all-terrain bike, off-roader",
+            "n03792782 mountain bike, all-terrain bike, off-roader"
+        ]
+    },
+    "forest_path/5-263491-A-25.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "n09193705 alp",
+            "n09193705 alp"
+        ]
+    },
+    "forest_path/3-103598-A-25.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "n03792782 mountain bike, all-terrain bike, off-roader",
+            "n03792782 mountain bike, all-terrain bike, off-roader"
+        ]
+    },
+    "forest_path/5-243025-A-25.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "n09193705 alp",
+            "n09193705 alp"
+        ]
+    },
+    "pond/33531.wav": {
+        "audio_length": 26.65299319727891,
+        "prediction": [
+            "n09193705 alp",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09256479 coral reef"
+        ]
+    },
+    "pond/15471.wav": {
+        "audio_length": 29.561020408163266,
+        "prediction": [
+            "n10565667 scuba diver",
+            "n10565667 scuba diver",
+            "n02951358 canoe",
+            "n02951358 canoe",
+            "n02951358 canoe",
+            "n02951358 canoe",
+            "n09332890 lakeside, lakeshore"
+        ]
+    },
+    "pond/a014_120_150.wav": {
+        "audio_length": 30.00002267573696,
+        "prediction": [
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore"
+        ]
+    },
+    "pond/75099.wav": {
+        "audio_length": 28.41687074829932,
+        "prediction": [
+            "n09332890 lakeside, lakeshore",
+            "n09468604 valley, vale",
+            "n09468604 valley, vale",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n03976657 pole"
+        ]
+    },
+    "pond/38285.wav": {
+        "audio_length": 28.5997052154195,
+        "prediction": [
+            "n09468604 valley, vale",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n03976657 pole"
+        ]
+    },
+    "pond/79355.wav": {
+        "audio_length": 24.39643990929705,
+        "prediction": [
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n02094114 Norfolk terrier"
+        ]
+    },
+    "pond/1-31836-A-4.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "n04371774 swing",
+            "n04371774 swing"
+        ]
+    },
+    "pond/5-262641-A-15.wav": {
+        "audio_length": 15.0,
+        "prediction": [
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore"
+        ]
+    },
+    "pond/a014_180_210.wav": {
+        "audio_length": 30.00002267573696,
+        "prediction": [
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore"
+        ]
+    },
+    "pond/13655.wav": {
+        "audio_length": 28.44734693877551,
+        "prediction": [
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n03976657 pole"
+        ]
+    },
+    "pond/43778.wav": {
+        "audio_length": 19.843356009070295,
+        "prediction": [
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n09332890 lakeside, lakeshore",
+            "n03976657 pole"
+        ]
+    }
+}

@@ -4,14 +4,11 @@ import numpy as np
 
 
 class DataStructureVisual:
-    def __init__(self, original_img, hsv_img, edge_img, overall_dominant_img, saliency_heatmap_img,
-                 saliency_thresh_map_img, steps):
+    def __init__(self, original_img, hsv_img, edge_img, overall_dominant_img, steps):
         self.original_img = original_img
         self.hsv_img = hsv_img
         self.edge_img = edge_img
         self.overall_dominant_img = overall_dominant_img
-        self.saliency_heatmap_img = saliency_heatmap_img
-        self.saliency_thresh_map_img = saliency_thresh_map_img
 
         self.steps = steps
 

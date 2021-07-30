@@ -18,9 +18,10 @@ def main():
             output_path = os.path.join(output_folder, scene)
             if not os.path.exists(output_path):
                 os.mkdir(output_path)
-                scene_audio_paths = SceneDetectionAudio.get_audio_for_scene("../soundnet/audio_scene_detection.json",
-                                                                            audio_dataset_base_dir,
-                                                                            scene)
+                scene_audio_paths = SceneDetectionAudio.get_audio_for_scene(
+                    "../soundnet/audio_scene_detection_all.json",
+                    audio_dataset_base_dir,
+                    scene)
                 for audio_path in scene_audio_paths:
                     filename_audio = os.path.basename(audio_path)
                     output_file_path = os.path.join(output_path, filename_audio)
