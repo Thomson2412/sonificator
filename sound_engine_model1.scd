@@ -19,8 +19,9 @@ fork{
 	if (thisProcess.argv[0] != nil) {
 		i = thisProcess.argv[0];
 	} {
-		// i = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/animal_painting-Eugene_Boudin-Cows_in_a_Pasture-1883-50445.txt"
-		i = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/allegorical_painting-Arthur_Streeton-Spirit_of_the_drought-1895-65154.txt"
+		i = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/animal_painting-Eugene_Boudin-Cows_in_a_Pasture-1883-50445.txt"
+		// i = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/allegorical_painting-Arthur_Streeton-Spirit_of_the_drought-1895-65154.txt"
+		// i = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/battle_painting-Konstantin_Korovin-Polovtsian_camp_-1914-70568.txt"
 
 	};
 
@@ -52,6 +53,7 @@ fork{
 		var scene_path;
 		var scene_buffer;
 		var scene_args;
+		var wait_for_scene_load = true;
 
 		var steps;
 
@@ -108,12 +110,13 @@ fork{
 			var sig, detuneSig, env;
 			bufPos = buf + bufPos.min(numBufs - 1).max(0);
 			env = Env.adsr(att, dec, sus, rel);
-			detuneSig = LFNoise1.kr(0.2!8).bipolar(0.2).midiratio;
+			detuneSig = LFNoise1.kr(0.2!2).bipolar(0.2).midiratio;
 			sig = VOsc.ar(bufPos, freq * detuneSig);
 			sig = Splay.ar(sig, center:pan);
 			sig = LeakDC.ar(sig);
 			sig = sig * EnvGen.kr(env, gate, doneAction: Done.freeSelf);
 			sig = FreeVerb2.ar(sig, sig, mix: revb, room: 0.5, damp: 0.5, mul: 1.0, add: 0.0);
+			sig[1] = DelayN.ar(sig[1], 0.016, 0.016);
 			sig = LPF.ar(sig, freq: 16000, mul: 1.0, add: 0.0);
 			// sig = CrossoverDistortion.ar(sig, amp: bufPos, smooth: 1.0, mul: 1.0, add: 0);
 			// sig = SmoothDecimator.ar(in, rate: 44100.0, smoothing: 0.5, mul: 1.0, add: 0);
@@ -126,14 +129,24 @@ fork{
 			var sig = PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum) * rate, t_trig, start, loop)!2;
 			var gateEnv = EnvGen.kr(Env([1, 1, 0], [sustainTime-rel, 0]));
 			var env = EnvGen.kr(Env.asr(atk, 1, rel), gate * gateEnv, doneAction: Done.freeSelf);
+			sig = CompanderD.ar(sig, sig, thresh: 1, slopeBelow: 1, slopeAbove: 0.5, clampTime: 0.01, relaxTime: 0.01);
+			sig = FreeVerb2.ar(sig, sig, mix: 0.5, room: 0.2, damp: 0.5);
+			sig[0] = DelayN.ar(sig[0], 0.024, 0.024);
+			sig = LPF.ar(sig, freq: 6000);
+			sig = HPF.ar(sig, freq: 220);
 			Out.ar(out, sig * env * amp);
 		}).add;
 
 		SynthDef(\audioFileStereo, {
 			arg out, amp=1, bufnum, sustainTime, atk=0, rel=0, gate=1, rate=1, t_trig=1, start=0, loop=1;
-			var sig = PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum) * rate, t_trig, start, loop);
+			var sig = PlayBuf.ar(2, bufnum, BufRateScale.kr(bufnum) * rate, t_trig, start, loop);
 			var gateEnv = EnvGen.kr(Env([1, 1, 0], [sustainTime-rel, 0]));
 			var env = EnvGen.kr(Env.asr(atk, 1, rel), gate * gateEnv, doneAction: Done.freeSelf);
+			sig = CompanderD.ar(sig, sig, thresh: 1, slopeBelow: 1, slopeAbove: 0.5, clampTime: 0.01, relaxTime: 0.01);
+			sig = FreeVerb2.ar(sig, sig, mix: 0.5, room: 0.2, damp: 0.5);
+			sig[0] = DelayN.ar(sig[0], 0.024, 0.024);
+			sig = LPF.ar(sig, freq: 6000);
+			sig = HPF.ar(sig, freq: 220);
 			Out.ar(out, sig * env * amp);
 		}).add;
 
@@ -167,9 +180,9 @@ fork{
 		pans = file[~pan].asFloat;
 
 		if(scene_path != " " && scene_path != "") {
-			scene_buffer = Buffer.read(s, scene_path);
+			scene_buffer = Buffer.read(s, scene_path, action: {wait_for_scene_load = false;});
 			scene_buffer = scene_buffer.normalize;
-			scene_args = [\bufnum, scene_buffer.bufnum, \sustainTime, durations.sum, \amp, 0.1];
+			scene_args = [\bufnum, scene_buffer.bufnum, \sustainTime, durations.sum, \amp, 0.05];
 		};
 
 		lines = steps.collect({arg s; file[s + ~line].asInteger;});
@@ -221,7 +234,7 @@ fork{
 		});
 
 		//Wait to make sure scene_buffer is loaded
-		1.wait;
+		while({wait_for_scene_load}, {0.1.wait; "Waiting on scene buffer".postln});
 
 		if(o != nil){
 			s.record(duration: durations.sum + 1, path: o);

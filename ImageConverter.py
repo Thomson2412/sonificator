@@ -92,7 +92,7 @@ def convert_painting_to_presentation(input_file_path, output_dir, saliency_coars
             output_filepath_txt = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}.txt")
             audio_data.write_to_file(output_filepath_txt)
             output_filepath_aiff = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}.aiff")
-            convert_txt_to_sound("sound_engine.scd", output_filepath_txt, output_filepath_aiff)
+            convert_txt_to_sound("sound_engine_model1.scd", output_filepath_txt, output_filepath_aiff)
             output_file_vid_audio = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}_audio.avi")
             add_audio_to_video(output_file_vid, output_filepath_aiff, output_file_vid_audio)
             if web_convert:

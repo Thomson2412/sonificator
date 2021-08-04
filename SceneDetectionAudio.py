@@ -1,9 +1,12 @@
 import os
+from shutil import copyfile
 from tensorflow.keras.layers import BatchNormalization, Activation, Conv1D, MaxPooling1D, ZeroPadding1D, Input
 from tensorflow.keras.models import Model
 import numpy as np
 import librosa
 import json
+
+from SceneDetectionVisual import SceneDetectionVisual
 
 
 def preprocess(audio):
@@ -161,7 +164,7 @@ class SceneDetectionAudio:
                         except:
                             print("Something went wrong")
 
-    def get_audio_for_scene(self, scene):
+    def get_audio_for_scene_json(self, scene):
         scene_results = []
         prediction_result_scene = {}
         if os.path.isfile(self.scene_data_file):
@@ -172,6 +175,32 @@ class SceneDetectionAudio:
                 if scene in pred:
                     scene_results.append(os.path.join(self.dataset_base_dir, audio))
         return scene_results
+
+    def get_audio_for_scene_folder(self, audio_folder, scene):
+        scene_results = []
+        for root, dirs, files in os.walk(audio_folder):
+            for filename in files:
+                if root.endswith(scene.replace("/", "_")) and ".wav" in filename:
+                    scene_results.append(os.path.join(root, filename))
+        return scene_results
+
+    def create_scene_audio_dataset_for_paintings(self, input_folder_img, output_dir, structure_only):
+        scene_detection = SceneDetectionVisual("../places", "resnet18")
+        for root, dirs, files in os.walk(input_folder_img):
+            for filename in files:
+                print(f"Working on: {filename}")
+                file_path = os.path.join(root, filename)
+                scene = scene_detection.detect(file_path).replace("/", "_")
+                output_path = os.path.join(output_dir, scene)
+                if not os.path.exists(output_path):
+                    os.mkdir(output_path)
+                    if not structure_only:
+                        scene_audio_paths = self.get_audio_for_scene_json(scene)
+                        for audio_path in scene_audio_paths:
+                            filename_audio = os.path.basename(audio_path)
+                            output_file_path = os.path.join(output_path, filename_audio)
+                            copyfile(audio_path, output_file_path)
+                print(f"Done: {filename}")
 
     def get_audio_for_object(self, object_name):
         object_results = []
