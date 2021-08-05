@@ -105,24 +105,27 @@ fork{
 
 		//fm synth
 		SynthDef(\fm, {
-			arg freq=500, mRatio=1, cRatio=1,
-			index=1, iScale=5, cAtk=4, cRel=(-4),
-			amp=0.2, atk=0.01, sus=1, dec=0, rel=3, pan=0;
-			var car, mod, env, iEnv, out=0, buf=1;
+			arg buf=0, numBufs=1, bufPos=0,
+			freq=500, mRatio=1, cRatio=1,
+			index=2, iScale=2, cAtk=4, cRel=(-4),
+			amp=0.2, att=0.01, sus=0, dec=1, rel=0.2, pan=0, out=0;
+			var car, mod, env, iEnv,detuneSig;
+			bufPos = buf + bufPos.min(numBufs - 1).max(0);
+			detuneSig = LFNoise1.kr(0.2!2).bipolar(0.2).midiratio;
 			//index of modulation
 			iEnv = EnvGen.kr(
 				Env(
 					[index, index*iScale, index],
-					[atk, rel],
+					[att, rel],
 					[cAtk, cRel]
 				)
 			);
 			//amplitude envelope
-			env = EnvGen.kr(Env.adsr(atk, dec, sus, rel), doneAction:2);
+			env = EnvGen.kr(Env.adsr(att, dec, sus, rel), doneAction:2);
 			//modulator/carrier
 			// mod = SinOsc.ar(freq * mRatio, mul:freq * mRatio * iEnv);
-			mod = Osc.ar(buf, freq * mRatio, mul:freq * mRatio * iEnv);
-			car = SinOsc.ar(freq * cRatio + mod) * env * amp;
+			mod = VOsc.ar(bufPos, freq * detuneSig * mRatio, mul:freq * mRatio * iEnv);
+			car = SinOsc.ar(freq * detuneSig * cRatio + mod) * env * amp;
 			car = Pan2.ar(car, pan);
 			Out.ar(out, car);
 		}).add;
@@ -285,9 +288,48 @@ fork{
 			\pan, 0,
 		).play;
 
+		//Bass
+		Pbind(
+			\instrument, \fm,
+			\degree, Pseq(chords.collect({arg i; i[0]})),
+			\root, root,
+			\octave, 2,
+			\dur, Pseq(durations),
+			\strum, 0,
+			\amp, Pseq(amps),
+			\att, Pseq(durations * 0.5),
+			\dec, Pseq(durations - releases),
+			\sus, 0,
+			\rel, Pseq(releases),
+			\buf, buf[0].bufnum,
+			\numBufs, buf.size,
+			\bufPos, Pseq(edginess),
+			\pan, 0,
+		).play;
+
 		//Chords
 		Pbind(
 			\instrument, \fm,
+			\degree, Pseq(chords),
+			\root, root,
+			\octave, Pseq(octaves),
+			\dur, Pseq(durations),
+			\strum, 0, // Pseq(strums),
+			\amp, Pseq(amps),
+			\att, Pseq(durations * 0.5),
+			\dec, Pseq(durations - releases),
+			\sus, 0,
+			\rel, Pseq(releases),
+			\buf, buf[0].bufnum,
+			\numBufs, buf.size,
+			\bufPos, Pseq(edginess),
+			\revb, 0.6,
+			\pan, Pseq(pans),
+		).play;
+
+		//Chords
+		Pbind(
+			\instrument, \vosc,
 			\degree, Pseq(chords),
 			\root, root,
 			\octave, Pseq(octaves),
