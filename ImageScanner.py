@@ -15,7 +15,7 @@ import scipy.cluster
 
 CV_HSV_MIN_MAX = [(0, 179), (0, 255), (0, 255)]
 
-ROOT_MIN_MAX = (0, 6)
+ROOT_MIN_MAX = (0, 11)
 SCALE_MIN_MAX = (0, 1)
 KEY_STEP_MIN_MAX = (0, 6)
 LOUDNESS_MIN_MAX = (1, 100)

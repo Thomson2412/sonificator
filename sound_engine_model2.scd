@@ -103,6 +103,30 @@ fork{
 		buf = Buffer.allocConsecutive(3, s, 1024);
 		buf.do({arg buf, i; buf.loadCollection(wt[i])});
 
+		//fm synth
+		SynthDef(\fm, {
+			arg freq=500, mRatio=1, cRatio=1,
+			index=1, iScale=5, cAtk=4, cRel=(-4),
+			amp=0.2, atk=0.01, sus=1, dec=0, rel=3, pan=0;
+			var car, mod, env, iEnv, out=0, buf=1;
+			//index of modulation
+			iEnv = EnvGen.kr(
+				Env(
+					[index, index*iScale, index],
+					[atk, rel],
+					[cAtk, cRel]
+				)
+			);
+			//amplitude envelope
+			env = EnvGen.kr(Env.adsr(atk, dec, sus, rel), doneAction:2);
+			//modulator/carrier
+			// mod = SinOsc.ar(freq * mRatio, mul:freq * mRatio * iEnv);
+			mod = Osc.ar(buf, freq * mRatio, mul:freq * mRatio * iEnv);
+			car = SinOsc.ar(freq * cRatio + mod) * env * amp;
+			car = Pan2.ar(car, pan);
+			Out.ar(out, car);
+		}).add;
+
 		SynthDef.new(\vosc, {
 			arg buf=0, numBufs=1, bufPos=0,
 			freq=440, att=0, dec=1, sus=0, rel=0.2,
@@ -244,7 +268,7 @@ fork{
 
 		//Bass
 		Pbind(
-			\instrument, \vosc,
+			\instrument, \fm,
 			\degree, Pseq(chords.collect({arg i; i[0]})),
 			\root, root,
 			\octave, 2,
@@ -263,7 +287,7 @@ fork{
 
 		//Chords
 		Pbind(
-			\instrument, \vosc,
+			\instrument, \fm,
 			\degree, Pseq(chords),
 			\root, root,
 			\octave, Pseq(octaves),
