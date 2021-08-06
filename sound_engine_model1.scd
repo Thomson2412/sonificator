@@ -281,26 +281,28 @@ fork{
 			\pan, Pseq(pans),
 		).play;
 
-		//Melody
-		/*		Pbind(
-		\instrument, \vosc,
-		\degree, Pseq(melody_notes),
-		\scale, scale,
-		\root, root,
-		\octave, Pseq(melody_octaves),
-		\dur, Pseq(melody_notes_durations),
-		\strum, 0,
-		\amp, Pseq(melody_amps),
-		\att, 0.08,
-		\dec, 0.5,
-		\sus, 0,
-		\rel, 0.5,
-		\buf, buf[0].bufnum,
-		\numBufs, buf.size,
-		\bufPos, 0.9,
-		\revb, 0.5,
-		\pan, Pseq(melody_pans),
-		).play;*/
+		if(melody_notes_amount_local > 0){
+			//Melody
+			Pbind(
+				\instrument, \vosc,
+				\degree, Pseq(melody_notes),
+				\scale, scale,
+				\root, root,
+				\octave, Pseq(melody_octaves),
+				\dur, Pseq(melody_notes_durations),
+				\strum, 0,
+				\amp, Pseq(melody_amps),
+				\att, 0.08,
+				\dec, 0.5,
+				\sus, 0,
+				\rel, 0.5,
+				\buf, buf[0].bufnum,
+				\numBufs, buf.size,
+				\bufPos, 0.9,
+				\revb, 0.5,
+				\pan, Pseq(melody_pans),
+			).play;
+		};
 
 		if(scene_buffer != nil){
 			if(scene_buffer.numChannels == 1) {

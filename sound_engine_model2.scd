@@ -14,6 +14,8 @@
 ~edginess = 11;
 ~line = 12;
 
+~vbus = Bus.audio(s, 2);
+
 fork{
 
 	if (thisProcess.argv[0] != nil) {
@@ -108,7 +110,8 @@ fork{
 			arg buf=0, numBufs=1, bufPos=0,
 			freq=500, mRatio=1, cRatio=1,
 			index=2, iScale=2, cAtk=4, cRel=(-4),
-			amp=0.2, att=0.01, sus=0, dec=1, rel=0.2, pan=0, out=0;
+			amp=0.2, att=0.01, sus=0, dec=1, rel=0.2,
+			pan=0, out=0, fx=0, fxsend=(-25);
 			var car, mod, env, iEnv,detuneSig;
 			bufPos = buf + bufPos.min(numBufs - 1).max(0);
 			detuneSig = LFNoise1.kr(0.2!2).bipolar(0.2).midiratio;
@@ -116,24 +119,28 @@ fork{
 			iEnv = EnvGen.kr(
 				Env(
 					[index, index*iScale, index],
-					[att, rel],
-					[cAtk, cRel]
-				)
+					[att, dec, rel],
+					[cAtk, 1, cRel],
+				),
+				doneAction:Done.freeSelf
 			);
 			//amplitude envelope
-			env = EnvGen.kr(Env.adsr(att, dec, sus, rel), doneAction:2);
+			env = EnvGen.kr(Env.adsr(att, dec, sus, rel), doneAction:Done.freeSelf);
 			//modulator/carrier
 			// mod = SinOsc.ar(freq * mRatio, mul:freq * mRatio * iEnv);
 			mod = VOsc.ar(bufPos, freq * detuneSig * mRatio, mul:freq * mRatio * iEnv);
 			car = SinOsc.ar(freq * detuneSig * cRatio + mod) * env * amp;
+			car = LPF.ar(car, freq: 16000, mul: 1.0, add: 0.0);
 			car = Pan2.ar(car, pan);
 			Out.ar(out, car);
+			Out.ar(fx, car * fxsend.dbamp);
 		}).add;
 
 		SynthDef.new(\vosc, {
 			arg buf=0, numBufs=1, bufPos=0,
 			freq=440, att=0, dec=1, sus=0, rel=0.2,
-			amp=0.2, revb=0.33, gate=1, pan=0;
+			amp=0.2, gate=1, pan=0,
+			out=0, fx=0, fxsend=(-25);
 			var sig, detuneSig, env;
 			bufPos = buf + bufPos.min(numBufs - 1).max(0);
 			env = Env.adsr(att, dec, sus, rel);
@@ -142,13 +149,13 @@ fork{
 			sig = Splay.ar(sig, center:pan);
 			sig = LeakDC.ar(sig);
 			sig = sig * EnvGen.kr(env, gate, doneAction: Done.freeSelf);
-			sig = FreeVerb2.ar(sig, sig, mix: revb, room: 0.5, damp: 0.5, mul: 1.0, add: 0.0);
 			sig[1] = DelayN.ar(sig[1], 0.016, 0.016);
 			sig = LPF.ar(sig, freq: 16000, mul: 1.0, add: 0.0);
 			// sig = CrossoverDistortion.ar(sig, amp: bufPos, smooth: 1.0, mul: 1.0, add: 0);
 			// sig = SmoothDecimator.ar(in, rate: 44100.0, smoothing: 0.5, mul: 1.0, add: 0);
 			// sig = Decimator.ar(sig, rate: 44100.0 * bufPos, bits: 24, mul: 1.0, add: 0);
 			Out.ar(0, sig  * amp);
+			Out.ar(fx, sig * fxsend.dbamp);
 		}).add;
 
 		SynthDef(\audioFileMono, {
@@ -176,6 +183,26 @@ fork{
 			sig = HPF.ar(sig, freq: 220);
 			Out.ar(out, sig * env * amp);
 		}).add;
+
+		SynthDef(\reverb, {
+			arg in=0, out=0, dec=4, lpf=1500;
+			var sig;
+			sig = In.ar(in, 2).sum;
+			sig = DelayN.ar(sig, 0.03, 0.03);
+			sig = CombN.ar(sig, 0.1, {Rand(0.01,0.099)}!32, dec);
+			sig = SplayAz.ar(2, sig);
+			sig = LPF.ar(sig, lpf);
+			5.do{sig = AllpassN.ar(sig, 0.1, {Rand(0.01,0.099)}!2, 3)};
+			sig = LPF.ar(sig, lpf);
+			sig = LeakDC.ar(sig);
+			Out.ar(out, sig);
+		}).add;
+
+		s.sync;
+
+		Synth(\reverb, [\in, ~vbus]);
+
+		s.sync;
 
 		steps = file[~steps][0].asInteger;
 
@@ -209,7 +236,7 @@ fork{
 		if(scene_path != " " && scene_path != "") {
 			scene_buffer = Buffer.read(s, scene_path, action: {wait_for_scene_load = false;});
 			scene_buffer = scene_buffer.normalize;
-			scene_args = [\bufnum, scene_buffer.bufnum, \atk, 4, \sustainTime, durations.sum, \rel, 2, \amp, max(amps.minItem(), 0.02)];
+			scene_args = [\bufnum, scene_buffer.bufnum, \atk, 4, \sustainTime, durations.sum, \rel, 2, \amp, max(amps.minItem(), 0.006) + 0.1];
 		} {
 			wait_for_scene_load = false;
 		};
@@ -286,11 +313,13 @@ fork{
 			\numBufs, buf.size,
 			\bufPos, Pseq(edginess),
 			\pan, 0,
+			\fx, ~vbus,
+			\fxsend, -20,
 		).play;
 
 		//Bass
-		Pbind(
-			\instrument, \fm,
+/*		Pbind(
+			\instrument, \vosc,
 			\degree, Pseq(chords.collect({arg i; i[0]})),
 			\root, root,
 			\octave, 2,
@@ -305,7 +334,9 @@ fork{
 			\numBufs, buf.size,
 			\bufPos, Pseq(edginess),
 			\pan, 0,
-		).play;
+			\fx, ~vbus,
+			\fxsend, -20,
+		).play;*/
 
 		//Chords
 		Pbind(
@@ -317,18 +348,19 @@ fork{
 			\strum, 0, // Pseq(strums),
 			\amp, Pseq(amps),
 			\att, Pseq(durations * 0.5),
-			\dec, Pseq(durations - releases),
+			\dec, Pseq(durations + 3),
 			\sus, 0,
 			\rel, Pseq(releases),
 			\buf, buf[0].bufnum,
 			\numBufs, buf.size,
 			\bufPos, Pseq(edginess),
-			\revb, 0.6,
 			\pan, Pseq(pans),
+			\fx, ~vbus,
+			\fxsend, -10,
 		).play;
 
 		//Chords
-		Pbind(
+/*		Pbind(
 			\instrument, \vosc,
 			\degree, Pseq(chords),
 			\root, root,
@@ -343,30 +375,58 @@ fork{
 			\buf, buf[0].bufnum,
 			\numBufs, buf.size,
 			\bufPos, Pseq(edginess),
-			\revb, 0.6,
 			\pan, Pseq(pans),
-		).play;
-
-		//Melody
-		/*		Pbind(
-		\instrument, \vosc,
-		\degree, Pseq(melody_notes),
-		\scale, scale,
-		\root, root,
-		\octave, Pseq(melody_octaves),
-		\dur, Pseq(melody_notes_durations),
-		\strum, 0,
-		\amp, Pseq(melody_amps),
-		\att, 0.08,
-		\dec, 0.5,
-		\sus, 0,
-		\rel, 0.5,
-		\buf, buf[0].bufnum,
-		\numBufs, buf.size,
-		\bufPos, 0.9,
-		\revb, 0.5,
-		\pan, Pseq(melody_pans),
+			\fx, ~vbus,
+			\fxsend, -10,
 		).play;*/
+
+		if(melody_notes_amount_local > 0){
+			//Melody
+			Pbind(
+				\instrument, \fm,
+				\degree, Pseq(melody_notes),
+				\scale, scale,
+				\root, root,
+				\octave, Pseq(melody_octaves),
+				\dur, Pseq(melody_notes_durations),
+				\strum, 0,
+				\amp, Pseq(melody_amps),
+				\att, 0.08,
+				\dec, 0.5,
+				\sus, 0,
+				\rel, 0.5,
+				\buf, buf[0].bufnum,
+				\numBufs, buf.size,
+				\bufPos, 0.9,
+				\pan, Pseq(melody_pans),
+				\fx, ~vbus,
+				\fxsend, -15,
+			).play;
+
+			//Melody
+/*			Pbind(
+				\instrument, \vosc,
+				\degree, Pseq(melody_notes),
+				\scale, scale,
+				\root, root,
+				\octave, Pseq(melody_octaves),
+				\dur, Pseq(melody_notes_durations),
+				\strum, 0,
+				\amp, Pseq(melody_amps),
+				\att, 0.08,
+				\dec, 0.5,
+				\sus, 0,
+				\rel, 0.5,
+				\buf, buf[0].bufnum,
+				\numBufs, buf.size,
+				\bufPos, 0.9,
+				\pan, Pseq(melody_pans),
+				\fx, ~vbus,
+				\fxsend, -15,
+			).play;*/
+		};
+
+
 
 		if(scene_buffer != nil){
 			if(scene_buffer.numChannels == 1) {

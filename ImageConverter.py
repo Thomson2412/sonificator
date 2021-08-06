@@ -61,18 +61,19 @@ def convert_txt_to_sound(exec_file, input_file_path, output_file_path):
     print("End")
 
 
-def convert_painting_to_presentation_bulk(input_dir, output_dir, saliency_coarse, with_saliency, scene_detection,
-                                          use_object_nav, add_audio, web_convert, include_content, include_border):
+def convert_painting_to_presentation_bulk(input_dir, output_dir, sound_model, saliency_coarse, with_saliency,
+                                          scene_detection, use_object_nav, add_audio, web_convert,
+                                          include_content, include_border):
     for root, dirs, files in os.walk(input_dir):
         for filename in files:
             if ".jpg" in filename or ".png" in filename:
                 file_path = os.path.join(root, filename)
-                convert_painting_to_presentation(file_path, output_dir, saliency_coarse, with_saliency,
+                convert_painting_to_presentation(file_path, output_dir, sound_model, saliency_coarse, with_saliency,
                                                  scene_detection, use_object_nav, add_audio,
                                                  web_convert, include_content, include_border)
 
 
-def convert_painting_to_presentation(input_file_path, output_dir, saliency_coarse, with_saliency,
+def convert_painting_to_presentation(input_file_path, output_dir, sound_model, saliency_coarse, with_saliency,
                                      scene_detection, use_object_nav, add_audio, web_convert,
                                      include_content, include_border):
     input_file_path = os.path.abspath(input_file_path)
@@ -92,7 +93,7 @@ def convert_painting_to_presentation(input_file_path, output_dir, saliency_coars
             output_filepath_txt = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}.txt")
             audio_data.write_to_file(output_filepath_txt)
             output_filepath_aiff = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}.aiff")
-            convert_txt_to_sound("sound_engine_model1.scd", output_filepath_txt, output_filepath_aiff)
+            convert_txt_to_sound(sound_model, output_filepath_txt, output_filepath_aiff)
             output_file_vid_audio = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}_audio.avi")
             add_audio_to_video(output_file_vid, output_filepath_aiff, output_file_vid_audio)
             if web_convert:

@@ -33,6 +33,7 @@ if __name__ == '__main__':
     ImageConverter.convert_painting_to_presentation_bulk(
         "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/",
         "data/presentation_scene/",
+        "sound_engine_model2.scd",
         saliency_coarse,
         True,
         (scene_detection_visual, scene_detection_audio),
@@ -45,6 +46,7 @@ if __name__ == '__main__':
     # ImageConverter.convert_painting_to_presentation_bulk(
     #     "data/test/paintings",
     #     "data/test/paintings",
+    #     "sound_engine_model2.scd",
     #     saliency_coarse,
     #     True,
     #     (scene_detection_visual, scene_detection_audio),

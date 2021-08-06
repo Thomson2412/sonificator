@@ -21,7 +21,7 @@ KEY_STEP_MIN_MAX = (0, 6)
 LOUDNESS_MIN_MAX = (1, 100)
 OCTAVE_MIN_MAX = (2, 5)
 PAN_MIN_MAX = (0, 1500)
-MELODY_NOTE_AMOUNT = 16
+MELODY_NOTE_AMOUNT = 4
 DURATION = 4
 
 
@@ -87,7 +87,7 @@ def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_obje
         data_audio = DataStructureAudio(
             root,
             scale,
-            0,
+            MELODY_NOTE_AMOUNT,
             wave_str,
             scene_audio_path,
             len(priority_list)
@@ -241,6 +241,9 @@ def scan_img_seg_object(segmentation_img, img, edge_img, data_visual, data_audio
         right_percentage = Counter(mask.T[middle_x:img.shape[1]].flatten())[True] / segment_pixel_count
         pan = (-1 * left_percentage) + (1 * right_percentage)
 
+        melody_array = [0, 2, 4, 6, 4, 6, 11, 2, 4, 8, 11, 8, 0]
+        random.shuffle(melody_array)
+
         data_audio.append_sub_img(
             hue,
             saturation,
@@ -248,7 +251,7 @@ def scan_img_seg_object(segmentation_img, img, edge_img, data_visual, data_audio
             pan,
             duration,
             edginess,
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            melody_array,
             current_step
         )
 
