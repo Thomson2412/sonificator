@@ -9,11 +9,11 @@ if __name__ == '__main__':
     scene_detection_visual = SceneDetectionVisual("places", "resnet18")
     scene_detection_audio = SceneDetectionAudio(
         "soundnet/sound8.npy",
-        "/mnt/datadrive/projects/thesis/Datasets/Audio/Audio_Filtered",
+        "data/scene_audio",
         "soundnet/categories_imagenet.txt",
         "soundnet/categories_places2.txt",
-        "soundnet/audio_object_detection_filtered.json",
-        "soundnet/audio_scene_detection_filtered.json"
+        "soundnet/audio_object_detection_scene_audio.json",
+        "soundnet/audio_scene_detection_scene_audio.json"
     )
 
     # scene_detection_audio.update_object_scene_detection_files()
@@ -31,7 +31,7 @@ if __name__ == '__main__':
     # ImageConverter.convert_painting_to_presentation_bulk("data/test/", "data/presentation/", False, True, False, True)
 
     ImageConverter.convert_painting_to_presentation_bulk(
-        "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/",
+        "data/painter_by_numbers_scene_correct/",
         "data/presentation_scene/",
         "sound_engine_model2.scd",
         saliency_coarse,

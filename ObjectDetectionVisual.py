@@ -1,10 +1,15 @@
 import os
 import cv2
+import torch
 from detectron2 import model_zoo
 from detectron2.engine import DefaultPredictor
 from detectron2.config import get_cfg
 from detectron2.utils.visualizer import Visualizer
 from detectron2.data import MetadataCatalog
+
+# TODO: Remove when not needed anymore
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
 
 
 def detect_instances(img):
@@ -27,6 +32,8 @@ def detect_instances(img):
 
 def detect_panoptic(img):
     cfg = get_cfg()
+    if not torch.cuda.is_available():
+        cfg.MODEL.DEVICE = "cpu"
     cfg.merge_from_file(model_zoo.get_config_file("COCO-PanopticSegmentation/panoptic_fpn_R_101_3x.yaml"))
     cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-PanopticSegmentation/panoptic_fpn_R_101_3x.yaml")
     predictor = DefaultPredictor(cfg)
