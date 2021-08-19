@@ -21,10 +21,10 @@ fork{
 	if (thisProcess.argv[0] != nil) {
 		i = thisProcess.argv[0];
 	} {
-		i = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/animal_painting-Eugene_Boudin-Cows_in_a_Pasture-1883-50445.txt"
-		// i = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/allegorical_painting-Arthur_Streeton-Spirit_of_the_drought-1895-65154.txt"
-		// i = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/battle_painting-Konstantin_Korovin-Polovtsian_camp_-1914-70568.txt"
-
+		// i = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/animal_painting-Eugene_Boudin-Cows_in_a_Pasture-1883-50445.txt";
+		// i = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/allegorical_painting-Arthur_Streeton-Spirit_of_the_drought-1895-65154.txt";
+		// i = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/battle_painting-Konstantin_Korovin-Polovtsian_camp_-1914-70568.txt";
+		i = "/Users/thomas/Documents/sonificator/data/presentation_scene/animal_painting-Eugene_Boudin-Cows_in_a_Pasture-1883-50445.txt";
 	};
 
 	if (thisProcess.argv[1] != nil) {
@@ -128,9 +128,9 @@ fork{
 			env = EnvGen.kr(Env.adsr(att, dec, sus, rel), doneAction:Done.freeSelf);
 			//modulator/carrier
 			// mod = SinOsc.ar(freq * mRatio, mul:freq * mRatio * iEnv);
-			mod = VOsc.ar(bufPos, freq * detuneSig * mRatio, mul:freq * mRatio * iEnv);
-			car = SinOsc.ar(freq * detuneSig * cRatio + mod) * env * amp;
-			car = LPF.ar(car, freq: 16000, mul: 1.0, add: 0.0);
+			mod = SinOsc.ar(freq * detuneSig * mRatio, mul:freq * mRatio * iEnv);
+			car = VOsc.ar(bufPos, freq * detuneSig * cRatio + mod) * env * amp;
+			car = LPF.ar(car, freq: 2000, mul: 1.0, add: 0.0);
 			car = Pan2.ar(car, pan);
 			Out.ar(out, car);
 			Out.ar(fx, car * fxsend.dbamp);
@@ -306,13 +306,15 @@ fork{
 			\strum, 0,
 			\amp, Pseq(amps),
 			\att, Pseq(durations * 0.5),
-			\dec, Pseq(durations - releases),
+			\dec, Pseq(durations + 3),
 			\sus, 0,
 			\rel, Pseq(releases),
 			\buf, buf[0].bufnum,
 			\numBufs, buf.size,
 			\bufPos, Pseq(edginess),
 			\pan, 0,
+			// \cAtk, 0,
+			// \cRel, 0,
 			\fx, ~vbus,
 			\fxsend, -20,
 		).play;
@@ -345,7 +347,7 @@ fork{
 			\root, root,
 			\octave, Pseq(octaves),
 			\dur, Pseq(durations),
-			\strum, 0, // Pseq(strums),
+			\strum, Pseq(strums),
 			\amp, Pseq(amps),
 			\att, Pseq(durations * 0.5),
 			\dec, Pseq(durations + 3),
@@ -353,8 +355,10 @@ fork{
 			\rel, Pseq(releases),
 			\buf, buf[0].bufnum,
 			\numBufs, buf.size,
-			\bufPos, Pseq(edginess),
+			\bufPos, 0, //Pseq(edginess),
 			\pan, Pseq(pans),
+			// \index, Pseq(edginess.normalize(0, 4)),
+			// \mRatio, Pseq(scaleSteps.asFloat.normalize(1, 2)),
 			\fx, ~vbus,
 			\fxsend, -10,
 		).play;
@@ -397,7 +401,7 @@ fork{
 				\rel, 0.5,
 				\buf, buf[0].bufnum,
 				\numBufs, buf.size,
-				\bufPos, 0.9,
+				\bufPos, 0,
 				\pan, Pseq(melody_pans),
 				\fx, ~vbus,
 				\fxsend, -15,
@@ -430,9 +434,9 @@ fork{
 
 		if(scene_buffer != nil){
 			if(scene_buffer.numChannels == 1) {
-				Synth.new(\audioFileMono, scene_args);
+				// Synth.new(\audioFileMono, scene_args);
 			} {
-				Synth.new(\audioFileStereo, scene_args);
+				// Synth.new(\audioFileStereo, scene_args);
 			};
 		};
 

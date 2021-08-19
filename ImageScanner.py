@@ -210,6 +210,18 @@ def scan_img_seg_standard(width, height, steps, img, hsv_img, edge_img, saliency
 
 def scan_img_seg_object(segmentation_img, img, edge_img, data_visual, data_audio, priority_list):
     total_pixel_count = img.shape[0] * img.shape[1]
+    min_v = CV_HSV_MIN_MAX[2][1]
+    max_v = CV_HSV_MIN_MAX[2][0]
+    for current_step, mask_id in enumerate(priority_list):
+        mask = np.array(segmentation_img == mask_id)
+        sub_img_reshape = img[mask]
+        dominant_color = get_dominant_color(sub_img_reshape, 1)
+        dominant_hsv = cv2.cvtColor(np.uint8([[dominant_color]]), cv2.COLOR_BGR2HSV).flatten()
+        if dominant_hsv[2] < min_v:
+            min_v = dominant_hsv[2]
+        if dominant_hsv[2] > max_v:
+            max_v = dominant_hsv[2]
+
     for current_step, mask_id in enumerate(priority_list):
         mask = np.array(segmentation_img == mask_id)
         sub_img_reshape = img[mask]
@@ -220,7 +232,7 @@ def scan_img_seg_object(segmentation_img, img, edge_img, data_visual, data_audio
 
         hue = Utils.scale_between_range(dominant_hsv[0], CV_HSV_MIN_MAX[0], KEY_STEP_MIN_MAX)
         saturation = Utils.scale_between_range(dominant_hsv[1], CV_HSV_MIN_MAX[1], LOUDNESS_MIN_MAX)
-        intensity = Utils.scale_between_range(dominant_hsv[2], CV_HSV_MIN_MAX[2], OCTAVE_MIN_MAX)
+        intensity = Utils.scale_between_range(dominant_hsv[2], (min_v, max_v), OCTAVE_MIN_MAX)
 
         sub_edge_reshape = edge_img[mask]
         edginess = np.count_nonzero(sub_edge_reshape == 255) / sub_edge_reshape.size

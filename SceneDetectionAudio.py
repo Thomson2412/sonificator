@@ -181,7 +181,7 @@ class SceneDetectionAudio:
         for root, dirs, files in os.walk(audio_folder):
             for filename in files:
                 if root.endswith(scene.replace("/", "_")) and ".wav" in filename:
-                    scene_results.append(os.path.join(root, filename))
+                    scene_results.append(os.path.abspath(os.path.join(root, filename)))
         return scene_results
 
     def create_scene_audio_dataset_for_paintings(self, input_folder_img, output_dir, structure_only):
