@@ -60,7 +60,7 @@ def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_obje
         scene = scene_detection[0].detect(input_img)
         # TODO: Fix hardcoded folder for scene audio
         scene_audio_paths = scene_detection[1].get_audio_for_scene_folder(
-            "data/scene_audio", scene)
+            "/mnt/datadrive/projects/thesis/Datasets/Audio/Audio_Filtered", scene)
         if len(scene_audio_paths) > 0:
             scene_audio_path = random.choice(scene_audio_paths)
             print(f"{scene}: {scene_audio_path}")
