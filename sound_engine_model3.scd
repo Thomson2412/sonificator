@@ -160,19 +160,6 @@ fork{
 		}).add;
 
 		SynthDef(\audioFileMono, {
-			arg out, amp=1, bufnum, sustainTime, atk=0, rel=0, gate=1, rate=1, t_trig=1, start=0, loop=1;
-			var sig = PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum) * rate, t_trig, start, loop)!2;
-			var gateEnv = EnvGen.kr(Env([1, 1, 0], [sustainTime-rel, 0]));
-			var env = EnvGen.kr(Env.asr(atk, 1, rel), gate * gateEnv, doneAction: Done.freeSelf);
-			sig = CompanderD.ar(sig, sig, thresh: 0.4, slopeBelow: 0.5, slopeAbove: 0.1, clampTime: 0.01, relaxTime: 0.01);
-			sig = FreeVerb2.ar(sig, sig, mix: 0.5, room: 0.2, damp: 0.5);
-			sig[0] = DelayN.ar(sig[0], 0.024, 0.024);
-			sig = LPF.ar(sig, freq: 6000);
-			sig = HPF.ar(sig, freq: 220);
-			Out.ar(out, sig * env * amp);
-		}).add;
-
-		SynthDef(\audioFileMono, {
 			arg out, fx=0, fxsend=(-25), amp=1, bufnum, sustainTime, atk=0, rel=0, gate=1, rate=1, t_trig=1, start=0, loop=1;
 			var sig = PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum) * rate, t_trig, start, loop)!2;
 			var gateEnv = EnvGen.kr(Env([1, 1, 0], [sustainTime-rel, 0]));
@@ -196,6 +183,20 @@ fork{
 			sig = HPF.ar(sig, freq: 220);
 			Out.ar(out, sig * env * amp);
 			Out.ar(fx, sig * fxsend.dbamp);
+		}).add;
+
+		SynthDef(\reverb, {
+			arg in=0, out=0, dec=4, lpf=1500;
+			var sig;
+			sig = In.ar(in, 2).sum;
+			sig = DelayN.ar(sig, 0.03, 0.03);
+			sig = CombN.ar(sig, 0.1, {Rand(0.01,0.099)}!32, dec);
+			sig = SplayAz.ar(2, sig);
+			sig = LPF.ar(sig, lpf);
+			5.do{sig = AllpassN.ar(sig, 0.1, {Rand(0.01,0.099)}!2, 3)};
+			sig = LPF.ar(sig, lpf);
+			sig = LeakDC.ar(sig);
+			Out.ar(out, sig);
 		}).add;
 
 		s.sync;

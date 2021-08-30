@@ -5,7 +5,7 @@ import numpy as np
 
 
 def main():
-    input_folder = "/mnt/datadrive/projects/thesis/sonificator/data/painter_by_numbers_scene_correct_segments/"
+    input_folder = "../data/painter_by_numbers_scene_correct_segments/"
     saliency = cv2.saliency.StaticSaliencySpectralResidual_create()
     steps = 16
     for root, dirs, files in os.walk(input_folder):
@@ -13,9 +13,11 @@ def main():
             if "_segments" in filename:
                 continue
             print(f"Working on: {filename}")
-            file_path = os.path.join(root, filename)
+            file_path = os.path.abspath(os.path.join(root, filename))
 
             img = cv2.imread(file_path)
+            if img is None:
+                continue
             scale_h = (1080 / 2) / img.shape[0]
             width = int(img.shape[1] * scale_h)
             height = int(img.shape[0] * scale_h)
