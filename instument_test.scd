@@ -1,6 +1,6 @@
 (
 ~instuments = Array.new;
-~folder = PathName.new("/Users/thomas/Documents/sonificator/data/instuments/");
+~folder = PathName.new("/mnt/datadrive/projects/thesis/sonificator/data/instuments/");
 ~folder.filesDo({
 	arg file;
 	if(file.extension == "wav"){
@@ -24,11 +24,11 @@ SynthDef(\instruments, {
 (
 Pbind(
 	\instrument, \instruments,
-	\degree, Pseq([0,4,7,11], [2,5,9,12], [4,7,11,14], [5,9,12,16], [7,11,14,17], [9,12,16,19], [11,14,17,21]),
-	\root, 0,
-	\octave, 4,
+	\degree, Pseq([0,3,7], [2,5,8], [3,7,10], [5,8,12], [7,10,14], [8,12,15], [10,14,17]),
+	\root, 5,
+	\octave, 3,
 	\dur, 4,
-	\amp, 4,
+	\amp, 1,
 	\atk, 1,
 	\rel, 1,
 	\sustainTime, 4,
@@ -42,13 +42,13 @@ Pbind(
 (
 Pbind(
 	\instrument, \instruments,
-	\degree, Pseq([0,4,7,11], inf),
+	\degree, Pseq([0,3,7,2,5,8,3,7,10,5,8,12,7,10,14,8,12,15,10,14,17], inf),
 	\root, 0,
 	\octave, 3,
-	\dur, 0.5,
-	\amp, 10,
-	\atk, 0.1,
-	\rel, 0.1,
+	\dur, 0.2,
+	\amp, 1,
+	\atk, 0.01,
+	\rel, 0.01,
 	\sustainTime, 1,
 	\buf, Prand(~instuments, inf),
 	\numBufs, b.size,

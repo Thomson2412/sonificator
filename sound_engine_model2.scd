@@ -1,38 +1,37 @@
 (
-//File offsets
-~root = 0;
-~scale = 1;
-~melody_note_amount = 2;
-~waveform = 3;
-~scene_audio_path = 4;
-~steps = 5;
-~hue = 6;
-~saturation = 7;
-~intensity = 8;
-~pan = 9;
-~duration = 10;
-~edginess = 11;
-~line = 12;
-
-~vbus = Bus.audio(s, 2);
-
 fork{
+	//File offsets
+	~root = 0;
+	~scale = 1;
+	~melody_note_amount = 2;
+	~waveform = 3;
+	~scene_audio_path = 4;
+	~steps = 5;
+	~hue = 6;
+	~saturation = 7;
+	~intensity = 8;
+	~pan = 9;
+	~duration = 10;
+	~edginess = 11;
+	~line = 12;
+
+	~vbus = Bus.audio(s, 2);
 
 	if (thisProcess.argv[0] != nil) {
-		i = thisProcess.argv[0];
+		~input_file = thisProcess.argv[0];
 	} {
-		// i = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/animal_painting-Eugene_Boudin-Cows_in_a_Pasture-1883-50445.txt";
-		// i = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/allegorical_painting-Arthur_Streeton-Spirit_of_the_drought-1895-65154.txt";
-		// i = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/battle_painting-Konstantin_Korovin-Polovtsian_camp_-1914-70568.txt";
-		i = "/Users/thomas/Documents/sonificator/data/presentation_scene/animal_painting-Eugene_Boudin-Cows_in_a_Pasture-1883-50445.txt";
+		~input_file = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/animal_painting-Eugene_Boudin-Cows_in_a_Pasture-1883-50445.txt";
+		// ~input_file = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/allegorical_painting-Arthur_Streeton-Spirit_of_the_drought-1895-65154.txt";
+		// ~input_file = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/battle_painting-Konstantin_Korovin-Polovtsian_camp_-1914-70568.txt";
+		// ~input_file = "/Users/thomas/Documents/sonificator/data/presentation_scene/animal_painting-Eugene_Boudin-Cows_in_a_Pasture-1883-50445.txt";
 	};
 
 	if (thisProcess.argv[1] != nil) {
-		o = thisProcess.argv[1];
+		~output_file = thisProcess.argv[1];
 	};
 
-	i.postln;
-	o.postln;
+	~input_file.postln;
+	~output_file.postln;
 
 	Buffer.freeAll(s);
 	s.waitForBoot({
@@ -44,10 +43,13 @@ fork{
 		var saw = Env([0, 1 , -1, 0], [1, 0, 1], \lin).asSignal(512).asWavetable;
 		var square = Signal.rectWindow(512, 256).asWavetable;
 
-		var maj = [[0,4,7,11], [2,5,9,12], [4,7,11,14], [5,9,12,16], [7,11,14,17], [9,12,16,19], [11,14,17,21]];
-		var min = [[0,3,7,10], [2,5,8,12], [3,7,10,14], [5,8,12,15], [7,10,14,17], [8,12,15,19], [10,14,17,20]];
+		// var maj = [[0,4,7,11], [2,5,9,12], [4,7,11,14], [5,9,12,16], [7,11,14,17], [9,12,16,19], [11,14,17,21]];
+		// var min = [[0,3,7,10], [2,5,8,12], [3,7,10,14], [5,8,12,15], [7,10,14,17], [8,12,15,19], [10,14,17,20]];
 
-		var file = FileReader.read(i, true);
+		var maj = [[0,4,7], [2,5,9], [4,7,11], [5,9,12], [7,11,14], [9,12,16], [11,14,17]];
+		var min = [[0,3,7], [2,5,8], [3,7,10], [5,8,12], [7,10,14], [8,12,15], [10,14,17]];
+
+		var file = FileReader.read(~input_file, true);
 
 		var root;
 		var scale;
@@ -160,42 +162,45 @@ fork{
 		}).add;
 
 		SynthDef(\audioFileMono, {
-			arg out, amp=1, bufnum, sustainTime, atk=0, rel=0, gate=1, rate=1, t_trig=1, start=0, loop=1;
+			arg out, fx=0, fxsend=(-25), amp=1, bufnum, sustainTime, atk=0, rel=0, gate=1, rate=1, t_trig=1, start=0, loop=1;
 			var sig = PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum) * rate, t_trig, start, loop)!2;
 			var gateEnv = EnvGen.kr(Env([1, 1, 0], [sustainTime-rel, 0]));
-			var env = EnvGen.kr(Env.asr(atk, 1, rel), gate * gateEnv, doneAction: Done.freeSelf);
+			var env = EnvGen.kr(Env.asr(atk, sustainTime, rel, -1), gate * gateEnv, doneAction: Done.freeSelf);
 			sig = CompanderD.ar(sig, sig, thresh: 0.4, slopeBelow: 0.5, slopeAbove: 0.1, clampTime: 0.01, relaxTime: 0.01);
 			sig = FreeVerb2.ar(sig, sig, mix: 0.5, room: 0.2, damp: 0.5);
 			sig[0] = DelayN.ar(sig[0], 0.024, 0.024);
 			sig = LPF.ar(sig, freq: 6000);
 			sig = HPF.ar(sig, freq: 220);
 			Out.ar(out, sig * env * amp);
-		}).add;
-
-		SynthDef(\audioFileMono, {
-			arg out, fx=0, fxsend=(-25), amp=1, bufnum, sustainTime, atk=0, rel=0, gate=1, rate=1, t_trig=1, start=0, loop=1;
-			var sig = PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum) * rate, t_trig, start, loop)!2;
-			var gateEnv = EnvGen.kr(Env([1, 1, 0], [sustainTime-rel, 0]));
-			var env = EnvGen.kr(Env.asr(atk, 1, rel), gate * gateEnv, doneAction: Done.freeSelf);
-			sig = CompanderD.ar(sig, sig, thresh: 0.4, slopeBelow: 0.5, slopeAbove: 0.1, clampTime: 0.01, relaxTime: 0.01);
-			sig[0] = DelayN.ar(sig[0], 0.024, 0.024);
-			sig = LPF.ar(sig, freq: 6000);
-			sig = HPF.ar(sig, freq: 220);
-			Out.ar(out, sig * env * amp);
-			Out.ar(fx, sig * fxsend.dbamp);
+			// Out.ar(fx, sig * env * fxsend.dbamp);
 		}).add;
 
 		SynthDef(\audioFileStereo, {
 			arg out, fx=0, fxsend=(-25), amp=1, bufnum, sustainTime, atk=0, rel=0, gate=1, rate=1, t_trig=1, start=0, loop=1;
 			var sig = PlayBuf.ar(2, bufnum, BufRateScale.kr(bufnum) * rate, t_trig, start, loop);
 			var gateEnv = EnvGen.kr(Env([1, 1, 0], [sustainTime-rel, 0]));
-			var env = EnvGen.kr(Env.asr(atk, 1, rel), gate * gateEnv, doneAction: Done.freeSelf);
+			var env = EnvGen.kr(Env.asr(atk, sustainTime, rel, -1), gate * gateEnv, doneAction: Done.freeSelf);
 			sig = CompanderD.ar(sig, sig, thresh: 0.4, slopeBelow: 0.5, slopeAbove: 0.1, clampTime: 0.01, relaxTime: 0.01);
+			sig = FreeVerb2.ar(sig, sig, mix: 0.5, room: 0.2, damp: 0.5);
 			sig[0] = DelayN.ar(sig[0], 0.024, 0.024);
 			sig = LPF.ar(sig, freq: 6000);
 			sig = HPF.ar(sig, freq: 220);
 			Out.ar(out, sig * env * amp);
-			Out.ar(fx, sig * fxsend.dbamp);
+			// Out.ar(fx, sig * env * fxsend.dbamp);
+		}).add;
+
+		SynthDef(\reverb, {
+			arg in=0, out=0, dec=4, lpf=1500;
+			var sig;
+			sig = In.ar(in, 2).sum;
+			sig = DelayN.ar(sig, 0.03, 0.03);
+			sig = CombN.ar(sig, 0.1, {Rand(0.01,0.099)}!32, dec);
+			sig = SplayAz.ar(2, sig);
+			sig = LPF.ar(sig, lpf);
+			5.do{sig = AllpassN.ar(sig, 0.1, {Rand(0.01,0.099)}!2, 3)};
+			sig = LPF.ar(sig, lpf);
+			sig = LeakDC.ar(sig);
+			Out.ar(out, sig);
 		}).add;
 
 		s.sync;
@@ -236,7 +241,12 @@ fork{
 		if(scene_path != " " && scene_path != "") {
 			scene_buffer = Buffer.read(s, scene_path, action: {wait_for_scene_load = false;});
 			scene_buffer = scene_buffer.normalize;
-			scene_args = [\bufnum, scene_buffer.bufnum, \atk, 4, \sustainTime, durations.sum, \rel, 2, \amp, max(amps.minItem(), 0.006) + 0.1, \fxsend, -10];
+			scene_args = [
+				\bufnum, scene_buffer.bufnum,
+				\atk, 4,
+				\sustainTime, durations.sum,
+				\rel, 2,
+				\amp, max(amps.minItem() - 0.002, 0.0006)];
 		} {
 			wait_for_scene_load = false;
 		};
@@ -292,8 +302,8 @@ fork{
 		//Wait to make sure scene_buffer is loaded
 		while({wait_for_scene_load}, {0.1.wait; "Waiting on scene buffer".postln});
 
-		if(o != nil){
-			s.record(duration: durations.sum + 1, path: o);
+		if(~output_file != nil){
+			s.record(duration: durations.sum + 1, path: ~output_file);
 		};
 
 		//Bass
@@ -434,9 +444,9 @@ fork{
 
 		if(scene_buffer != nil){
 			if(scene_buffer.numChannels == 1) {
-				// Synth.new(\audioFileMono, scene_args);
+				Synth.new(\audioFileMono, scene_args);
 			} {
-				// Synth.new(\audioFileStereo, scene_args);
+				Synth.new(\audioFileStereo, scene_args);
 			};
 		};
 
@@ -465,7 +475,7 @@ fork{
 		Post << "Pans: " << pans << Char.nl;
 		Post << Char.nl;
 
-		if(o != nil){
+		if(~output_file != nil){
 			(durations.sum + 8).wait;
 			0.exit;
 		};

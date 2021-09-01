@@ -38,10 +38,10 @@ def hue_to_scale(height, width, min_max):
     img = cv2.cvtColor(img, cv2.COLOR_HSV2BGR)
     img_scaled = cv2.cvtColor(img_scaled, cv2.COLOR_HSV2BGR)
     img = cv2.vconcat([img, img_scaled])
-    # cv2.imwrite("../data/test/scale_plots/hue.png", img)
-    cv2.imshow("data/test/scale_plots/hue.png", img)
+    # cv2.imwrite("../data/test/scale_plots/hue_6.png", img)
+    cv2.imshow("data/test/scale_plots/hue_6.png", img)
     cv2.waitKey(0)
 
 
 if __name__ == '__main__':
-    hue_to_scale(200, 800, ROOT_MIN_MAX)
+    hue_to_scale(200, 800, KEY_STEP_MIN_MAX)

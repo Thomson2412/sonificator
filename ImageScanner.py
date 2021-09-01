@@ -88,7 +88,7 @@ def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_obje
         data_audio = DataStructureAudio(
             root,
             scale,
-            MELODY_NOTE_AMOUNT,
+            len(priority_list),
             wave_str,
             scene_audio_path,
             len(priority_list)
@@ -210,17 +210,24 @@ def scan_img_seg_standard(width, height, steps, img, hsv_img, edge_img, saliency
 
 def scan_img_seg_object(segmentation_img, img, edge_img, data_visual, data_audio, priority_list):
     total_pixel_count = img.shape[0] * img.shape[1]
-    min_v = CV_HSV_MIN_MAX[2][1]
-    max_v = CV_HSV_MIN_MAX[2][0]
+    # min_v = CV_HSV_MIN_MAX[2][1]
+    # max_v = CV_HSV_MIN_MAX[2][0]
+    seen_hue = []
+    seen_value = []
     for current_step, mask_id in enumerate(priority_list):
         mask = np.array(segmentation_img == mask_id)
         sub_img_reshape = img[mask]
         dominant_color = get_dominant_color(sub_img_reshape, 1)
         dominant_hsv = cv2.cvtColor(np.uint8([[dominant_color]]), cv2.COLOR_BGR2HSV).flatten()
-        if dominant_hsv[2] < min_v:
-            min_v = dominant_hsv[2]
-        if dominant_hsv[2] > max_v:
-            max_v = dominant_hsv[2]
+        # if dominant_hsv[2] < min_v:
+        #     min_v = dominant_hsv[2]
+        # if dominant_hsv[2] > max_v:
+        #     max_v = dominant_hsv[2]
+        seen_value.append(dominant_hsv[2])
+        seen_hue.append(dominant_hsv[0])
+    value_factor = ((OCTAVE_MIN_MAX[1] + 1) - OCTAVE_MIN_MAX[0]) / len(seen_value)
+    hue_factor = ((KEY_STEP_MIN_MAX[1] + 1) - KEY_STEP_MIN_MAX[0]) / len(seen_hue)
+    melody_array = [Utils.scale_between_range(seen_hue[i], (min(seen_hue), max(seen_hue)), (0, 11)) for i in range(len(seen_hue))]
 
     for current_step, mask_id in enumerate(priority_list):
         mask = np.array(segmentation_img == mask_id)
@@ -230,9 +237,15 @@ def scan_img_seg_object(segmentation_img, img, edge_img, data_visual, data_audio
         dominant_hsv = cv2.cvtColor(np.uint8([[dominant_color]]), cv2.COLOR_BGR2HSV).flatten()
 
 
-        hue = Utils.scale_between_range(dominant_hsv[0], CV_HSV_MIN_MAX[0], KEY_STEP_MIN_MAX)
+        # hue = Utils.scale_between_range(dominant_hsv[0], CV_HSV_MIN_MAX[0], KEY_STEP_MIN_MAX)
+        hue_index = sorted(seen_hue).index(dominant_hsv[0])
+        hue = math.floor(hue_index * hue_factor) + KEY_STEP_MIN_MAX[0]
+        # if hue == 6:
+        #     hue = 0
         saturation = Utils.scale_between_range(dominant_hsv[1], CV_HSV_MIN_MAX[1], LOUDNESS_MIN_MAX)
-        intensity = Utils.scale_between_range(dominant_hsv[2], (min_v, max_v), OCTAVE_MIN_MAX)
+        # intensity = Utils.scale_between_range(dominant_hsv[2], (min_v, max_v), OCTAVE_MIN_MAX)
+        intensity_index = sorted(seen_value).index(dominant_hsv[2])
+        intensity = math.floor(intensity_index * value_factor) + OCTAVE_MIN_MAX[0]
 
         sub_edge_reshape = edge_img[mask]
         edginess = np.count_nonzero(sub_edge_reshape == 255) / sub_edge_reshape.size
@@ -254,7 +267,7 @@ def scan_img_seg_object(segmentation_img, img, edge_img, data_visual, data_audio
         right_percentage = Counter(mask.T[middle_x:img.shape[1]].flatten())[True] / segment_pixel_count
         pan = (-1 * left_percentage) + (1 * right_percentage)
 
-        melody_array = [0, 2, 4, 6, 4, 6, 11, 2, 4, 8, 11, 8, 0]
+        # melody_array = [0, 2, 4, 6, 4, 6, 11, 2, 4, 8, 11, 8, 0, 4, 6, 11]
         random.shuffle(melody_array)
 
         data_audio.append_sub_img(
