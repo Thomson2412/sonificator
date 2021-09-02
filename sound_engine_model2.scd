@@ -112,7 +112,7 @@ fork{
 			arg buf=0, numBufs=1, bufPos=0,
 			freq=500, mRatio=1, cRatio=1,
 			index=2, iScale=2, cAtk=4, cRel=(-4),
-			amp=0.2, att=0.01, sus=0, dec=1, rel=0.2,
+			amp=0.2, atk=0.01, sus=0, dec=1, rel=0.2,
 			pan=0, out=0, fx=0, fxsend=(-25);
 			var car, mod, env, iEnv,detuneSig;
 			bufPos = buf + bufPos.min(numBufs - 1).max(0);
@@ -121,13 +121,13 @@ fork{
 			iEnv = EnvGen.kr(
 				Env(
 					[index, index*iScale, index],
-					[att, dec, rel],
+					[atk, dec, rel],
 					[cAtk, 1, cRel],
 				),
 				doneAction:Done.freeSelf
 			);
 			//amplitude envelope
-			env = EnvGen.kr(Env.adsr(att, dec, sus, rel), doneAction:Done.freeSelf);
+			env = EnvGen.kr(Env.adsr(atk, dec, sus, rel), doneAction:Done.freeSelf);
 			//modulator/carrier
 			// mod = SinOsc.ar(freq * mRatio, mul:freq * mRatio * iEnv);
 			mod = SinOsc.ar(freq * mRatio, mul:freq * mRatio * iEnv);
@@ -141,12 +141,12 @@ fork{
 
 		SynthDef.new(\vosc, {
 			arg buf=0, numBufs=1, bufPos=0,
-			freq=440, att=0, dec=1, sus=0, rel=0.2,
+			freq=440, atk=0, dec=1, sus=0, rel=0.2,
 			amp=0.2, gate=1, pan=0,
 			out=0, fx=0, fxsend=(-25);
 			var sig, detuneSig, env;
 			bufPos = buf + bufPos.min(numBufs - 1).max(0);
-			env = Env.adsr(att, dec, sus, rel);
+			env = Env.adsr(atk, dec, sus, rel);
 			detuneSig = LFNoise1.kr(0.2!2).bipolar(0.2).midiratio;
 			sig = VOsc.ar(bufPos, freq * detuneSig);
 			sig = Splay.ar(sig, center:pan);
@@ -162,10 +162,12 @@ fork{
 		}).add;
 
 		SynthDef(\audioFileMono, {
-			arg out, fx=0, fxsend=(-25), amp=1, bufnum, sustainTime, atk=0, rel=0, gate=1, rate=1, t_trig=1, start=0, loop=1;
+			arg out, fx=0, fxsend=(-25), amp=1, bufnum, sustainTime,
+			atk=0, dec=1, sus=0, rel=0,
+			gate=1, rate=1, t_trig=1, start=0, loop=1;
 			var sig = PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum) * rate, t_trig, start, loop)!2;
 			var gateEnv = EnvGen.kr(Env([1, 1, 0], [sustainTime-rel, 0]));
-			var env = EnvGen.kr(Env.asr(atk, sustainTime, rel, -1), gate * gateEnv, doneAction: Done.freeSelf);
+			var env = EnvGen.kr(Env.adsr(atk, dec, sus, rel, -1), gate * gateEnv, doneAction: Done.freeSelf);
 			sig = CompanderD.ar(sig, sig, thresh: 0.4, slopeBelow: 0.5, slopeAbove: 0.1, clampTime: 0.01, relaxTime: 0.01);
 			sig = FreeVerb2.ar(sig, sig, mix: 0.5, room: 0.2, damp: 0.5);
 			sig[0] = DelayN.ar(sig[0], 0.024, 0.024);
@@ -176,10 +178,12 @@ fork{
 		}).add;
 
 		SynthDef(\audioFileStereo, {
-			arg out, fx=0, fxsend=(-25), amp=1, bufnum, sustainTime, atk=0, rel=0, gate=1, rate=1, t_trig=1, start=0, loop=1;
+			arg out, fx=0, fxsend=(-25), amp=1, bufnum, sustainTime,
+			atk=0, dec=1, sus=0, rel=0,
+			gate=1, rate=1, t_trig=1, start=0, loop=1;
 			var sig = PlayBuf.ar(2, bufnum, BufRateScale.kr(bufnum) * rate, t_trig, start, loop);
 			var gateEnv = EnvGen.kr(Env([1, 1, 0], [sustainTime-rel, 0]));
-			var env = EnvGen.kr(Env.asr(atk, sustainTime, rel, -1), gate * gateEnv, doneAction: Done.freeSelf);
+			var env = EnvGen.kr(Env.adsr(atk, dec, sus, rel, -1), gate * gateEnv, doneAction: Done.freeSelf);
 			sig = CompanderD.ar(sig, sig, thresh: 0.4, slopeBelow: 0.5, slopeAbove: 0.1, clampTime: 0.01, relaxTime: 0.01);
 			sig = FreeVerb2.ar(sig, sig, mix: 0.5, room: 0.2, damp: 0.5);
 			sig[0] = DelayN.ar(sig[0], 0.024, 0.024);
@@ -315,7 +319,7 @@ fork{
 			\dur, Pseq(durations),
 			\strum, 0,
 			\amp, Pseq(amps),
-			\att, Pseq(durations * 0.5),
+			\atk, Pseq(durations * 0.5),
 			\dec, Pseq(durations + 3),
 			\sus, 0,
 			\rel, Pseq(releases),
@@ -338,7 +342,7 @@ fork{
 			\dur, Pseq(durations),
 			\strum, 0,
 			\amp, Pseq(amps),
-			\att, Pseq(durations * 0.5),
+			\atk, Pseq(durations * 0.5),
 			\dec, Pseq(durations - releases),
 			\sus, 0,
 			\rel, Pseq(releases),
@@ -359,7 +363,7 @@ fork{
 			\dur, Pseq(durations),
 			\strum, Pseq(strums),
 			\amp, Pseq(amps),
-			\att, Pseq(durations * 0.5),
+			\atk, Pseq(durations * 0.5),
 			\dec, Pseq(durations + 3),
 			\sus, 0,
 			\rel, Pseq(releases),
@@ -382,7 +386,7 @@ fork{
 			\dur, Pseq(durations),
 			\strum, 0, // Pseq(strums),
 			\amp, Pseq(amps),
-			\att, Pseq(durations * 0.5),
+			\atk, Pseq(durations * 0.5),
 			\dec, Pseq(durations - releases),
 			\sus, 0,
 			\rel, Pseq(releases),
@@ -405,7 +409,7 @@ fork{
 				\dur, Pseq(melody_notes_durations),
 				\strum, 0,
 				\amp, Pseq(melody_amps),
-				\att, 0.08,
+				\atk, 0.08,
 				\dec, 0.5,
 				\sus, 0,
 				\rel, 0.5,
@@ -427,7 +431,7 @@ fork{
 				\dur, Pseq(melody_notes_durations),
 				\strum, 0,
 				\amp, Pseq(melody_amps),
-				\att, 0.08,
+				\atk, 0.08,
 				\dec, 0.5,
 				\sus, 0,
 				\rel, 0.5,

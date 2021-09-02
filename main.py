@@ -28,28 +28,28 @@ if __name__ == '__main__':
 
     # ImageConverter.convert_txt_to_sound_bulk("sound_engine_model1.scd", "converted/")
 
-    # ImageConverter.convert_paintings_to_txt_bulk(
-    #     "data/test/paintings",
-    #     "data/test/paintings",
-    #     saliency_coarse,
-    #     True,
-    #     (scene_detection_visual, scene_detection_audio),
-    #     True)
-
-    # ImageConverter.convert_painting_to_presentation_bulk("data/test/", "data/presentation/", False, True, False, True)
-
-    ImageConverter.convert_painting_to_presentation_bulk(
-        "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/",
-        "data/presentation_scene/",
-        "sound_engine_model3.scd",
+    ImageConverter.convert_paintings_to_txt_bulk(
+        "data/test/paintings",
+        "data/test/paintings",
         saliency_coarse,
         True,
         (scene_detection_visual, scene_detection_audio),
-        True,
-        True,
-        False,
-        True,
-        False)
+        True)
+
+    # ImageConverter.convert_painting_to_presentation_bulk("data/test/", "data/presentation/", False, True, False, True)
+
+    # ImageConverter.convert_painting_to_presentation_bulk(
+    #     "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/",
+    #     "data/presentation_scene/",
+    #     "sound_engine_model3.scd",
+    #     saliency_coarse,
+    #     True,
+    #     (scene_detection_visual, scene_detection_audio),
+    #     True,
+    #     True,
+    #     False,
+    #     True,
+    #     False)
 
     # ImageConverter.convert_painting_to_presentation_bulk(
     #     "data/test/paintings",

@@ -6,14 +6,15 @@ fork{
 	~melody_note_amount = 2;
 	~waveform = 3;
 	~scene_audio_path = 4;
-	~steps = 5;
-	~hue = 6;
-	~saturation = 7;
-	~intensity = 8;
-	~pan = 9;
-	~duration = 10;
-	~edginess = 11;
-	~line = 12;
+	~things = 5;
+	~steps = 6;
+	~hue = 7;
+	~saturation = 8;
+	~intensity = 9;
+	~pan = 10;
+	~duration = 11;
+	~edginess = 12;
+	~line = 13;
 
 	~vbus = Bus.audio(s, 2);
 
@@ -22,9 +23,13 @@ fork{
 	if (thisProcess.argv[0] != nil) {
 		~input_file = thisProcess.argv[0];
 	} {
-		~input_file = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/animal_painting-Eugene_Boudin-Cows_in_a_Pasture-1883-50445.txt";
+		// ~input_file = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/animal_painting-Eugene_Boudin-Cows_in_a_Pasture-1883-50445.txt";
 		// ~input_file = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/allegorical_painting-Arthur_Streeton-Spirit_of_the_drought-1895-65154.txt";
 		// ~input_file = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/battle_painting-Konstantin_Korovin-Polovtsian_camp_-1914-70568.txt";
+
+		~input_file = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/Hunters_in_the_Snow_(Winter)_by_Pieter_Bruegel_the_Elder.txt";
+		// ~input_file = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/Corot_Venise,_La_Piazetta.txt";
+
 		// ~input_file = "/Users/thomas/Documents/sonificator/data/presentation_scene/animal_painting-Eugene_Boudin-Cows_in_a_Pasture-1883-50445.txt";
 	};
 
@@ -37,6 +42,7 @@ fork{
 
 	// Server.killAll();
 	Buffer.freeAll(s);
+	CmdPeriod.run;
 	s.waitForBoot({
 		var buf;
 		var wt = Array.newClear(3);
@@ -63,6 +69,8 @@ fork{
 		var scene_buffer;
 		var scene_args;
 		var wait_for_scene_load = true;
+
+		var amount_of_things;
 
 		var steps;
 
@@ -125,7 +133,7 @@ fork{
 			arg buf=0, numBufs=1, bufPos=0,
 			freq=500, mRatio=1, cRatio=1,
 			index=2, iScale=2, cAtk=4, cRel=(-4),
-			amp=0.2, att=0.01, sus=0, dec=1, rel=0.2,
+			amp=0.2, atk=0.01, sus=0, dec=1, rel=0.2,
 			pan=0, out=0, fx=0, fxsend=(-25);
 			var car, mod, env, iEnv,detuneSig;
 			bufPos = buf + bufPos.min(numBufs - 1).max(0);
@@ -134,19 +142,19 @@ fork{
 			iEnv = EnvGen.kr(
 				Env(
 					[index, index*iScale, index],
-					[att, dec, rel],
+					[atk, dec, rel],
 					[cAtk, 1, cRel],
 				),
 				doneAction:Done.freeSelf
 			);
 			//amplitude envelope
-			env = EnvGen.kr(Env.adsr(att, dec, sus, rel), doneAction:Done.freeSelf);
+			env = EnvGen.kr(Env.adsr(atk, dec, sus, rel), doneAction:Done.freeSelf);
 			//modulator/carrier
 			// mod = SinOsc.ar(freq * mRatio, mul:freq * mRatio * iEnv);
 			mod = SinOsc.ar(freq * mRatio, mul:freq * mRatio * iEnv);
 			car = Osc.ar(bufPos, freq * detuneSig * cRatio + mod) * env * amp;
 			// car = SinOsc.ar(freq * detuneSig * cRatio + mod) * env * amp;
-			// car = LPF.ar(car, freq: 2000, mul: 1.0, add: 0.0);
+			car = LPF.ar(car, freq: 2000, mul: 1.0, add: 0.0);
 			car = Pan2.ar(car, pan);
 			Out.ar(out, car);
 			Out.ar(fx, car * fxsend.dbamp);
@@ -154,12 +162,12 @@ fork{
 
 		SynthDef.new(\vosc, {
 			arg buf=0, numBufs=1, bufPos=0,
-			freq=440, att=0, dec=1, sus=0, rel=0.2,
+			freq=440, atk=0, dec=1, sus=0, rel=0.2,
 			amp=0.2, gate=1, pan=0,
 			out=0, fx=0, fxsend=(-25);
 			var sig, detuneSig, env;
 			bufPos = buf + bufPos.min(numBufs - 1).max(0);
-			env = Env.adsr(att, dec, sus, rel);
+			env = Env.adsr(atk, dec, sus, rel);
 			detuneSig = LFNoise1.kr(0.2!2).bipolar(0.2).midiratio;
 			sig = VOsc.ar(bufPos, freq * detuneSig);
 			sig = Splay.ar(sig, center:pan);
@@ -175,38 +183,44 @@ fork{
 		}).add;
 
 		SynthDef(\instruments, {
-			arg out, freq=60.midicps, amp=1, buf, sustainTime, atk=0, rel=0, pan=0, gate=1, t_trig=1, start=0, loop=1;
+			arg out, freq=60.midicps, amp=1, buf, sustainTime,
+			atk=0, dec=1, sus=0, rel=0,
+			pan=0, gate=1, t_trig=1, start=0, loop=1;
 			var sig = PlayBuf.ar(2, buf, (freq / 60.midicps) * BufRateScale.kr(buf), t_trig, start, loop);
 			var gateEnv = EnvGen.kr(Env([1, 1, 0], [sustainTime-rel, 0]));
-			var env = EnvGen.kr(Env.asr(atk, sustainTime, rel), gate * gateEnv, doneAction: Done.freeSelf);
+			var env = EnvGen.kr(Env.adsr(atk, dec, sus, rel), gate * gateEnv, doneAction: Done.freeSelf);
 			sig[0] = DelayN.ar(sig[0], 0.024, 0.024);
 			sig = Splay.ar(sig, center:pan);
 			Out.ar(out, sig * env * (amp + 0.4));
 		}).add;
 
 		SynthDef(\audioFileMono, {
-			arg out, fx=0, fxsend=(-25), amp=1, bufnum, sustainTime, atk=0, rel=0, gate=1, rate=1, t_trig=1, start=0, loop=1;
+			arg out, fx=0, fxsend=(-25), amp=1, bufnum, sustainTime,
+			atk=0, dec=1, sus=0, rel=0,
+			gate=1, rate=1, t_trig=1, start=0, loop=1;
 			var sig = PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum) * rate, t_trig, start, loop)!2;
 			var gateEnv = EnvGen.kr(Env([1, 1, 0], [sustainTime-rel, 0]));
-			var env = EnvGen.kr(Env.asr(atk, sustainTime, rel, -1), gate * gateEnv, doneAction: Done.freeSelf);
+			var env = EnvGen.kr(Env.adsr(atk, dec, sus, rel, 1), gate * gateEnv, doneAction: Done.freeSelf);
 			sig = CompanderD.ar(sig, sig, thresh: 0.4, slopeBelow: 0.5, slopeAbove: 0.1, clampTime: 0.01, relaxTime: 0.01);
 			sig = FreeVerb2.ar(sig, sig, mix: 0.5, room: 0.2, damp: 0.5);
 			sig[0] = DelayN.ar(sig[0], 0.024, 0.024);
-			sig = LPF.ar(sig, freq: 6000);
+			sig = LPF.ar(sig, freq: 4000);
 			sig = HPF.ar(sig, freq: 220);
 			Out.ar(out, sig * env * amp);
 			// Out.ar(fx, sig * env * fxsend.dbamp);
 		}).add;
 
 		SynthDef(\audioFileStereo, {
-			arg out, fx=0, fxsend=(-25), amp=1, bufnum, sustainTime, atk=0, rel=0, gate=1, rate=1, t_trig=1, start=0, loop=1;
+			arg out, fx=0, fxsend=(-25), amp=1, bufnum, sustainTime,
+			atk=0, dec=1, sus=0, rel=0,
+			gate=1, rate=1, t_trig=1, start=0, loop=1;
 			var sig = PlayBuf.ar(2, bufnum, BufRateScale.kr(bufnum) * rate, t_trig, start, loop);
 			var gateEnv = EnvGen.kr(Env([1, 1, 0], [sustainTime-rel, 0]));
-			var env = EnvGen.kr(Env.asr(atk, sustainTime, rel, -1), gate * gateEnv, doneAction: Done.freeSelf);
+			var env = EnvGen.kr(Env.adsr(atk, dec, sus, rel, 1), gate * gateEnv, doneAction: Done.freeSelf);
 			sig = CompanderD.ar(sig, sig, thresh: 0.4, slopeBelow: 0.5, slopeAbove: 0.1, clampTime: 0.01, relaxTime: 0.01);
 			sig = FreeVerb2.ar(sig, sig, mix: 0.5, room: 0.2, damp: 0.5);
 			sig[0] = DelayN.ar(sig[0], 0.024, 0.024);
-			sig = LPF.ar(sig, freq: 6000);
+			sig = LPF.ar(sig, freq: 4000);
 			sig = HPF.ar(sig, freq: 220);
 			Out.ar(out, sig * env * amp);
 			// Out.ar(fx, sig * env * fxsend.dbamp);
@@ -238,6 +252,8 @@ fork{
 
 		scene_path = file[~scene_audio_path][0];
 
+		amount_of_things = file[~things][0].asInteger;
+
 		scaleSteps = file[~hue].asInteger;
 
 		if(file[~scale][0].asInteger == 0) {
@@ -256,7 +272,7 @@ fork{
 
 		amps = file[~saturation].asInteger / 1000;
 		amps = max(min(amps, 0.1), 0.001);
-		durations = file[~duration].asInteger;
+		durations = file[~duration].asFloat;
 		releases = durations * 0.5;
 		strums = Array.fill(steps, {0.08.rand + 0.02});
 		pans = file[~pan].asFloat;
@@ -267,9 +283,11 @@ fork{
 			scene_args = [
 				\bufnum, scene_buffer.bufnum,
 				\atk, 4,
+				\dec, 0,
+				\sus, 1,
+				\rel, 1,
 				\sustainTime, durations.sum,
-				\rel, 2,
-				\amp, max(amps.minItem() - 0.008, 0.0006)];
+				\amp, max(amps.minItem() + 0.05, 0.0006)];
 		} {
 			wait_for_scene_load = false;
 		};
@@ -358,7 +376,7 @@ fork{
 			\dur, Pseq(durations),
 			\strum, 0,
 			\amp, Pseq(amps),
-			\att, Pseq(durations * 0.5),
+			\atk, Pseq(durations * 0.5),
 			\dec, Pseq(durations + 3),
 			\sus, 0,
 			\rel, Pseq(releases),
@@ -381,7 +399,7 @@ fork{
 			\dur, Pseq(durations),
 			\strum, 0,
 			\amp, Pseq(amps),
-			\att, Pseq(durations * 0.5),
+			\atk, Pseq(durations * 0.5),
 			\dec, Pseq(durations - releases),
 			\sus, 0,
 			\rel, Pseq(releases),
@@ -401,7 +419,7 @@ fork{
 			\octave, Pseq(octaves),
 			\dur, Pseq(durations),
 			// \strum, Pseq(strums),
-			\amp, Pseq(amps),
+			\amp, Pseq(amps + 0.2),
 			\atk, Pseq(durations * 0.8),
 			\dec, Pseq(durations + 3),
 			\sus, 0,
@@ -422,7 +440,7 @@ fork{
 			\dur, Pseq(durations),
 			\strum, Pseq(strums),
 			\amp, Pseq(amps),
-			\att, Pseq(durations * 0.8),
+			\atk, Pseq(durations * 0.8),
 			\dec, Pseq(durations + 3),
 			\sus, 0,
 			\rel, Pseq(releases),
@@ -445,7 +463,7 @@ fork{
 			\dur, Pseq(durations),
 			\strum, 0, // Pseq(strums),
 			\amp, Pseq(amps),
-			\att, Pseq(durations * 0.5),
+			\atk, Pseq(durations * 0.5),
 			\dec, Pseq(durations - releases),
 			\sus, 0,
 			\rel, Pseq(releases),
@@ -464,15 +482,16 @@ fork{
 				\degree, Pseq(melody_notes),
 				\scale, scale,
 				\root, root,
-				\octave, Pseq(melody_octaves),
+				\octave, Pseq(melody_octaves - 1),
 				\dur, Pseq(melody_notes_durations),
 				\strum, 0,
-				\amp, Pseq(melody_amps + 1),
-				\att, 0.08,
-				\dec, 0.5,
+				\amp, Pseq(melody_amps + 0.3),
+				\atk, 0.08,
+				\dec, Pseq(melody_notes_durations),
 				\sus, 0,
-				\sustainTime, Pseq(melody_notes_durations),
+				\sustainTime, Pseq(melody_notes_durations + 2),
 				\rel, 0.5,
+				\start, 4,
 				\buf, Pseq(melody_notes.collect(scaleSteps.collect({arg i; instruments[i]}))),
 				\pan, Pseq(melody_pans),
 				\fx, ~vbus,
@@ -480,7 +499,7 @@ fork{
 			).play;
 
 			//Melody
-/*			Pbind(
+			Pbind(
 				\instrument, \fm,
 				\degree, Pseq(melody_notes),
 				\scale, scale,
@@ -489,7 +508,7 @@ fork{
 				\dur, Pseq(melody_notes_durations),
 				\strum, 0,
 				\amp, Pseq(melody_amps),
-				\att, 0.08,
+				\atk, 0.08,
 				\dec, 0.5,
 				\sus, 0,
 				\rel, 0.5,
@@ -499,7 +518,7 @@ fork{
 				\pan, Pseq(melody_pans),
 				\fx, ~vbus,
 				\fxsend, -15,
-			).play;*/
+			).play;
 
 			//Melody
 /*			Pbind(
@@ -511,7 +530,7 @@ fork{
 				\dur, Pseq(melody_notes_durations),
 				\strum, 0,
 				\amp, Pseq(melody_amps),
-				\att, 0.08,
+				\atk, 0.08,
 				\dec, 0.5,
 				\sus, 0,
 				\rel, 0.5,
@@ -542,6 +561,8 @@ fork{
 		Post << "Octaves: " << octaves << Char.nl;
 		Post << "ScaleSteps: " << scaleSteps << Char.nl;
 		Post << "Chords: " << chords << Char.nl;
+
+		Post << "Things: " << amount_of_things << Char.nl;
 
 		Post << "Lines: " << lines << Char.nl;
 		Post << "Melody notes: " << melody_notes << Char.nl;
