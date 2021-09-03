@@ -251,8 +251,9 @@ def scan_img_seg_object(segmentation_img, img, edge_img, data_visual, data_audio
 
         segment_pixel_count = sub_img_reshape.shape[0]
         area_percentage = (segment_pixel_count / total_pixel_count) * 100
-        # duration = Utils.scale_between_range(area_percentage, (0, 100), (2, 8))
-        duration = 4 * (things / 10)
+        duration = Utils.scale_between_range(area_percentage, (0, 100), (max(1, 4 - (things / 4)), max(4, 16 - things)))
+        # area_factor = (segment_pixel_count / total_pixel_count)
+        # duration = min(max(2, (20 - things) * area_factor), 8)
 
         presentation_img = np.array(img, copy=True)
         presentation_img[mask] = cv2.cvtColor(np.uint8([[dominant_hsv]]), cv2.COLOR_HSV2BGR)

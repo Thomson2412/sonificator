@@ -28,13 +28,13 @@ if __name__ == '__main__':
 
     # ImageConverter.convert_txt_to_sound_bulk("sound_engine_model1.scd", "converted/")
 
-    ImageConverter.convert_paintings_to_txt_bulk(
-        "data/test/paintings",
-        "data/test/paintings",
-        saliency_coarse,
-        True,
-        (scene_detection_visual, scene_detection_audio),
-        True)
+    # ImageConverter.convert_paintings_to_txt_bulk(
+    #     "data/test/paintings",
+    #     "data/test/paintings",
+    #     saliency_coarse,
+    #     True,
+    #     (scene_detection_visual, scene_detection_audio),
+    #     True)
 
     # ImageConverter.convert_painting_to_presentation_bulk("data/test/", "data/presentation/", False, True, False, True)
 
@@ -51,18 +51,18 @@ if __name__ == '__main__':
     #     True,
     #     False)
 
-    # ImageConverter.convert_painting_to_presentation_bulk(
-    #     "data/test/paintings",
-    #     "data/test/paintings",
-    #     "sound_engine_model2.scd",
-    #     saliency_coarse,
-    #     True,
-    #     (scene_detection_visual, scene_detection_audio),
-    #     True,
-    #     True,
-    #     False,
-    #     True,
-    #     False)
+    ImageConverter.convert_painting_to_presentation_bulk(
+        "data/test/paintings",
+        "data/test/paintings",
+        "sound_engine_model3.scd",
+        saliency_coarse,
+        True,
+        (scene_detection_visual, scene_detection_audio),
+        True,
+        True,
+        False,
+        True,
+        False)
 
     # saliency_coarse = cv2.saliency.StaticSaliencySpectralResidual_create()
     # ImageConverter.convert_painting_to_presentation(

@@ -27,7 +27,7 @@ fork{
 		// ~input_file = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/allegorical_painting-Arthur_Streeton-Spirit_of_the_drought-1895-65154.txt";
 		// ~input_file = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/battle_painting-Konstantin_Korovin-Polovtsian_camp_-1914-70568.txt";
 
-		~input_file = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/Hunters_in_the_Snow_(Winter)_by_Pieter_Bruegel_the_Elder.txt";
+		// ~input_file = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/Hunters_in_the_Snow_(Winter)_by_Pieter_Bruegel_the_Elder.txt";
 		// ~input_file = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/Corot_Venise,_La_Piazetta.txt";
 
 		// ~input_file = "/Users/thomas/Documents/sonificator/data/presentation_scene/animal_painting-Eugene_Boudin-Cows_in_a_Pasture-1883-50445.txt";
@@ -77,7 +77,7 @@ fork{
 		var octaves;
 
 
-		var scaleSteps;
+		var scale_steps;
 		var chords;
 
 		var lines;
@@ -254,14 +254,14 @@ fork{
 
 		amount_of_things = file[~things][0].asInteger;
 
-		scaleSteps = file[~hue].asInteger;
+		scale_steps = file[~hue].asInteger;
 
 		if(file[~scale][0].asInteger == 0) {
 			scale = Scale.melodicMinor;
-			chords = scaleSteps.collect({arg i; min[i]});
+			chords = scale_steps.collect({arg i; min[i]});
 		} {
 			scale = Scale.major;
-			chords = scaleSteps.collect({arg i; maj[i]});
+			chords = scale_steps.collect({arg i; maj[i]});
 		};
 
 		octaves = file[~intensity].asInteger;
@@ -333,7 +333,7 @@ fork{
 				//.nearestInScale(chords[s]);
 
 				melody_octaves[melody_note_count] = octaves[s] + 1;
-				melody_amps[melody_note_count] = amps[s];
+				melody_amps[melody_note_count] = amps[s] + 0.08;
 				melody_pans[melody_note_count] = pans[s] + rrand(-0.1, 0.1);
 
 				melody_note_count = melody_note_count + 1;
@@ -361,7 +361,7 @@ fork{
 			\sus, 0,
 			\sustainTime, Pseq(durations),
 			\rel, Pseq(releases),
-			\buf, Pseq(scaleSteps.collect({arg i; instruments[i]})),
+			\buf, Pseq(scale_steps.collect({arg i; instruments[i]})),
 			\pan, 0,
 			\fx, ~vbus,
 			\fxsend, -20,
@@ -419,13 +419,13 @@ fork{
 			\octave, Pseq(octaves),
 			\dur, Pseq(durations),
 			// \strum, Pseq(strums),
-			\amp, Pseq(amps + 0.2),
+			\amp, Pseq(amps + 0.4),
 			\atk, Pseq(durations * 0.8),
 			\dec, Pseq(durations + 3),
 			\sus, 0,
 			\sustainTime, Pseq(durations),
 			\rel, Pseq(releases),
-			\buf, Pseq(scaleSteps.collect({arg i; instruments[i]})),
+			\buf, Pseq(scale_steps.collect({arg i; instruments[i]})),
 			\pan, Pseq(pans),
 			\fx, ~vbus,
 			\fxsend, -10,
@@ -449,7 +449,7 @@ fork{
 			\bufPos, Pseq(edginess),
 			\pan, Pseq(pans),
 			\index, Pseq(edginess.normalize(0, 4)),
-			// \mRatio, Pseq(scaleSteps.asFloat.normalize(1, 2)),
+			// \mRatio, Pseq(scale_steps.asFloat.normalize(1, 2)),
 			\fx, ~vbus,
 			\fxsend, -10,
 		).play;
@@ -482,17 +482,17 @@ fork{
 				\degree, Pseq(melody_notes),
 				\scale, scale,
 				\root, root,
-				\octave, Pseq(melody_octaves - 1),
+				\octave, Pseq(melody_octaves),
 				\dur, Pseq(melody_notes_durations),
 				\strum, 0,
-				\amp, Pseq(melody_amps + 0.3),
+				\amp, Pseq(melody_amps),
 				\atk, 0.08,
 				\dec, Pseq(melody_notes_durations),
 				\sus, 0,
-				\sustainTime, Pseq(melody_notes_durations + 2),
+				\sustainTime, Pseq(melody_notes_durations),
 				\rel, 0.5,
 				\start, 4,
-				\buf, Pseq(melody_notes.collect(scaleSteps.collect({arg i; instruments[i]}))),
+				\buf, Pseq(steps.collect({arg i; melody_notes_amount_local.collect({instruments[scale_steps[i]]})})),
 				\pan, Pseq(melody_pans),
 				\fx, ~vbus,
 				\fxsend, -15,
@@ -559,7 +559,7 @@ fork{
 		Post << "Scene: " << scene_path << Char.nl;
 		Post << "Steps: " << root << Char.nl;
 		Post << "Octaves: " << octaves << Char.nl;
-		Post << "ScaleSteps: " << scaleSteps << Char.nl;
+		Post << "scale_steps: " << scale_steps << Char.nl;
 		Post << "Chords: " << chords << Char.nl;
 
 		Post << "Things: " << amount_of_things << Char.nl;
