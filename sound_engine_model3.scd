@@ -24,7 +24,7 @@ fork{
 		~input_file = thisProcess.argv[0];
 	} {
 		// ~input_file = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/animal_painting-Eugene_Boudin-Cows_in_a_Pasture-1883-50445.txt";
-		// ~input_file = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/allegorical_painting-Arthur_Streeton-Spirit_of_the_drought-1895-65154.txt";
+		~input_file = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/allegorical_painting-Arthur_Streeton-Spirit_of_the_drought-1895-65154.txt";
 		// ~input_file = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/battle_painting-Konstantin_Korovin-Polovtsian_camp_-1914-70568.txt";
 
 		// ~input_file = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/Hunters_in_the_Snow_(Winter)_by_Pieter_Bruegel_the_Elder.txt";
@@ -53,6 +53,7 @@ fork{
 		var square = Signal.rectWindow(512, 256).asWavetable;
 
 		var instruments = Array.new;
+		var instruments_melody = Array.new;
 
 		// var maj = [[0,4,7,11], [2,5,9,12], [4,7,11,14], [5,9,12,16], [7,11,14,17], [9,12,16,19], [11,14,17,21]];
 		// var min = [[0,3,7,10], [2,5,8,12], [3,7,10,14], [5,8,12,15], [7,10,14,17], [8,12,15,19], [10,14,17,20]];
@@ -187,7 +188,7 @@ fork{
 			atk=0, dec=1, sus=0, rel=0,
 			pan=0, gate=1, t_trig=1, start=0, loop=1;
 			var sig = PlayBuf.ar(2, buf, (freq / 60.midicps) * BufRateScale.kr(buf), t_trig, start, loop);
-			var gateEnv = EnvGen.kr(Env([1, 1, 0], [sustainTime-rel, 0]));
+			var gateEnv = EnvGen.kr(Env([1, 1, 0], [sustainTime, 0]));
 			var env = EnvGen.kr(Env.adsr(atk, dec, sus, rel), gate * gateEnv, doneAction: Done.freeSelf);
 			sig[0] = DelayN.ar(sig[0], 0.024, 0.024);
 			sig = Splay.ar(sig, center:pan);
@@ -199,7 +200,7 @@ fork{
 			atk=0, dec=1, sus=0, rel=0,
 			gate=1, rate=1, t_trig=1, start=0, loop=1;
 			var sig = PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum) * rate, t_trig, start, loop)!2;
-			var gateEnv = EnvGen.kr(Env([1, 1, 0], [sustainTime-rel, 0]));
+			var gateEnv = EnvGen.kr(Env([1, 1, 0], [sustainTime, 0]));
 			var env = EnvGen.kr(Env.adsr(atk, dec, sus, rel, 1), gate * gateEnv, doneAction: Done.freeSelf);
 			sig = CompanderD.ar(sig, sig, thresh: 0.4, slopeBelow: 0.5, slopeAbove: 0.1, clampTime: 0.01, relaxTime: 0.01);
 			sig = FreeVerb2.ar(sig, sig, mix: 0.5, room: 0.2, damp: 0.5);
@@ -215,7 +216,7 @@ fork{
 			atk=0, dec=1, sus=0, rel=0,
 			gate=1, rate=1, t_trig=1, start=0, loop=1;
 			var sig = PlayBuf.ar(2, bufnum, BufRateScale.kr(bufnum) * rate, t_trig, start, loop);
-			var gateEnv = EnvGen.kr(Env([1, 1, 0], [sustainTime-rel, 0]));
+			var gateEnv = EnvGen.kr(Env([1, 1, 0], [sustainTime, 0]));
 			var env = EnvGen.kr(Env.adsr(atk, dec, sus, rel, 1), gate * gateEnv, doneAction: Done.freeSelf);
 			sig = CompanderD.ar(sig, sig, thresh: 0.4, slopeBelow: 0.5, slopeAbove: 0.1, clampTime: 0.01, relaxTime: 0.01);
 			sig = FreeVerb2.ar(sig, sig, mix: 0.5, room: 0.2, damp: 0.5);
@@ -285,7 +286,7 @@ fork{
 				\atk, 4,
 				\dec, 0,
 				\sus, 1,
-				\rel, 1,
+				\rel, 4,
 				\sustainTime, durations.sum,
 				\amp, max(amps.minItem() + 0.05, 0.0006)];
 		} {
@@ -419,7 +420,7 @@ fork{
 			\octave, Pseq(octaves),
 			\dur, Pseq(durations),
 			// \strum, Pseq(strums),
-			\amp, Pseq(amps + 0.4),
+			\amp, Pseq(amps + 1),
 			\atk, Pseq(durations * 0.8),
 			\dec, Pseq(durations + 3),
 			\sus, 0,
@@ -477,6 +478,7 @@ fork{
 
 		if(melody_notes_amount_local > 0){
 			//Melody
+			steps.do({arg i; melody_notes_amount_local.do({instruments_melody = instruments_melody.add(instruments[scale_steps[i]])})});
 			Pbind(
 				\instrument, \instruments,
 				\degree, Pseq(melody_notes),
@@ -484,15 +486,13 @@ fork{
 				\root, root,
 				\octave, Pseq(melody_octaves),
 				\dur, Pseq(melody_notes_durations),
-				\strum, 0,
-				\amp, Pseq(melody_amps),
+				\amp, Pseq(melody_amps + 2),
 				\atk, 0.08,
 				\dec, Pseq(melody_notes_durations),
 				\sus, 0,
 				\sustainTime, Pseq(melody_notes_durations),
 				\rel, 0.5,
-				\start, 4,
-				\buf, Pseq(steps.collect({arg i; melody_notes_amount_local.collect({instruments[scale_steps[i]]})})),
+				\buf, Pseq(instruments_melody),
 				\pan, Pseq(melody_pans),
 				\fx, ~vbus,
 				\fxsend, -15,
@@ -506,10 +506,10 @@ fork{
 				\root, root,
 				\octave, Pseq(melody_octaves),
 				\dur, Pseq(melody_notes_durations),
-				\strum, 0,
 				\amp, Pseq(melody_amps),
 				\atk, 0.08,
 				\dec, 0.5,
+				// \dec, Pseq(melody_notes_durations),
 				\sus, 0,
 				\rel, 0.5,
 				\buf, buf[0].bufnum,

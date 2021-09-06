@@ -13,20 +13,20 @@ STEPS = 16
 
 
 def convert_paintings_to_txt_bulk(input_dir, output_dir, saliency_coarse, with_saliency, scene_detection,
-                                  use_object_nav):
+                                  use_object_nav, inner_scaling):
     for root, dirs, files in os.walk(input_dir):
         for filename in files:
             if ".jpg" in filename or ".png" in filename:
                 input_file_path = os.path.join(root, filename)
                 output_file_path = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}.txt")
                 convert_paintings_to_txt(input_file_path, output_file_path, saliency_coarse, with_saliency,
-                                         scene_detection, use_object_nav)
+                                         scene_detection, use_object_nav, inner_scaling)
 
 
 def convert_paintings_to_txt(input_file_path, output_file_path, saliency_coarse, with_saliency, scene_detection,
-                             use_object_nav):
+                             use_object_nav, inner_scaling):
     data = ImageScanner.scan_img(
-        input_file_path, STEPS, saliency_coarse, with_saliency, scene_detection, use_object_nav)
+        input_file_path, STEPS, saliency_coarse, with_saliency, scene_detection, use_object_nav, inner_scaling)
     if data:
         data[0].write_to_file(output_file_path)
 
@@ -63,23 +63,23 @@ def convert_txt_to_sound(exec_file, input_file_path, output_file_path):
 
 def convert_painting_to_presentation_bulk(input_dir, output_dir, sound_model, saliency_coarse, with_saliency,
                                           scene_detection, use_object_nav, add_audio, web_convert,
-                                          include_content, include_border):
+                                          include_content, include_border, inner_scaling):
     for root, dirs, files in os.walk(input_dir):
         for filename in files:
             if ".jpg" in filename or ".png" in filename:
                 file_path = os.path.join(root, filename)
                 convert_painting_to_presentation(file_path, output_dir, sound_model, saliency_coarse, with_saliency,
                                                  scene_detection, use_object_nav, add_audio,
-                                                 web_convert, include_content, include_border)
+                                                 web_convert, include_content, include_border, inner_scaling)
 
 
 def convert_painting_to_presentation(input_file_path, output_dir, sound_model, saliency_coarse, with_saliency,
                                      scene_detection, use_object_nav, add_audio, web_convert,
-                                     include_content, include_border):
+                                     include_content, include_border, inner_scaling):
     input_file_path = os.path.abspath(input_file_path)
     filename = os.path.basename(input_file_path)
     data = ImageScanner.scan_img(input_file_path, STEPS, saliency_coarse, with_saliency, scene_detection,
-                                 use_object_nav)
+                                 use_object_nav, inner_scaling)
 
     if data:
         visual_data = data[1]

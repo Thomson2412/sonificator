@@ -13,7 +13,8 @@ if __name__ == '__main__':
         "soundnet/categories_imagenet.txt",
         "soundnet/categories_places2.txt",
         "soundnet/audio_object_detection_scene_audio.json",
-        "soundnet/audio_scene_detection_scene_audio.json"
+        "soundnet/audio_scene_detection_scene_audio.json",
+        "/mnt/datadrive/projects/thesis/Datasets/Audio/Audio_Filtered"
     )
 
     # scene_detection_audio.update_object_scene_detection_files()
@@ -62,6 +63,7 @@ if __name__ == '__main__':
         True,
         False,
         True,
+        False,
         False)
 
     # saliency_coarse = cv2.saliency.StaticSaliencySpectralResidual_create()

@@ -33,13 +33,14 @@ def predictions_to_categories(prediction, cat):
 
 class SceneDetectionAudio:
     def __init__(self, model_path, dataset_base_dir, object_categories, scene_categories,
-                 object_data_file, scene_data_file):
+                 object_data_file, scene_data_file, organized_audio_folder):
         self.model_path = model_path
         self.dataset_base_dir = dataset_base_dir
         self.object_categories = object_categories
         self.scene_categories = scene_categories
         self.object_data_file = object_data_file
         self.scene_data_file = scene_data_file
+        self.organized_audio_folder = organized_audio_folder
 
     def build_model(self):
         model_weights = np.load(self.model_path, encoding="latin1", allow_pickle=True).item()
@@ -176,22 +177,21 @@ class SceneDetectionAudio:
                     scene_results.append(os.path.join(self.dataset_base_dir, audio))
         return scene_results
 
-    def get_audio_for_scene_folder(self, audio_folder, scene):
+    def get_audio_for_scene_folder(self, scene):
         scene_results = []
-        for root, dirs, files in os.walk(audio_folder):
+        for root, dirs, files in os.walk(self.organized_audio_folder):
             for filename in files:
                 if root.endswith(scene.replace("/", "_")) and ".wav" in filename:
                     scene_results.append(os.path.abspath(os.path.join(root, filename)))
         return scene_results
 
-    def create_scene_audio_dataset_for_paintings(self, input_folder_img, output_dir, structure_only):
-        scene_detection = SceneDetectionVisual("../places", "resnet18")
+    def create_scene_audio_dataset_for_paintings(self, input_folder_img, scene_detection, structure_only):
         for root, dirs, files in os.walk(input_folder_img):
             for filename in files:
                 print(f"Working on: {filename}")
                 file_path = os.path.join(root, filename)
                 scene = scene_detection.detect(file_path).replace("/", "_")
-                output_path = os.path.join(output_dir, scene)
+                output_path = os.path.join(self.organized_audio_folder, scene)
                 if not os.path.exists(output_path):
                     os.mkdir(output_path)
                     if not structure_only:
