@@ -9,7 +9,7 @@ from detectron2.data import MetadataCatalog
 
 
 def main():
-    input_folder = "../data/painter_by_numbers_scene_correct_object/"
+    input_folder = "../data/new_dataset_scene_correct_resize_segments/"
     for root, dirs, files in os.walk(input_folder):
         for filename in files:
             if "_object_segments" in filename:

@@ -2,7 +2,6 @@ import ImageConverter
 import cv2
 from SceneDetectionAudio import SceneDetectionAudio
 from SceneDetectionVisual import SceneDetectionVisual
-import ObjectDetectionVisual
 
 if __name__ == '__main__':
     saliency_coarse = cv2.saliency.StaticSaliencySpectralResidual_create()
@@ -39,9 +38,23 @@ if __name__ == '__main__':
 
     # ImageConverter.convert_painting_to_presentation_bulk("data/test/", "data/presentation/", False, True, False, True)
 
+    ImageConverter.convert_painting_to_presentation_bulk(
+        "/mnt/datadrive/projects/thesis/Datasets/Paintings/new_dataset_scene_correct/",
+        "data/presentation_scene/",
+        "sound_engine_model3.scd",
+        saliency_coarse,
+        True,
+        None,  # (scene_detection_visual, scene_detection_audio),
+        True,
+        True,
+        False,
+        True,
+        False,
+        True)
+
     # ImageConverter.convert_painting_to_presentation_bulk(
-    #     "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/",
-    #     "data/presentation_scene/",
+    #     "data/test/paintings",
+    #     "data/test/paintings",
     #     "sound_engine_model3.scd",
     #     saliency_coarse,
     #     True,
@@ -50,21 +63,8 @@ if __name__ == '__main__':
     #     True,
     #     False,
     #     True,
+    #     False,
     #     False)
-
-    ImageConverter.convert_painting_to_presentation_bulk(
-        "data/test/paintings",
-        "data/test/paintings",
-        "sound_engine_model3.scd",
-        saliency_coarse,
-        True,
-        (scene_detection_visual, scene_detection_audio),
-        True,
-        True,
-        False,
-        True,
-        False,
-        False)
 
     # saliency_coarse = cv2.saliency.StaticSaliencySpectralResidual_create()
     # ImageConverter.convert_painting_to_presentation(

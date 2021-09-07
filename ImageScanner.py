@@ -67,7 +67,7 @@ def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_obje
 
     if use_object_nav:
         segmentation_img, segmentation_info = ObjectDetectionVisual.detect_panoptic(img)
-        Utils.merge_segments_by_category(segmentation_img, segmentation_info)
+        # Utils.merge_segments_by_category(segmentation_img, segmentation_info)
         if use_saliency:
             priority_list = Utils.calculate_step_priority_object(segmentation_img, thresh_map)
         else:
@@ -276,20 +276,20 @@ def scan_img_seg_object(segmentation_img, img, edge_img, data_visual, data_audio
         dominant_hsv = cv2.cvtColor(np.uint8([[dominant_color]]), cv2.COLOR_BGR2HSV).flatten()
 
         if inner_scaling:
+            hue_index = sorted(seen_hue).index(dominant_hsv[0])
+            hue = math.floor(hue_index * hue_factor) + KEY_STEP_MIN_MAX[0]
+        else:
             hue = Utils.scale_between_range(dominant_hsv[0], CV_HSV_MIN_MAX[0], KEY_STEP_MIN_MAX)
             if hue == 6:
                 hue = 0
-        else:
-            hue_index = sorted(seen_hue).index(dominant_hsv[0])
-            hue = math.floor(hue_index * hue_factor) + KEY_STEP_MIN_MAX[0]
 
         saturation = Utils.scale_between_range(dominant_hsv[1], CV_HSV_MIN_MAX[1], LOUDNESS_MIN_MAX)
 
         if inner_scaling:
-            intensity = Utils.scale_between_range(dominant_hsv[2], CV_HSV_MIN_MAX[2], OCTAVE_MIN_MAX)
-        else:
             intensity_index = sorted(seen_value).index(dominant_hsv[2])
             intensity = math.floor(intensity_index * value_factor) + OCTAVE_MIN_MAX[0]
+        else:
+            intensity = Utils.scale_between_range(dominant_hsv[2], CV_HSV_MIN_MAX[2], OCTAVE_MIN_MAX)
 
         sub_edge_reshape = edge_img[mask]
         edginess = np.count_nonzero(sub_edge_reshape == 255) / sub_edge_reshape.size
