@@ -13,13 +13,14 @@ if __name__ == '__main__':
         "soundnet/categories_places2.txt",
         "soundnet/audio_object_detection_scene_audio.json",
         "soundnet/audio_scene_detection_scene_audio.json",
-        "/mnt/datadrive/projects/thesis/Datasets/Audio/Audio_Filtered"
+        "/mnt/datadrive/projects/thesis/Datasets/Audio/new_dataset_audio"
     )
 
     # scene_detection_audio.update_object_scene_detection_files()
-    # scene_detection.detect_bulk("/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/")
-
-    # ObjectDetectionVisual.detect_bulk("/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/")
+    # scene_detection_audio.create_scene_audio_dataset_for_paintings(
+    #     "/mnt/datadrive/projects/thesis/Datasets/Paintings/new_dataset_scene_correct", scene_detection_visual, True)
+    # scene_detection_visual.detect_bulk(
+    #     "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/")
 
     # ImageConverter.convert_paintings_to_txt_bulk(
     #     "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/",
@@ -44,7 +45,7 @@ if __name__ == '__main__':
         "sound_engine_model3.scd",
         saliency_coarse,
         True,
-        None,  # (scene_detection_visual, scene_detection_audio),
+        (scene_detection_visual, scene_detection_audio),
         True,
         True,
         False,
