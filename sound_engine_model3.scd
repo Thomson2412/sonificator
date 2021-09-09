@@ -23,9 +23,9 @@ fork{
 	if (thisProcess.argv[0] != nil) {
 		~input_file = thisProcess.argv[0];
 	} {
-		// ~input_file = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/animal_painting-Eugene_Boudin-Cows_in_a_Pasture-1883-50445.txt";
+		~input_file = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/animal_painting-Eugene_Boudin-Cows_in_a_Pasture-1883-50445.txt";
 		// ~input_file = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/allegorical_painting-Arthur_Streeton-Spirit_of_the_drought-1895-65154.txt";
-		~input_file = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/battle_painting-Konstantin_Korovin-Polovtsian_camp_-1914-70568.txt";
+		// ~input_file = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/battle_painting-Konstantin_Korovin-Polovtsian_camp_-1914-70568.txt";
 
 		// ~input_file = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/Hunters_in_the_Snow_(Winter)_by_Pieter_Bruegel_the_Elder.txt";
 		// ~input_file = "/mnt/datadrive/projects/thesis/sonificator/data/test/paintings/Corot_Venise,_La_Piazetta.txt";
@@ -288,7 +288,7 @@ fork{
 				\sus, 1,
 				\rel, 4,
 				\sustainTime, durations.sum,
-				\amp, max(amps.minItem() + 0.05, 0.0006)];
+				\amp, max(amps.minItem() + 0.1, 0.0006)];
 		} {
 			wait_for_scene_load = false;
 		};
