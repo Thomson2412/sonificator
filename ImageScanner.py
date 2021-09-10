@@ -313,7 +313,8 @@ def scan_img_seg_object(segmentation_img, img, edge_img, data_visual, data_audio
         right_percentage = Counter(mask.T[middle_x:img.shape[1]].flatten())[True] / segment_pixel_count
         pan = (-1 * left_percentage) + (1 * right_percentage)
 
-        random.shuffle(melody_array)
+        mdc = melody_array[:]
+        random.shuffle(mdc)
 
         data_audio.append_sub_img(
             hue,
@@ -322,7 +323,7 @@ def scan_img_seg_object(segmentation_img, img, edge_img, data_visual, data_audio
             pan,
             duration,
             edginess,
-            melody_array,
+            mdc,
             current_step
         )
 

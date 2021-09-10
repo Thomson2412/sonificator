@@ -288,7 +288,7 @@ fork{
 				\sus, 1,
 				\rel, 4,
 				\sustainTime, durations.sum,
-				\amp, max(amps.minItem() + 0.1, 0.0006)];
+				\amp, max(amps.minItem() + 0.14, 0.0006)];
 		} {
 			wait_for_scene_load = false;
 		};
