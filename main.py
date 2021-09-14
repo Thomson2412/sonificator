@@ -41,7 +41,7 @@ if __name__ == '__main__':
 
     ImageConverter.convert_painting_to_presentation_bulk(
         "/mnt/datadrive/projects/thesis/Datasets/Paintings/evaluation_dataset/",
-        "data/presentation_scene/",
+        "data/presentation_evaluation/",
         "sound_engine_model3.scd",
         saliency_coarse,
         True,

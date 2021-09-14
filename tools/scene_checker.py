@@ -5,8 +5,10 @@ import shutil
 
 
 def main():
-    input_folder_img = "/mnt/datadrive/projects/thesis/Datasets/Paintings/new_dataset/"
-    output_folder = "/mnt/datadrive/projects/thesis/Datasets/Paintings/new_dataset_scene_correct/"
+    # input_folder_img = "/mnt/datadrive/projects/thesis/Datasets/Paintings/new_dataset/"
+    # output_folder = "/mnt/datadrive/projects/thesis/Datasets/Paintings/new_dataset_scene_correct/"
+    input_folder_img = "../data/test/temp_scene"
+    output_folder = "../data/test/temp_scene"
     scene_detection = SceneDetectionVisual("../places", "resnet18")
 
     for root, dirs, files in os.walk(input_folder_img):
