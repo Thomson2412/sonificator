@@ -268,7 +268,7 @@ def scan_img_seg_object(segmentation_img, img, edge_img, data_visual, data_audio
         mask = np.array(segmentation_img == mask_id)
         sub_img_reshape = img[mask]
 
-        dominant_color = Utils.get_dominant_color(sub_img_reshape, 2)
+        dominant_color = Utils.get_dominant_color(sub_img_reshape, 1)
         dominant_hsv = cv2.cvtColor(np.uint8([[dominant_color]]), cv2.COLOR_BGR2HSV).flatten()
 
         if inner_scaling:

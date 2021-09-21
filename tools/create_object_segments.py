@@ -43,7 +43,7 @@ def main():
             for mask_id in np.unique(panoptic_seg.to("cpu")):
                 mask = panoptic_seg.to("cpu") == mask_id
                 sub_img_reshape = img[mask]
-                dominant_color = Utils.get_dominant_color(sub_img_reshape, 2)
+                dominant_color = Utils.get_dominant_color(sub_img_reshape, 1)
                 dominant_hsv = cv2.cvtColor(np.uint8([[dominant_color]]), cv2.COLOR_BGR2HSV).flatten()
                 color_segments_img[mask] = cv2.cvtColor(np.uint8([[dominant_hsv]]), cv2.COLOR_HSV2BGR)
 

@@ -52,6 +52,7 @@ if __name__ == '__main__':
     #     True,
     #     False,
     #     True)
+
     for i in range(1, 5):
         ImageConverter.convert_painting_to_presentation_bulk(
             "/mnt/datadrive/projects/thesis/Datasets/Paintings/evaluation_dataset/",
