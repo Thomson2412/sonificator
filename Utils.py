@@ -1,7 +1,10 @@
 import math
-from collections import Counter, OrderedDict
+from collections import Counter
 import numpy as np
 from pythonosc import osc_message_builder
+import scipy
+import scipy.misc
+import scipy.cluster
 
 
 def scale_between_range(value, in_min_max, out_min_max):
@@ -16,6 +19,21 @@ def scale_between_range(value, in_min_max, out_min_max):
         return round(out_max)
     if scaled < out_min:
         return round(out_min)
+    return scaled
+
+
+def scale_between_range_no_round(value, in_min_max, out_min_max):
+    in_min = in_min_max[0]
+    in_max = in_min_max[1]
+    out_min = out_min_max[0]
+    out_max = out_min_max[1]
+    if in_min == in_max:
+        return (out_max - out_min) / 2
+    scaled = out_min + (value - in_min) * ((out_max + out_min) / (in_max - in_min))
+    if scaled > out_max:
+        return out_max
+    if scaled < out_min:
+        return out_min
     return scaled
 
 
@@ -71,6 +89,16 @@ def merge_segments_by_category(segmentation_img, segmentation_info):
             min_id = min(id_values)
             for id_value in id_values:
                 segmentation_img[segmentation_img == id_value] = min_id
+
+
+def get_dominant_color(ar, num_clusters):
+    ar = ar.astype(float)
+    codes, _ = scipy.cluster.vq.kmeans2(ar, num_clusters)
+    vecs, _ = scipy.cluster.vq.vq(ar, codes)  # assign codes
+    counts, _ = scipy.histogram(vecs, len(codes))  # count occurrences
+    index_max = scipy.argmax(counts)  # find most frequent
+    peak = codes[index_max]
+    return peak.astype(np.uint8)
 
 
 class Utils:

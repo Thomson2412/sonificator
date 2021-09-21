@@ -2,16 +2,12 @@ import random
 from collections import Counter
 import cv2
 import ObjectDetectionVisual
-import SceneDetectionAudio
 import Utils
 from DataStructureAudio import DataStructureAudio
 from DataStructureVisual import DataStructureVisual
 from colorthief import ColorThief
 import numpy as np
 import math
-import scipy
-import scipy.misc
-import scipy.cluster
 
 CV_HSV_MIN_MAX = [(0, 179), (0, 255), (0, 255)]
 
@@ -259,7 +255,7 @@ def scan_img_seg_object(segmentation_img, img, edge_img, data_visual, data_audio
     for current_step, mask_id in enumerate(priority_list):
         mask = np.array(segmentation_img == mask_id)
         sub_img_reshape = img[mask]
-        dominant_color = get_dominant_color(sub_img_reshape, 1)
+        dominant_color = Utils.get_dominant_color(sub_img_reshape, 1)
         dominant_hsv = cv2.cvtColor(np.uint8([[dominant_color]]), cv2.COLOR_BGR2HSV).flatten()
         seen_value.append(dominant_hsv[2])
         seen_hue.append(dominant_hsv[0])
@@ -272,7 +268,7 @@ def scan_img_seg_object(segmentation_img, img, edge_img, data_visual, data_audio
         mask = np.array(segmentation_img == mask_id)
         sub_img_reshape = img[mask]
 
-        dominant_color = get_dominant_color(sub_img_reshape, 1)
+        dominant_color = Utils.get_dominant_color(sub_img_reshape, 2)
         dominant_hsv = cv2.cvtColor(np.uint8([[dominant_color]]), cv2.COLOR_BGR2HSV).flatten()
 
         if inner_scaling:
@@ -328,16 +324,6 @@ def scan_img_seg_object(segmentation_img, img, edge_img, data_visual, data_audio
         )
 
     return data_audio, data_visual
-
-
-def get_dominant_color(ar, num_clusters):
-    ar = ar.astype(float)
-    codes, _ = scipy.cluster.vq.kmeans2(ar, num_clusters)
-    vecs, _ = scipy.cluster.vq.vq(ar, codes)  # assign codes
-    counts, _ = scipy.histogram(vecs, len(codes))  # count occurrences
-    index_max = scipy.argmax(counts)  # find most frequent
-    peak = codes[index_max]
-    return peak.astype(np.uint8)
 
 
 class ImageScanner:

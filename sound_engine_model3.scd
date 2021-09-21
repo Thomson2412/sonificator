@@ -129,60 +129,6 @@ fork{
 			};
 		});
 
-		//fm synth
-		SynthDef(\fm, {
-			arg buf=0, numBufs=1, bufPos=0,
-			freq=500, mRatio=1, cRatio=1,
-			index=2, iScale=2, cAtk=4, cRel=(-4),
-			amp=0.2, atk=0.01, sus=0, dec=1, rel=0.2,
-			pan=0, out=0, fx=0, fxsend=(-25);
-			var car, mod, env, iEnv,detuneSig;
-			bufPos = buf + bufPos.min(numBufs - 1).max(0);
-			detuneSig = LFNoise1.kr(0.2!2).bipolar(0.2).midiratio;
-			//index of modulation
-			iEnv = EnvGen.kr(
-				Env(
-					[index, index*iScale, index],
-					[atk, dec, rel],
-					[cAtk, 1, cRel],
-				),
-				doneAction:Done.freeSelf
-			);
-			//amplitude envelope
-			env = EnvGen.kr(Env.adsr(atk, dec, sus, rel), doneAction:Done.freeSelf);
-			//modulator/carrier
-			// mod = SinOsc.ar(freq * mRatio, mul:freq * mRatio * iEnv);
-			mod = SinOsc.ar(freq * mRatio, mul:freq * mRatio * iEnv);
-			car = Osc.ar(bufPos, freq * detuneSig * cRatio + mod) * env * amp;
-			// car = SinOsc.ar(freq * detuneSig * cRatio + mod) * env * amp;
-			car = LPF.ar(car, freq: 2000, mul: 1.0, add: 0.0);
-			car = Pan2.ar(car, pan);
-			Out.ar(out, car);
-			Out.ar(fx, car * fxsend.dbamp);
-		}).add;
-
-		SynthDef.new(\vosc, {
-			arg buf=0, numBufs=1, bufPos=0,
-			freq=440, atk=0, dec=1, sus=0, rel=0.2,
-			amp=0.2, gate=1, pan=0,
-			out=0, fx=0, fxsend=(-25);
-			var sig, detuneSig, env;
-			bufPos = buf + bufPos.min(numBufs - 1).max(0);
-			env = Env.adsr(atk, dec, sus, rel);
-			detuneSig = LFNoise1.kr(0.2!2).bipolar(0.2).midiratio;
-			sig = VOsc.ar(bufPos, freq * detuneSig);
-			sig = Splay.ar(sig, center:pan);
-			sig = LeakDC.ar(sig);
-			sig = sig * EnvGen.kr(env, gate, doneAction: Done.freeSelf);
-			sig[1] = DelayN.ar(sig[1], 0.016, 0.016);
-			sig = LPF.ar(sig, freq: 16000, mul: 1.0, add: 0.0);
-			// sig = CrossoverDistortion.ar(sig, amp: bufPos, smooth: 1.0, mul: 1.0, add: 0);
-			// sig = SmoothDecimator.ar(in, rate: 44100.0, smoothing: 0.5, mul: 1.0, add: 0);
-			// sig = Decimator.ar(sig, rate: 44100.0 * bufPos, bits: 24, mul: 1.0, add: 0);
-			Out.ar(0, sig  * amp);
-			Out.ar(fx, sig * fxsend.dbamp);
-		}).add;
-
 		SynthDef(\instruments, {
 			arg out, freq=60.midicps, amp=1, buf, sustainTime,
 			atk=0, dec=1, sus=0, rel=0,
@@ -349,7 +295,7 @@ fork{
 		};
 
 		//Bass
-/*		Pbind(
+		Pbind(
 			\instrument, \instruments,
 			\degree, Pseq(chords.collect({arg i; i[0]})),
 			\root, root,
@@ -366,51 +312,7 @@ fork{
 			\pan, 0,
 			\fx, ~vbus,
 			\fxsend, -20,
-		).play;*/
-
-		//Bass
-		Pbind(
-			\instrument, \fm,
-			\degree, Pseq(chords.collect({arg i; i[0]})),
-			\root, root,
-			\octave, 2,
-			\dur, Pseq(durations),
-			\strum, 0,
-			\amp, Pseq(amps),
-			\atk, Pseq(durations * 0.5),
-			\dec, Pseq(durations + 3),
-			\sus, 0,
-			\rel, Pseq(releases),
-			\buf, buf[0].bufnum,
-			\numBufs, buf.size,
-			\bufPos, Pseq(edginess),
-			\pan, 0,
-			// \cAtk, 0,
-			// \cRel, 0,
-			\fx, ~vbus,
-			\fxsend, -20,
 		).play;
-
-		//Bass
-/*		Pbind(
-			\instrument, \vosc,
-			\degree, Pseq(chords.collect({arg i; i[0]})),
-			\root, root,
-			\octave, 2,
-			\dur, Pseq(durations),
-			\strum, 0,
-			\amp, Pseq(amps),
-			\atk, Pseq(durations * 0.5),
-			\dec, Pseq(durations - releases),
-			\sus, 0,
-			\rel, Pseq(releases),
-			\buf, buf[0].bufnum,
-			\numBufs, buf.size,
-			\bufPos, Pseq(edginess),
-			\pan, 0,
-			\fx, ~vbus,
-			\fxsend, -20,
-		).play;*/
 
 		//Chords
 		Pbind(
@@ -431,50 +333,6 @@ fork{
 			\fx, ~vbus,
 			\fxsend, -10,
 		).play;
-
-		//Chords
-		Pbind(
-			\instrument, \fm,
-			\degree, Pseq(chords),
-			\root, root,
-			\octave, Pseq(octaves),
-			\dur, Pseq(durations),
-			\strum, Pseq(strums),
-			\amp, Pseq(amps),
-			\atk, Pseq(durations * 0.8),
-			\dec, Pseq(durations + 3),
-			\sus, 0,
-			\rel, Pseq(releases),
-			\buf, buf[0].bufnum,
-			\numBufs, buf.size,
-			\bufPos, Pseq(edginess),
-			\pan, Pseq(pans),
-			\index, Pseq(edginess.normalize(0, 4)),
-			// \mRatio, Pseq(scale_steps.asFloat.normalize(1, 2)),
-			\fx, ~vbus,
-			\fxsend, -10,
-		).play;
-
-		//Chords
-/*		Pbind(
-			\instrument, \vosc,
-			\degree, Pseq(chords),
-			\root, root,
-			\octave, Pseq(octaves),
-			\dur, Pseq(durations),
-			\strum, 0, // Pseq(strums),
-			\amp, Pseq(amps),
-			\atk, Pseq(durations * 0.5),
-			\dec, Pseq(durations - releases),
-			\sus, 0,
-			\rel, Pseq(releases),
-			\buf, buf[0].bufnum,
-			\numBufs, buf.size,
-			\bufPos, Pseq(edginess),
-			\pan, Pseq(pans),
-			\fx, ~vbus,
-			\fxsend, -10,
-		).play;*/
 
 		if(melody_notes_amount_local > 0){
 			//Melody
@@ -497,50 +355,6 @@ fork{
 				\fx, ~vbus,
 				\fxsend, -15,
 			).play;
-
-			//Melody
-			Pbind(
-				\instrument, \fm,
-				\degree, Pseq(melody_notes),
-				\scale, scale,
-				\root, root,
-				\octave, Pseq(melody_octaves),
-				\dur, Pseq(melody_notes_durations),
-				\amp, Pseq(melody_amps),
-				\atk, 0.08,
-				\dec, 0.5,
-				// \dec, Pseq(melody_notes_durations),
-				\sus, 0,
-				\rel, 0.5,
-				\buf, buf[0].bufnum,
-				\numBufs, buf.size,
-				\bufPos, 0.9,
-				\pan, Pseq(melody_pans),
-				\fx, ~vbus,
-				\fxsend, -15,
-			).play;
-
-			//Melody
-/*			Pbind(
-				\instrument, \vosc,
-				\degree, Pseq(melody_notes),
-				\scale, scale,
-				\root, root,
-				\octave, Pseq(melody_octaves),
-				\dur, Pseq(melody_notes_durations),
-				\strum, 0,
-				\amp, Pseq(melody_amps),
-				\atk, 0.08,
-				\dec, 0.5,
-				\sus, 0,
-				\rel, 0.5,
-				\buf, buf[0].bufnum,
-				\numBufs, buf.size,
-				\bufPos, 0.9,
-				\pan, Pseq(melody_pans),
-				\fx, ~vbus,
-				\fxsend, -15,
-			).play;*/
 		};
 
 

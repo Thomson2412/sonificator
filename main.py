@@ -39,19 +39,33 @@ if __name__ == '__main__':
 
     # ImageConverter.convert_painting_to_presentation_bulk("data/test/", "data/presentation/", False, True, False, True)
 
-    ImageConverter.convert_painting_to_presentation_bulk(
-        "/mnt/datadrive/projects/thesis/Datasets/Paintings/evaluation_dataset/",
-        "data/presentation_evaluation/",
-        "sound_engine_model3.scd",
-        saliency_coarse,
-        True,
-        (scene_detection_visual, scene_detection_audio),
-        True,
-        True,
-        False,
-        True,
-        False,
-        True)
+    # ImageConverter.convert_painting_to_presentation_bulk(
+    #     "/mnt/datadrive/projects/thesis/Datasets/Paintings/evaluation_dataset/",
+    #     "data/presentation_evaluation_model_4/",
+    #     "sound_engine_model4.scd",
+    #     saliency_coarse,
+    #     True,
+    #     (scene_detection_visual, scene_detection_audio),
+    #     True,
+    #     True,
+    #     False,
+    #     True,
+    #     False,
+    #     True)
+    for i in range(1, 5):
+        ImageConverter.convert_painting_to_presentation_bulk(
+            "/mnt/datadrive/projects/thesis/Datasets/Paintings/evaluation_dataset/",
+            f"data/presentation_evaluation_model_{i}/",
+            f"sound_engine_model{i}.scd",
+            saliency_coarse,
+            True,
+            (scene_detection_visual, scene_detection_audio),
+            True,
+            True,
+            False,
+            True,
+            False,
+            True)
 
     # ImageConverter.convert_painting_to_presentation_bulk(
     #     "data/test/paintings",
