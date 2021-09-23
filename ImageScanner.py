@@ -262,7 +262,7 @@ def scan_img_seg_object(segmentation_img, img, edge_img, data_visual, data_audio
     value_factor = ((OCTAVE_MIN_MAX[1] + 1) - OCTAVE_MIN_MAX[0]) / len(seen_value)
     hue_factor = ((KEY_STEP_MIN_MAX[1] + 1) - KEY_STEP_MIN_MAX[0]) / len(seen_hue)
     melody_array = \
-        [Utils.scale_between_range(seen_hue[i], (min(seen_hue), max(seen_hue)), (0, 11)) for i in range(len(seen_hue))]
+        [Utils.scale_between_range(seen_hue[i], (min(seen_hue), max(seen_hue)), KEY_STEP_MIN_MAX) for i in range(len(seen_hue))]
 
     for current_step, mask_id in enumerate(priority_list):
         mask = np.array(segmentation_img == mask_id)

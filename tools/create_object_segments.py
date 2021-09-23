@@ -10,8 +10,8 @@ import numpy as np
 import Utils
 
 
-def main():
-    input_folder = "../data/new_dataset_scene_correct_resize_segments/"
+def main(output_individual=False):
+    input_folder = "../data/test/one_segment"
     for root, dirs, files in os.walk(input_folder):
         for filename in files:
             if "_object_segments" in filename or "_object_colors" in filename:
@@ -45,6 +45,15 @@ def main():
                 sub_img_reshape = img[mask]
                 dominant_color = Utils.get_dominant_color(sub_img_reshape, 1)
                 dominant_hsv = cv2.cvtColor(np.uint8([[dominant_color]]), cv2.COLOR_BGR2HSV).flatten()
+                if output_individual:
+                    color_segments_sub_img = np.array(img, copy=True)
+                    color_segments_sub_img[mask] = cv2.cvtColor(np.uint8([[dominant_hsv]]), cv2.COLOR_HSV2BGR)
+                    color_segments_sub_img[~mask] = (255, 255, 255)
+                    filename_segment = os.path.join(
+                        root,
+                        f"{os.path.splitext(filename)[0]}_object_colors_{mask_id}{os.path.splitext(filename)[1]}")
+                    cv2.imwrite(filename_segment, color_segments_sub_img)
+
                 color_segments_img[mask] = cv2.cvtColor(np.uint8([[dominant_hsv]]), cv2.COLOR_HSV2BGR)
 
             filename_colors = os.path.join(
@@ -56,4 +65,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main(True)

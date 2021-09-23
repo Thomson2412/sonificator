@@ -29,13 +29,14 @@ if __name__ == '__main__':
 
     # ImageConverter.convert_txt_to_sound_bulk("sound_engine_model1.scd", "converted/")
 
-    # ImageConverter.convert_paintings_to_txt_bulk(
-    #     "data/test/paintings",
-    #     "data/test/paintings",
-    #     saliency_coarse,
-    #     True,
-    #     (scene_detection_visual, scene_detection_audio),
-    #     True)
+    ImageConverter.convert_paintings_to_txt_bulk(
+        "data/test/paintings",
+        "data/test/paintings",
+        saliency_coarse,
+        True,
+        (scene_detection_visual, scene_detection_audio),
+        True,
+        False)
 
     # ImageConverter.convert_painting_to_presentation_bulk("data/test/", "data/presentation/", False, True, False, True)
 
@@ -53,25 +54,25 @@ if __name__ == '__main__':
     #     False,
     #     True)
 
-    for i in range(1, 5):
-        ImageConverter.convert_painting_to_presentation_bulk(
-            "/mnt/datadrive/projects/thesis/Datasets/Paintings/evaluation_dataset/",
-            f"data/presentation_evaluation_model_{i}/",
-            f"sound_engine_model{i}.scd",
-            saliency_coarse,
-            True,
-            (scene_detection_visual, scene_detection_audio),
-            True,
-            True,
-            False,
-            True,
-            False,
-            True)
+    # for i in range(1, 5):
+    #     ImageConverter.convert_painting_to_presentation_bulk(
+    #         "/mnt/datadrive/projects/thesis/Datasets/Paintings/evaluation_dataset/",
+    #         f"data/presentation_evaluation_model_{i}_no_inner/",
+    #         f"sound_engine_model{i}.scd",
+    #         saliency_coarse,
+    #         True,
+    #         (scene_detection_visual, scene_detection_audio),
+    #         True,
+    #         True,
+    #         False,
+    #         True,
+    #         False,
+    #         False)
 
     # ImageConverter.convert_painting_to_presentation_bulk(
     #     "data/test/paintings",
     #     "data/test/paintings",
-    #     "sound_engine_model3.scd",
+    #     "sound_engine_model4.scd",
     #     saliency_coarse,
     #     True,
     #     (scene_detection_visual, scene_detection_audio),
