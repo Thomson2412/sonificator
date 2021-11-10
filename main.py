@@ -1,3 +1,5 @@
+import os.path
+
 import ImageConverter
 import cv2
 from SceneDetectionAudio import SceneDetectionAudio
@@ -29,14 +31,14 @@ if __name__ == '__main__':
 
     # ImageConverter.convert_txt_to_sound_bulk("sound_engine_model1.scd", "converted/")
 
-    ImageConverter.convert_paintings_to_txt_bulk(
-        "data/test/paintings",
-        "data/test/paintings",
-        saliency_coarse,
-        True,
-        (scene_detection_visual, scene_detection_audio),
-        True,
-        False)
+    # ImageConverter.convert_paintings_to_txt_bulk(
+    #     "data/test/paintings",
+    #     "data/test/paintings",
+    #     saliency_coarse,
+    #     True,
+    #     (scene_detection_visual, scene_detection_audio),
+    #     True,
+    #     False)
 
     # ImageConverter.convert_painting_to_presentation_bulk("data/test/", "data/presentation/", False, True, False, True)
 
@@ -54,20 +56,23 @@ if __name__ == '__main__':
     #     False,
     #     True)
 
-    # for i in range(1, 5):
-    #     ImageConverter.convert_painting_to_presentation_bulk(
-    #         "/mnt/datadrive/projects/thesis/Datasets/Paintings/evaluation_dataset/",
-    #         f"data/presentation_evaluation_model_{i}_no_inner/",
-    #         f"sound_engine_model{i}.scd",
-    #         saliency_coarse,
-    #         True,
-    #         (scene_detection_visual, scene_detection_audio),
-    #         True,
-    #         True,
-    #         False,
-    #         True,
-    #         False,
-    #         False)
+    for i in range(1, 5):
+        output_dir = f"data/presentation_evaluation_model_{i}_no_scene/"
+        if not os.path.exists(output_dir):
+            os.mkdir(output_dir)
+        ImageConverter.convert_painting_to_presentation_bulk(
+            "/mnt/datadrive/projects/thesis/Datasets/Paintings/evaluation_dataset/",
+            output_dir,
+            f"sound_engine_model{i}.scd",
+            saliency_coarse,
+            True,
+            None,
+            True,
+            True,
+            False,
+            True,
+            False,
+            False)
 
     # ImageConverter.convert_painting_to_presentation_bulk(
     #     "data/test/paintings",
