@@ -18,21 +18,22 @@ def main():
         input_from_dir(
             "/mnt/datadrive/projects/thesis/Datasets/Paintings/evaluation_dataset",
             db,
-            "../data/combinations_exclusion.csv"
+            None
         )
 
 
 def input_from_dir(input_dir, db, exclusion_csv):
     exclusion_dict = {}
-    with open(exclusion_csv) as csv_file:
-        reader = csv.DictReader(csv_file)
-        for row in reader:
-            for key, value in row.items():
-                if value != "":
-                    if key in exclusion_dict:
-                        exclusion_dict[key].append(value)
-                    else:
-                        exclusion_dict[key] = [value]
+    if exclusion_csv is not None:
+        with open(exclusion_csv) as csv_file:
+            reader = csv.DictReader(csv_file)
+            for row in reader:
+                for key, value in row.items():
+                    if value != "":
+                        if key in exclusion_dict:
+                            exclusion_dict[key].append(value)
+                        else:
+                            exclusion_dict[key] = [value]
 
     image_filename_list = []
     video_filename_list = []
@@ -74,6 +75,9 @@ def input_from_dir(input_dir, db, exclusion_csv):
                     audio_file_path = os.path.join(folder_name, f"{os.path.splitext(filename)[0]}.mp3")
                     content.append(audio_file_path)
                 q = generate_questions(4, content)
+                input_question(q, db)
+                del content[0]
+                q = generate_questions(5, content)
                 input_question(q, db)
 
 
@@ -160,8 +164,17 @@ def generate_questions(question_type, content):
         question_list = [
             {
                 "type": question_type,
-                "question": "What audio piece is most fitting to the painting?",
-                "scale": None,
+                "question": "Choose the audio piece you find most descriptive of the painting.",
+                "scale": [None, None],
+                "content": content
+            }
+        ]
+    elif question_type == 5:
+        question_list = [
+            {
+                "type": question_type,
+                "question": "Choose the audio piece you find most pleasant to listen to.",
+                "scale": [None, None],
                 "content": content
             }
         ]
