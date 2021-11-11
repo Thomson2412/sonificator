@@ -35,8 +35,8 @@ def input_from_dir(input_dir, db, exclusion_csv):
                         else:
                             exclusion_dict[key] = [value]
 
-    image_filename_list = []
-    video_filename_list = []
+    # image_filename_list = []
+    # video_filename_list = []
     # for root, dirs, files in os.walk(input_dir):
     #     for filename in files:
     #         if ".jpg" in filename or ".png" in filename:
