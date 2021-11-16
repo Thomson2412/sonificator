@@ -56,14 +56,28 @@ if __name__ == '__main__':
     #     False,
     #     True)
 
-    for i in range(1, 5):
-        output_dir = f"data/presentation_evaluation_model_{i}_no_scene/"
-        if not os.path.exists(output_dir):
-            os.mkdir(output_dir)
-        ImageConverter.convert_painting_to_presentation_bulk(
+    # for i in range(1, 5):
+    #     output_dir = f"data/presentation_evaluation_model_{i}_no_scene/"
+    #     if not os.path.exists(output_dir):
+    #         os.mkdir(output_dir)
+    #     ImageConverter.convert_painting_to_presentation_bulk(
+    #         "/mnt/datadrive/projects/thesis/Datasets/Paintings/evaluation_dataset/",
+    #         output_dir,
+    #         f"sound_engine_model{i}.scd",
+    #         saliency_coarse,
+    #         True,
+    #         None,
+    #         True,
+    #         True,
+    #         False,
+    #         True,
+    #         False,
+    #         False)
+
+    ImageConverter.convert_painting_to_presentation_bulk(
             "/mnt/datadrive/projects/thesis/Datasets/Paintings/evaluation_dataset/",
-            output_dir,
-            f"sound_engine_model{i}.scd",
+            "data/presentation_evaluation_model_1_no_scene",
+            f"sound_engine_model1.scd",
             saliency_coarse,
             True,
             None,

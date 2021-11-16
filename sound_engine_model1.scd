@@ -312,7 +312,7 @@ fork{
 			\bufPos, Pseq(edginess),
 			\pan, 0,
 			\fx, ~vbus,
-			\fxsend, -20,
+			\fxsend, -30,
 		).play;
 
 		//Chords
@@ -333,7 +333,7 @@ fork{
 			\bufPos, Pseq(edginess),
 			\pan, Pseq(pans),
 			\fx, ~vbus,
-			\fxsend, -10,
+			\fxsend, -20,
 		).play;
 
 		if(melody_notes_amount_local > 0){
@@ -359,7 +359,7 @@ fork{
 				\bufPos, 0.9,
 				\pan, Pseq(melody_pans),
 				\fx, ~vbus,
-				\fxsend, -15,
+				\fxsend, -25,
 			).play;
 		};
 
