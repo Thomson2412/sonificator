@@ -79,6 +79,26 @@ def input_from_dir(input_dir, db, exclusion_csv):
                 del content[0]
                 q = generate_questions(5, content)
                 input_question(q, db)
+    for root, dirs, files in os.walk(input_dir):
+        for filename in files:
+            if ".jpg" in filename or ".png" in filename:
+                content = [filename]
+                for i in [1, 2, 4]:
+                    folder_name = f"visual_model_{i}_sound_model_4"
+                    audio_file_path = os.path.join(folder_name, f"{os.path.splitext(filename)[0]}.mp3")
+                    content.append(audio_file_path)
+                q = generate_questions(6, content)
+                input_question(q, db)
+    for root, dirs, files in os.walk(input_dir):
+        for filename in files:
+            if ".jpg" in filename or ".png" in filename:
+                content = []
+                for i in [1, 4]:
+                    folder_name = f"visual_model_{i}_sound_model_4"
+                    audio_file_path = os.path.join(folder_name, f"{os.path.splitext(filename)[0]}_audio.mp4")
+                    content.append(audio_file_path)
+                q = generate_questions(7, content)
+                input_question(q, db)
 
 
 def generate_questions(question_type, content):
@@ -175,6 +195,24 @@ def generate_questions(question_type, content):
                 "type": question_type,
                 "question": "Choose the audio piece you find most pleasant to listen to.",
                 "scale": [None, None],
+                "content": content
+            }
+        ]
+    elif question_type == 6:
+        question_list = [
+            {
+                "type": question_type,
+                "question": "Choose the audio piece you find most descriptive of the painting.",
+                "scale": [None, None],
+                "content": content
+            }
+        ]
+    elif question_type == 7:
+        question_list = [
+            {
+                "type": question_type,
+                "question": "What type of segmentation feels the most natural for this painting?",
+                "scale": ["First", "Second"],
                 "content": content
             }
         ]
