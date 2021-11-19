@@ -21,7 +21,7 @@ MELODY_NOTE_AMOUNT = 4
 DURATION = 4
 
 
-def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_object_nav, inner_scaling):
+def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_object_nav, inner_scaling, things_as_chaos):
     img = cv2.imread(input_img)
     scale_h = (1080 / 2) / img.shape[0]
     width = int(img.shape[1] * scale_h)
@@ -91,12 +91,19 @@ def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_obje
             len(priority_list)
         )
 
-        return scan_img_seg_object(segmentation_img, img, edge_img, data_visual, data_audio, priority_list, things, inner_scaling)
+        return scan_img_seg_object(segmentation_img, img, edge_img, data_visual, data_audio, priority_list,
+                                   inner_scaling, things, things_as_chaos)
     else:
         if use_saliency:
             priority_list = Utils.calculate_step_priority_standard(saliency_map, steps)
         else:
             priority_list = list(range(steps))
+
+        things = None
+        if things_as_chaos:
+            segmentation_img, segmentation_info = ObjectDetectionVisual.detect_panoptic(img)
+            things = sum(i["isthing"] is True for i in segmentation_info)
+
         data_visual = DataStructureVisual(
             img,
             hsv_img,
@@ -114,12 +121,13 @@ def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_obje
             0,
             steps
         )
-        return scan_img_seg_standard(width, height, steps, img, hsv_img, edge_img, saliency_map, thresh_map,
-                                     data_visual, data_audio, use_saliency, priority_list, inner_scaling)
+        return scan_img_seg_standard(width, height, steps, img, edge_img,
+                                     data_visual, data_audio, priority_list, inner_scaling, things, things_as_chaos)
 
 
-def scan_img_seg_standard(width, height, steps, img, hsv_img, edge_img, saliency_map, thresh_map,
-                          data_visual, data_audio, use_saliency, priority_list, inner_scaling):
+def scan_img_seg_standard(width, height, steps, img, edge_img,
+                          data_visual, data_audio, priority_list, inner_scaling, things, things_as_chaos):
+    total_pixel_count = img.shape[0] * img.shape[1]
     current_step = 0
     step_size_x = math.ceil(width / math.sqrt(steps))
     step_size_y = math.ceil(height / math.sqrt(steps))
@@ -128,61 +136,39 @@ def scan_img_seg_standard(width, height, steps, img, hsv_img, edge_img, saliency
     seen_value = []
     for y in range(0, height, step_size_y):
         for x in range(0, width, step_size_x):
-            sub_sal = saliency_map[y:y + step_size_y, x:x + step_size_x]
-            sub_thresh = thresh_map[y:y + step_size_y, x:x + step_size_x]
-            sum_sub_sal = np.round(np.sum(sub_sal) / (sub_sal.shape[1] * sub_sal.shape[0])).astype(int)
+            sub_img = img[y:y + step_size_y, x:x + step_size_x]
+            sub_img_reshape = sub_img.reshape(-1, 3)
+            dominant_color = Utils.get_dominant_color(sub_img_reshape, 1)
+            dominant_hsv = cv2.cvtColor(np.uint8([[dominant_color]]), cv2.COLOR_BGR2HSV).flatten()
 
-            sub_hsv = hsv_img[y:y + step_size_y, x:x + step_size_x]
-            sub_hsv_reshape = sub_hsv.reshape(-1, 3)
-            sub_thresh_reshape = sub_thresh.flatten()
-
-            if sum_sub_sal > 127 and use_saliency:
-                to_use_hsv = []
-                for i, item in enumerate(sub_thresh_reshape):
-                    if item == 255:
-                        to_use_hsv.append(sub_hsv_reshape[i])
-                mean_hsv = np.round(np.mean(to_use_hsv, axis=0)).astype(int)
-            else:
-                mean_hsv = np.round(np.mean(sub_hsv_reshape, axis=0)).astype(int)
-            seen_value.append(mean_hsv[2])
-            seen_hue.append(mean_hsv[0])
+            seen_value.append(dominant_hsv[2])
+            seen_hue.append(dominant_hsv[0])
     value_factor = ((OCTAVE_MIN_MAX[1] + 1) - OCTAVE_MIN_MAX[0]) / len(seen_value)
     hue_factor = ((KEY_STEP_MIN_MAX[1] + 1) - KEY_STEP_MIN_MAX[0]) / len(seen_hue)
 
     for y in range(0, height, step_size_y):
         for x in range(0, width, step_size_x):
-            sub_sal = saliency_map[y:y + step_size_y, x:x + step_size_x]
-            sub_thresh = thresh_map[y:y + step_size_y, x:x + step_size_x]
-            sum_sub_sal = np.round(np.sum(sub_sal) / (sub_sal.shape[1] * sub_sal.shape[0])).astype(int)
-
-            sub_hsv = hsv_img[y:y + step_size_y, x:x + step_size_x]
-            sub_hsv_reshape = sub_hsv.reshape(-1, 3)
-            sub_thresh_reshape = sub_thresh.flatten()
-
-            if sum_sub_sal > 127 and use_saliency:
-                to_use_hsv = []
-                for i, item in enumerate(sub_thresh_reshape):
-                    if item == 255:
-                        to_use_hsv.append(sub_hsv_reshape[i])
-                mean_hsv = np.round(np.mean(to_use_hsv, axis=0)).astype(int)
-            else:
-                mean_hsv = np.round(np.mean(sub_hsv_reshape, axis=0)).astype(int)
+            sub_img = img[y:y + step_size_y, x:x + step_size_x]
+            sub_img_reshape = sub_img.reshape(-1, 3)
+            dominant_color = Utils.get_dominant_color(sub_img_reshape, 1)
+            dominant_hsv = cv2.cvtColor(np.uint8([[dominant_color]]), cv2.COLOR_BGR2HSV).flatten()
 
             if inner_scaling:
-                hue = Utils.scale_between_range(mean_hsv[0], CV_HSV_MIN_MAX[0], KEY_STEP_MIN_MAX)
-                if hue == 6:
-                    hue = 0
-            else:
-                hue_index = sorted(seen_hue).index(mean_hsv[0])
+                hue_index = sorted(seen_hue).index(dominant_hsv[0])
                 hue = math.floor(hue_index * hue_factor) + KEY_STEP_MIN_MAX[0]
+            else:
+                hue = Utils.scale_between_range(dominant_hsv[0], CV_HSV_MIN_MAX[0], KEY_STEP_MIN_MAX)
+                # if hue == 6:
+                #     hue = 0
 
-            saturation = Utils.scale_between_range(mean_hsv[1], CV_HSV_MIN_MAX[1], LOUDNESS_MIN_MAX)
+            saturation = Utils.scale_between_range(dominant_hsv[1], CV_HSV_MIN_MAX[1], LOUDNESS_MIN_MAX)
 
             if inner_scaling:
-                intensity = Utils.scale_between_range(mean_hsv[2], CV_HSV_MIN_MAX[2], OCTAVE_MIN_MAX)
-            else:
-                intensity_index = sorted(seen_value).index(mean_hsv[2])
+                intensity_index = sorted(seen_value).index(dominant_hsv[2])
                 intensity = math.floor(intensity_index * value_factor) + OCTAVE_MIN_MAX[0]
+            else:
+                intensity = Utils.scale_between_range(dominant_hsv[2], CV_HSV_MIN_MAX[2], OCTAVE_MIN_MAX)
+
 
             # hue = Utils.scale_between_range(mean_hsv[0], CV_HSV_MIN_MAX[0], KEY_STEP_MIN_MAX)
             # saturation = Utils.scale_between_range(mean_hsv[1], CV_HSV_MIN_MAX[1], LOUDNESS_MIN_MAX)
@@ -206,18 +192,27 @@ def scan_img_seg_standard(width, height, steps, img, hsv_img, edge_img, saliency
                 else:
                     line.append(start_position)
 
-            presentation = np.tile(mean_hsv, sub_hsv.shape[1] * sub_hsv.shape[0])
-            presentation = presentation.reshape(sub_hsv.shape).astype('uint8')
+            presentation = np.tile(dominant_hsv, sub_img.shape[1] * sub_img.shape[0])
+            presentation = presentation.reshape(sub_img.shape).astype('uint8')
             presentation = cv2.cvtColor(presentation, cv2.COLOR_HSV2BGR)
             inverted_color = cv2.bitwise_not(presentation.reshape(-1, 3)[0]).flatten()
             for i, point in enumerate(line):
                 presentation[point][i] = inverted_color
 
+            segment_pixel_count = sub_img_reshape.shape[0]
+            area_percentage = (segment_pixel_count / total_pixel_count) * 100
+            if things_as_chaos:
+                duration = \
+                    Utils.scale_between_range(area_percentage, (0, 100),
+                                              (max(1, 4 - (things / 4)), max(4, 16 - things)))
+            else:
+                duration = DURATION
+
             presentation_img = np.array(img, copy=True)
             presentation_img[y:y + step_size_y, x:x + step_size_x] = presentation
             data_visual.append_sub_img(
                 presentation_img,
-                DURATION,
+                duration,
                 priority_list[current_step]
             )
 
@@ -237,7 +232,7 @@ def scan_img_seg_standard(width, height, steps, img, hsv_img, edge_img, saliency
                 saturation,
                 intensity,
                 pan,
-                DURATION,
+                duration,
                 edginess,
                 scaled_inverted_line,
                 priority_list[current_step]
@@ -248,7 +243,8 @@ def scan_img_seg_standard(width, height, steps, img, hsv_img, edge_img, saliency
     return data_audio, data_visual
 
 
-def scan_img_seg_object(segmentation_img, img, edge_img, data_visual, data_audio, priority_list, things, inner_scaling):
+def scan_img_seg_object(segmentation_img, img, edge_img, data_visual, data_audio, priority_list,
+                        inner_scaling, things, things_as_chaos):
     total_pixel_count = img.shape[0] * img.shape[1]
     seen_hue = []
     seen_value = []
@@ -276,8 +272,8 @@ def scan_img_seg_object(segmentation_img, img, edge_img, data_visual, data_audio
             hue = math.floor(hue_index * hue_factor) + KEY_STEP_MIN_MAX[0]
         else:
             hue = Utils.scale_between_range(dominant_hsv[0], CV_HSV_MIN_MAX[0], KEY_STEP_MIN_MAX)
-            if hue == 6:
-                hue = 0
+            # if hue == 6:
+            #     hue = 0
 
         saturation = Utils.scale_between_range(dominant_hsv[1], CV_HSV_MIN_MAX[1], LOUDNESS_MIN_MAX)
 
@@ -292,9 +288,11 @@ def scan_img_seg_object(segmentation_img, img, edge_img, data_visual, data_audio
 
         segment_pixel_count = sub_img_reshape.shape[0]
         area_percentage = (segment_pixel_count / total_pixel_count) * 100
-        duration = Utils.scale_between_range(area_percentage, (0, 100), (max(1, 4 - (things / 4)), max(4, 16 - things)))
-        # area_factor = (segment_pixel_count / total_pixel_count)
-        # duration = min(max(2, (20 - things) * area_factor), 8)
+        if things_as_chaos:
+            duration = \
+                Utils.scale_between_range(area_percentage, (0, 100), (max(1, 4 - (things / 4)), max(4, 16 - things)))
+        else:
+            duration = Utils.scale_between_range(area_percentage, (0, 100), (2, 8))
 
         presentation_img = np.array(img, copy=True)
         presentation_img[mask] = cv2.cvtColor(np.uint8([[dominant_hsv]]), cv2.COLOR_HSV2BGR)
