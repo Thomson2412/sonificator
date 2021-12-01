@@ -25,9 +25,14 @@ if __name__ == '__main__':
     #     "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/")
 
     # ImageConverter.convert_paintings_to_txt_bulk(
-    #     "/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/",
-    #     "data/presentation_scene/", saliency_coarse, True,
-    #     (scene_detection_visual, scene_detection_audio), True)
+    #     input_dir="/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/",
+    #     output_dir="data/presentation_scene/",
+    #     saliency_coarse=saliency_coarse,
+    #     with_saliency=True,
+    #     scene_detection=None,
+    #     use_object_nav=False,
+    #     inner_scaling=False,
+    #     things_as_chaos=False)
 
     # ImageConverter.convert_txt_to_sound_bulk("sound_engine_model1.scd", "converted/")
 
@@ -41,6 +46,21 @@ if __name__ == '__main__':
     #     False)
 
     # ImageConverter.convert_painting_to_presentation_bulk("data/test/", "data/presentation/", False, True, False, True)
+
+    # ImageConverter.convert_painting_to_presentation_bulk(
+    #     input_dir="/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/",
+    #     output_dir="data/presentation_evaluation_model_4/",
+    #     sound_model=f"sound_engine_model4.scd",
+    #     saliency_coarse=saliency_coarse,
+    #     with_saliency=True,
+    #     scene_detection=(scene_detection_visual, scene_detection_audio),
+    #     use_object_nav=True,
+    #     add_audio=True,
+    #     web_convert=False,
+    #     include_content=True,
+    #     include_border=False,
+    #     inner_scaling=True,
+    #     things_as_chaos=True)
 
     # ImageConverter.convert_painting_to_presentation_bulk(
     #     input_dir="/mnt/datadrive/projects/thesis/Datasets/Paintings/evaluation_dataset/",
@@ -57,39 +77,54 @@ if __name__ == '__main__':
     #     inner_scaling=True,
     #     things_as_chaos=True)
 
-    for i in range(1, 5):
-        output_dir = f"data/presentation_evaluation_model_{i}_no_scene/"
-        if not os.path.exists(output_dir):
-            os.mkdir(output_dir)
-        ImageConverter.convert_painting_to_presentation_bulk(
-            input_dir="/mnt/datadrive/projects/thesis/Datasets/Paintings/evaluation_dataset/",
-            output_dir=output_dir,
-            sound_model=f"sound_engine_model{i}.scd",
-            saliency_coarse=saliency_coarse,
-            with_saliency=True,
-            scene_detection=None,
-            use_object_nav=True,
-            add_audio=True,
-            web_convert=True,
-            include_content=True,
-            include_border=False,
-            inner_scaling=True,
-            things_as_chaos=True)
+    # for i in range(1, 5):
+    #     output_dir = f"data/presentation_evaluation_model_{i}_no_scene/"
+    #     if not os.path.exists(output_dir):
+    #         os.mkdir(output_dir)
+    #     ImageConverter.convert_painting_to_presentation_bulk(
+    #         input_dir="/mnt/datadrive/projects/thesis/Datasets/Paintings/evaluation_dataset/",
+    #         output_dir=output_dir,
+    #         sound_model=f"sound_engine_model{i}.scd",
+    #         saliency_coarse=saliency_coarse,
+    #         with_saliency=True,
+    #         scene_detection=None,
+    #         use_object_nav=True,
+    #         add_audio=True,
+    #         web_convert=True,
+    #         include_content=True,
+    #         include_border=False,
+    #         inner_scaling=True,
+    #         things_as_chaos=True)
+
+    ImageConverter.convert_painting_to_presentation_bulk(
+        input_dir="/mnt/datadrive/projects/thesis/Datasets/Paintings/evaluation_dataset/",
+        output_dir="data/presentation_evaluation_model_1_no_scene/",
+        sound_model="sound_engine_model1.scd",
+        saliency_coarse=saliency_coarse,
+        with_saliency=True,
+        scene_detection=None,
+        use_object_nav=True,
+        add_audio=True,
+        web_convert=True,
+        include_content=True,
+        include_border=False,
+        inner_scaling=True,
+        things_as_chaos=True)
 
     # ImageConverter.convert_painting_to_presentation_bulk(
     #     input_dir="/mnt/datadrive/projects/thesis/Datasets/Paintings/evaluation_dataset/",
-    #     output_dir="data/visual_model_4_sound_model_4",
+    #     output_dir="data/visual_model_1_sound_model_4",
     #     sound_model=f"sound_engine_model4.scd",
     #     saliency_coarse=saliency_coarse,
     #     with_saliency=True,
     #     scene_detection=None,
-    #     use_object_nav=True,
+    #     use_object_nav=False,
     #     add_audio=True,
     #     web_convert=True,
     #     include_content=True,
     #     include_border=False,
-    #     inner_scaling=True,
-    #     things_as_chaos=True)
+    #     inner_scaling=False,
+    #     things_as_chaos=False)
 
     # ImageConverter.convert_painting_to_presentation_bulk(
     #     input_dir="/mnt/datadrive/projects/thesis/Datasets/Paintings/evaluation_dataset/",

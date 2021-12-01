@@ -47,17 +47,18 @@ def create_message_from_list(address, data_list):
     return msg.build()
 
 
-def calculate_step_priority_standard(saliency_map, steps):
+def calculate_step_priority_standard(thresh_map, steps):
     sal_list = []
-    width = int(saliency_map.shape[1])
-    height = int(saliency_map.shape[0])
+    width = int(thresh_map.shape[1])
+    height = int(thresh_map.shape[0])
     step_size_x = math.ceil(width / math.sqrt(steps))
     step_size_y = math.ceil(height / math.sqrt(steps))
     for y in range(0, height, step_size_y):
         for x in range(0, width, step_size_x):
-            sub_sal = saliency_map[y:y + step_size_y, x:x + step_size_x]
-            sum_sub_sal = np.round(np.sum(sub_sal) / (sub_sal.shape[1] * sub_sal.shape[0])).astype(int)
-            sal_list.append(sum_sub_sal)
+            sub_sal = thresh_map[y:y + step_size_y, x:x + step_size_x]
+            sal_count = np.count_nonzero(sub_sal == 255)
+            sal_percentage = round((sal_count / sub_sal.size) * 100)
+            sal_list.append(sal_percentage)
     to_be_ordered = dict()
     for step in range(steps):
         to_be_ordered[step] = sal_list[step]

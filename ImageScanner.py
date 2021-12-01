@@ -95,7 +95,7 @@ def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_obje
                                    inner_scaling, things, things_as_chaos)
     else:
         if use_saliency:
-            priority_list = Utils.calculate_step_priority_standard(saliency_map, steps)
+            priority_list = Utils.calculate_step_priority_standard(thresh_map, steps)
         else:
             priority_list = list(range(steps))
 
@@ -169,7 +169,6 @@ def scan_img_seg_standard(width, height, steps, img, edge_img,
             else:
                 intensity = Utils.scale_between_range(dominant_hsv[2], CV_HSV_MIN_MAX[2], OCTAVE_MIN_MAX)
 
-
             # hue = Utils.scale_between_range(mean_hsv[0], CV_HSV_MIN_MAX[0], KEY_STEP_MIN_MAX)
             # saturation = Utils.scale_between_range(mean_hsv[1], CV_HSV_MIN_MAX[1], LOUDNESS_MIN_MAX)
             # intensity = Utils.scale_between_range(mean_hsv[2], CV_HSV_MIN_MAX[2], OCTAVE_MIN_MAX)
@@ -199,9 +198,9 @@ def scan_img_seg_standard(width, height, steps, img, edge_img,
             for i, point in enumerate(line):
                 presentation[point][i] = inverted_color
 
-            segment_pixel_count = sub_img_reshape.shape[0]
-            area_percentage = (segment_pixel_count / total_pixel_count) * 100
             if things_as_chaos:
+                segment_pixel_count = sub_img_reshape.shape[0]
+                area_percentage = (segment_pixel_count / total_pixel_count) * 100
                 duration = \
                     Utils.scale_between_range(area_percentage, (0, 100),
                                               (max(1, 4 - (things / 4)), max(4, 16 - things)))
@@ -258,7 +257,8 @@ def scan_img_seg_object(segmentation_img, img, edge_img, data_visual, data_audio
     value_factor = ((OCTAVE_MIN_MAX[1] + 1) - OCTAVE_MIN_MAX[0]) / len(seen_value)
     hue_factor = ((KEY_STEP_MIN_MAX[1] + 1) - KEY_STEP_MIN_MAX[0]) / len(seen_hue)
     melody_array = \
-        [Utils.scale_between_range(seen_hue[i], (min(seen_hue), max(seen_hue)), KEY_STEP_MIN_MAX) for i in range(len(seen_hue))]
+        [Utils.scale_between_range(seen_hue[i], (min(seen_hue), max(seen_hue)), KEY_STEP_MIN_MAX) for i in
+         range(len(seen_hue))]
 
     for current_step, mask_id in enumerate(priority_list):
         mask = np.array(segmentation_img == mask_id)

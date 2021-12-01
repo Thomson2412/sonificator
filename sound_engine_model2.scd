@@ -50,9 +50,6 @@ fork{
 		var saw = Env([0, 1 , -1, 0], [1, 0, 1], \lin).asSignal(512).asWavetable;
 		var square = Signal.rectWindow(512, 256).asWavetable;
 
-		var instruments = Array.new;
-		var instruments_melody = Array.new;
-
 		// var maj = [[0,4,7,11], [2,5,9,12], [4,7,11,14], [5,9,12,16], [7,11,14,17], [9,12,16,19], [11,14,17,21]];
 		// var min = [[0,3,7,10], [2,5,8,12], [3,7,10,14], [5,8,12,15], [7,10,14,17], [8,12,15,19], [10,14,17,20]];
 
@@ -351,8 +348,6 @@ fork{
 		).play;
 
 		if(melody_notes_amount_local > 0){
-			//Melody
-			steps.do({arg i; melody_notes_amount_local.do({instruments_melody = instruments_melody.add(instruments[scale_steps[i]])})});
 			//Melody
 			Pbind(
 				\instrument, \fm,

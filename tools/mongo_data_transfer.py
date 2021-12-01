@@ -89,16 +89,16 @@ def input_from_dir(input_dir, db, exclusion_csv):
                     content.append(audio_file_path)
                 q = generate_questions(6, content)
                 input_question(q, db)
-    for root, dirs, files in os.walk(input_dir):
-        for filename in files:
-            if ".jpg" in filename or ".png" in filename:
-                content = []
-                for i in [1, 4]:
-                    folder_name = f"visual_model_{i}_sound_model_4"
-                    audio_file_path = os.path.join(folder_name, f"{os.path.splitext(filename)[0]}_audio.mp4")
-                    content.append(audio_file_path)
-                q = generate_questions(7, content)
-                input_question(q, db)
+    # for root, dirs, files in os.walk(input_dir):
+    #     for filename in files:
+    #         if ".jpg" in filename or ".png" in filename:
+    #             content = []
+    #             for i in [1, 4]:
+    #                 folder_name = f"visual_model_{i}_sound_model_4"
+    #                 audio_file_path = os.path.join(folder_name, f"{os.path.splitext(filename)[0]}_audio.mp4")
+    #                 content.append(audio_file_path)
+    #             q = generate_questions(7, content)
+    #             input_question(q, db)
 
 
 def generate_questions(question_type, content):
