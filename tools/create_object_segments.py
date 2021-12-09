@@ -11,7 +11,7 @@ import Utils
 
 
 def main(output_individual=False):
-    input_folder = "../data/test/one_segment"
+    input_folder = "../data/evaluation_dataset_resize_object_segments"
     for root, dirs, files in os.walk(input_folder):
         for filename in files:
             if "_object_segments" in filename or "_object_colors" in filename:
@@ -65,4 +65,4 @@ def main(output_individual=False):
 
 
 if __name__ == '__main__':
-    main(True)
+    main()
