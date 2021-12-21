@@ -29,77 +29,80 @@ if __name__ == '__main__':
     #     output_dir="data/presentation_scene/",
     #     saliency_coarse=saliency_coarse,
     #     with_saliency=True,
-    #     scene_detection=None,
+    #     scene_detection=(scene_detection_visual, scene_detection_audio),
     #     use_object_nav=False,
     #     inner_scaling=False,
     #     things_as_chaos=False)
 
-    # ImageConverter.convert_txt_to_sound_bulk("sound_engine_model1.scd", "converted/")
-
-    # ImageConverter.convert_paintings_to_txt_bulk(
-    #     "data/test/paintings",
-    #     "data/test/paintings",
-    #     saliency_coarse,
-    #     True,
-    #     (scene_detection_visual, scene_detection_audio),
-    #     True,
-    #     False)
-
-    # ImageConverter.convert_painting_to_presentation_bulk("data/test/", "data/presentation/", False, True, False, True)
-
-    # ImageConverter.convert_painting_to_presentation_bulk(
-    #     input_dir="/mnt/datadrive/projects/thesis/Datasets/Paintings/painter_by_numbers_scene_correct/",
-    #     output_dir="data/presentation_evaluation_model_4/",
-    #     sound_model=f"sound_engine_model4.scd",
-    #     saliency_coarse=saliency_coarse,
-    #     with_saliency=True,
-    #     scene_detection=(scene_detection_visual, scene_detection_audio),
-    #     use_object_nav=True,
-    #     add_audio=True,
-    #     web_convert=False,
-    #     include_content=True,
-    #     include_border=False,
-    #     inner_scaling=True,
-    #     things_as_chaos=True)
-
-    # ImageConverter.convert_painting_to_presentation_bulk(
-    #     input_dir="/mnt/datadrive/projects/thesis/Datasets/Paintings/evaluation_dataset/",
-    #     output_dir="data/presentation_evaluation_model_4/",
-    #     sound_model=f"sound_engine_model4.scd",
-    #     saliency_coarse=saliency_coarse,
-    #     with_saliency=True,
-    #     scene_detection=(scene_detection_visual, scene_detection_audio),
-    #     use_object_nav=True,
-    #     add_audio=True,
-    #     web_convert=False,
-    #     include_content=True,
-    #     include_border=False,
-    #     inner_scaling=True,
-    #     things_as_chaos=True)
-
-    # for i in range(1, 5):
-    #     output_dir = f"data/presentation_evaluation_model_{i}_no_scene/"
-    #     if not os.path.exists(output_dir):
-    #         os.mkdir(output_dir)
-    #     ImageConverter.convert_painting_to_presentation_bulk(
-    #         input_dir="/mnt/datadrive/projects/thesis/Datasets/Paintings/evaluation_dataset/",
-    #         output_dir=output_dir,
-    #         sound_model=f"sound_engine_model{i}.scd",
-    #         saliency_coarse=saliency_coarse,
-    #         with_saliency=True,
-    #         scene_detection=None,
-    #         use_object_nav=True,
-    #         add_audio=True,
-    #         web_convert=True,
-    #         include_content=True,
-    #         include_border=False,
-    #         inner_scaling=True,
-    #         things_as_chaos=True)
-
+    # Model 1
     ImageConverter.convert_painting_to_presentation_bulk(
         input_dir="/mnt/datadrive/projects/thesis/Datasets/Paintings/evaluation_dataset/",
-        output_dir="data/presentation_evaluation_model_1_no_scene/",
+        output_dir="data/model1/",
         sound_model="sound_engine_model1.scd",
+        saliency_coarse=saliency_coarse,
+        with_saliency=True,
+        scene_detection=(scene_detection_visual, scene_detection_audio),
+        use_object_nav=False,
+        add_audio=True,
+        web_convert=True,
+        include_content=True,
+        include_border=False,
+        inner_scaling=False,
+        things_as_chaos=False)
+
+    # Model 2
+    ImageConverter.convert_painting_to_presentation_bulk(
+        input_dir="/mnt/datadrive/projects/thesis/Datasets/Paintings/evaluation_dataset/",
+        output_dir="data/model2/",
+        sound_model="sound_engine_model2.scd",
+        saliency_coarse=saliency_coarse,
+        with_saliency=True,
+        scene_detection=(scene_detection_visual, scene_detection_audio),
+        use_object_nav=True,
+        add_audio=True,
+        web_convert=True,
+        include_content=True,
+        include_border=False,
+        inner_scaling=False,
+        things_as_chaos=False)
+
+    # Model 3
+    ImageConverter.convert_painting_to_presentation_bulk(
+        input_dir="/mnt/datadrive/projects/thesis/Datasets/Paintings/evaluation_dataset/",
+        output_dir="data/model3/",
+        sound_model="sound_engine_model3.scd",
+        saliency_coarse=saliency_coarse,
+        with_saliency=True,
+        scene_detection=(scene_detection_visual, scene_detection_audio),
+        use_object_nav=True,
+        add_audio=True,
+        web_convert=True,
+        include_content=True,
+        include_border=False,
+        inner_scaling=True,
+        things_as_chaos=True)
+
+    # Model 4
+    ImageConverter.convert_painting_to_presentation_bulk(
+        input_dir="/mnt/datadrive/projects/thesis/Datasets/Paintings/evaluation_dataset/",
+        output_dir="data/model4/",
+        sound_model="sound_engine_model4.scd",
+        saliency_coarse=saliency_coarse,
+        with_saliency=True,
+        scene_detection=(scene_detection_visual, scene_detection_audio),
+        use_object_nav=True,
+        add_audio=True,
+        web_convert=True,
+        include_content=True,
+        include_border=False,
+        inner_scaling=True,
+        things_as_chaos=True)
+
+    # Model 4 no scene
+    ImageConverter.convert_painting_to_presentation_bulk(
+        input_dir="/mnt/datadrive/projects/thesis/Datasets/Paintings/evaluation_dataset/",
+        output_dir="data/model4_no_scene/",
+        sound_model="sound_engine_model4.scd",
         saliency_coarse=saliency_coarse,
         with_saliency=True,
         scene_detection=None,
@@ -110,59 +113,3 @@ if __name__ == '__main__':
         include_border=False,
         inner_scaling=True,
         things_as_chaos=True)
-
-    # ImageConverter.convert_painting_to_presentation_bulk(
-    #     input_dir="/mnt/datadrive/projects/thesis/Datasets/Paintings/evaluation_dataset/",
-    #     output_dir="data/visual_model_1_sound_model_4",
-    #     sound_model=f"sound_engine_model4.scd",
-    #     saliency_coarse=saliency_coarse,
-    #     with_saliency=True,
-    #     scene_detection=None,
-    #     use_object_nav=False,
-    #     add_audio=True,
-    #     web_convert=True,
-    #     include_content=True,
-    #     include_border=False,
-    #     inner_scaling=False,
-    #     things_as_chaos=False)
-
-    # ImageConverter.convert_painting_to_presentation_bulk(
-    #     input_dir="/mnt/datadrive/projects/thesis/Datasets/Paintings/evaluation_dataset/",
-    #     output_dir="data/no_octave_inner",
-    #     sound_model=f"sound_engine_model4.scd",
-    #     saliency_coarse=saliency_coarse,
-    #     with_saliency=True,
-    #     scene_detection=None,
-    #     use_object_nav=True,
-    #     add_audio=True,
-    #     web_convert=True,
-    #     include_content=True,
-    #     include_border=False,
-    #     inner_scaling=True)
-
-    # ImageConverter.convert_painting_to_presentation_bulk(
-    #     "data/test/paintings",
-    #     "data/test/paintings",
-    #     "sound_engine_model4.scd",
-    #     saliency_coarse,
-    #     True,
-    #     None,
-    #     False,
-    #     True,
-    #     False,
-    #     True,
-    #     False,
-    #     False)
-
-    # saliency_coarse = cv2.saliency.StaticSaliencySpectralResidual_create()
-    # ImageConverter.convert_painting_to_presentation(
-    #     "data/test/allegorical_painting-Arthur_Streeton-Spirit_of_the_drought-1895-65154.jpg",
-    #     "data/test/",
-    #     saliency_coarse,
-    #     True,
-    #     None,
-    #     False,
-    #     True,
-    #     True,
-    #     True,
-    #     False)
