@@ -1,5 +1,3 @@
-import os.path
-
 import ImageConverter
 import cv2
 from SceneDetectionAudio import SceneDetectionAudio
