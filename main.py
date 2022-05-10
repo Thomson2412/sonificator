@@ -79,7 +79,7 @@ if __name__ == '__main__':
         web_convert=True,
         include_content=True,
         include_border=False,
-        inner_scaling=True,
+        inner_scaling=False,
         things_as_chaos=True)
 
     # Model 4
