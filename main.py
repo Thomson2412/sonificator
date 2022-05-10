@@ -78,7 +78,7 @@ if __name__ == '__main__':
         include_content=True,
         include_border=False,
         inner_scaling=False,
-        things_as_chaos=True)
+        things_as_chaos=False)
 
     # Model 4
     ImageConverter.convert_painting_to_presentation_bulk(
