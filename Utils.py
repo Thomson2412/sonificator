@@ -1,7 +1,6 @@
 import math
 from collections import Counter
 import numpy as np
-from pythonosc import osc_message_builder
 import scipy
 import scipy.misc
 import scipy.cluster
@@ -35,16 +34,6 @@ def scale_between_range_no_round(value, in_min_max, out_min_max):
     if scaled < out_min:
         return out_min
     return scaled
-
-
-def create_message_from_list(address, data_list):
-    msg = osc_message_builder.OscMessageBuilder(address=address)
-    for data in data_list:
-        if isinstance(data, list):
-            msg.add_arg(bytes(data))
-        else:
-            msg.add_arg(data)
-    return msg.build()
 
 
 def calculate_step_priority_standard(thresh_map, steps):

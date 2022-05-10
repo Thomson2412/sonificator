@@ -5,7 +5,6 @@ import ObjectDetectionVisual
 import Utils
 from DataStructureAudio import DataStructureAudio
 from DataStructureVisual import DataStructureVisual
-from colorthief import ColorThief
 import numpy as np
 import math
 
@@ -35,9 +34,8 @@ def scan_img(input_img, steps, saliency, use_saliency, scene_detection, use_obje
     saliency_map = cv2.normalize(saliency_map, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
     thresh_map = cv2.threshold(saliency_map, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
 
-    color_thief = ColorThief(input_img)
-    dominant_color = color_thief.get_color(quality=1)
-    dominant_color_hsv = cv2.cvtColor(np.uint8([[list(dominant_color)]]), cv2.COLOR_RGB2HSV).flatten()
+    dominant_color = Utils.get_dominant_color(img.reshape(-1, 3), 1)
+    dominant_color_hsv = cv2.cvtColor(np.uint8([[dominant_color]]), cv2.COLOR_RGB2HSV).flatten()
     dominant_color_img = np.tile(dominant_color_hsv, img.shape[1] * img.shape[0])
     dominant_color_img = dominant_color_img.reshape(img.shape).astype('uint8')
     dominant_color_img = cv2.cvtColor(dominant_color_img, cv2.COLOR_HSV2BGR)

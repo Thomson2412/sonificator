@@ -1,12 +1,10 @@
 import os
 from shutil import copyfile
-from tensorflow.keras.layers import BatchNormalization, Activation, Conv1D, MaxPooling1D, ZeroPadding1D, Input
-from tensorflow.keras.models import Model
+from keras.layers import BatchNormalization, Activation, Conv1D, MaxPooling1D, ZeroPadding1D, Input
+from keras.models import Model
 import numpy as np
 import librosa
 import json
-
-from SceneDetectionVisual import SceneDetectionVisual
 
 
 def preprocess(audio):
