@@ -97,17 +97,17 @@ if __name__ == '__main__':
         things_as_chaos=True)
 
     # Model 4 no scene
-    ImageConverter.convert_painting_to_presentation_bulk(
-        input_dir="/mnt/datadrive/projects/thesis/Datasets/Paintings/evaluation_dataset/",
-        output_dir="data/model4_no_scene/",
-        sound_model="sound_engine_model4.scd",
-        saliency_coarse=saliency_coarse,
-        with_saliency=True,
-        scene_detection=None,
-        use_object_nav=True,
-        add_audio=True,
-        web_convert=True,
-        include_content=True,
-        include_border=False,
-        inner_scaling=True,
-        things_as_chaos=True)
+    # ImageConverter.convert_painting_to_presentation_bulk(
+    #     input_dir="/mnt/datadrive/projects/thesis/Datasets/Paintings/evaluation_dataset/",
+    #     output_dir="data/model4_no_scene/",
+    #     sound_model="sound_engine_model4.scd",
+    #     saliency_coarse=saliency_coarse,
+    #     with_saliency=True,
+    #     scene_detection=None,
+    #     use_object_nav=True,
+    #     add_audio=True,
+    #     web_convert=True,
+    #     include_content=True,
+    #     include_border=False,
+    #     inner_scaling=True,
+    #     things_as_chaos=True)
