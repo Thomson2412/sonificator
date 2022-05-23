@@ -2,8 +2,9 @@
 
 ### Dependencies
 * python3.9
+* python3.9-venv
+* python3.9-dev
 * ffmpeg
-* supercollider
 * supercollider-language
 * preferably cuda
 
@@ -16,7 +17,6 @@ pip install opencv-contrib-python
 pip install tensorflow
 pip install torch==1.10 torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu113
 pip install librosa
-pip install pillow
 pip install detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu113/torch1.10/index.html
 ```
 
