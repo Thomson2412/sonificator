@@ -81,6 +81,8 @@ def convert_painting_to_presentation(input_file_path, output_dir, sound_model, s
                                  use_object_nav, inner_scaling, things_as_chaos)
 
     if data:
+        if not os.path.isdir(output_dir):
+            os.makedirs(output_dir)
         visual_data = data[1]
         output_file_vid = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}.avi")
         visual_data.generate_presentation_video(output_file_vid, include_content, include_border)

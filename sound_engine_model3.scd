@@ -18,7 +18,7 @@ fork{
 
 	~vbus = Bus.audio(s, 2);
 
-	~instrument_folder = PathName.new("/mnt/datadrive/projects/thesis/sonificator/data/instruments/use");
+	~instrument_folder = PathName.new("datasets/instruments/use");
 
 	if (thisProcess.argv[0] != nil) {
 		~input_file = thisProcess.argv[0];

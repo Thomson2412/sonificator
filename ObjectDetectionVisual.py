@@ -22,12 +22,6 @@ def detect_instances(img):
     predictor = DefaultPredictor(cfg)
     outputs = predictor(img)
 
-    # print(outputs["instances"].pred_classes)
-    # print(outputs["instances"].pred_boxes)
-
-    # v = Visualizer(img[:, :, ::-1], MetadataCatalog.get(cfg.DATASETS.TRAIN[0]), scale=1.2)
-    # out = v.draw_instance_predictions(outputs["instances"].to("cpu"))
-    # return out.get_image()[:, :, ::-1]
     return outputs["instances"].pred_classes.to("cpu")
 
 
@@ -54,24 +48,6 @@ def detect_bulk(input_dir):
                 img = cv2.imread(input_file_path)
                 scan_img_segment(img)
 
-            break
-        break
-
-                # result_inst = detect_instances(img)
-                # output_filepath_inst = os.path.join(
-                #     "data/test/detectron/",
-                #     f"{os.path.splitext(filename)[0]}_instances{os.path.splitext(filename)[1]}"
-                # )
-                # cv2.imwrite(output_filepath_inst, result_inst)
-                #
-                # result_seg = detect_panoptic(img)
-                # output_filepath_seg = os.path.join(
-                #     "data/test/detectron/",
-                #     f"{os.path.splitext(filename)[0]}_segmentation{os.path.splitext(filename)[1]}"
-                # )
-                # cv2.imwrite(output_filepath_seg, result_seg)
-                # print(f"End: {filename}")
-
 
 def scan_img_segment(img):
     segmentation_img, segmentation_info = detect_panoptic(img)
@@ -79,8 +55,6 @@ def scan_img_segment(img):
     for step in range(max([item["id"] for item in segmentation_info])):
         sub_img = img[segmentation_img == step]
         print(sub_img)
-
-    # return data_audio, data_visual
 
 
 class ObjectDetectionVisual:
